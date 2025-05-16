@@ -1,0 +1,16 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/shreyash/AndroidStudioProjects/DoTrack/domain/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest10681972252332436137.xml:2:13-83
+INJECTED from /Users/shreyash/AndroidStudioProjects/DoTrack/domain/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest10681972252332436137.xml:2:13-83
+	package
+		INJECTED from /Users/shreyash/AndroidStudioProjects/DoTrack/domain/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest10681972252332436137.xml
+	xmlns:android
+		ADDED from /Users/shreyash/AndroidStudioProjects/DoTrack/domain/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest10681972252332436137.xml:2:23-81
+uses-sdk
+INJECTED from /Users/shreyash/AndroidStudioProjects/DoTrack/domain/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest10681972252332436137.xml reason: use-sdk injection requested
+INJECTED from /Users/shreyash/AndroidStudioProjects/DoTrack/domain/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest10681972252332436137.xml
+INJECTED from /Users/shreyash/AndroidStudioProjects/DoTrack/domain/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest10681972252332436137.xml
+	android:targetSdkVersion
+		INJECTED from /Users/shreyash/AndroidStudioProjects/DoTrack/domain/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest10681972252332436137.xml
+	android:minSdkVersion
+		INJECTED from /Users/shreyash/AndroidStudioProjects/DoTrack/domain/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest10681972252332436137.xml

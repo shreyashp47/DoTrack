@@ -21,3 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "DoTrack"
 include(":app")
+include(":data")
+include(":domain")
+include(":core")
