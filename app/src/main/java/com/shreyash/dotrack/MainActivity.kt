@@ -7,11 +7,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.shreyash.dotrack.core.ui.theme.DoTrackTheme
+import com.shreyash.dotrack.navigation.DoTrackBottomNavigation
+import com.shreyash.dotrack.navigation.DoTrackNavHost
+import com.shreyash.dotrack.navigation.bottomNavDestinations
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,26 +24,30 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             DoTrackTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    HomeScreen(modifier = Modifier.padding(innerPadding))
+                val navController = rememberNavController()
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentDestination = navBackStackEntry?.destination
+                
+                // Check if the current destination is in the bottom nav destinations
+                val showBottomBar = currentDestination?.route in bottomNavDestinations.map { it.route }
+                
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    bottomBar = {
+                        if (showBottomBar) {
+                            DoTrackBottomNavigation(
+                                navController = navController,
+                                currentDestination = currentDestination
+                            )
+                        }
+                    }
+                ) { innerPadding ->
+                    DoTrackNavHost(
+                        navController = navController,
+                        modifier = Modifier.padding(innerPadding)
+                    )
                 }
             }
         }
-    }
-}
-
-@Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
-    Text(
-        text = "Welcome to DoTrack!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    DoTrackTheme {
-        HomeScreen()
     }
 }
