@@ -1,0 +1,7 @@
+package com.shreyash.dotrack
+
+import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
+
+@HiltAndroidApp
+class DoTrackApplication : Application()
