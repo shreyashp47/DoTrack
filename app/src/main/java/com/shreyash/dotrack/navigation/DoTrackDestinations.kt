@@ -3,8 +3,10 @@ package com.shreyash.dotrack.navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.ui.graphics.vector.ImageVector
 
 interface DoTrackDestination {
@@ -23,8 +25,8 @@ object Home : DoTrackDestination {
 
 object Categories : DoTrackDestination {
     override val route = "categories"
-    override val selectedIcon = Icons.Filled.Info
-    override val unselectedIcon = Icons.Outlined.Info
+    override val selectedIcon = Icons.Filled.Menu
+    override val unselectedIcon = Icons.Outlined.Menu
     override val title = "Categories"
 }
 
