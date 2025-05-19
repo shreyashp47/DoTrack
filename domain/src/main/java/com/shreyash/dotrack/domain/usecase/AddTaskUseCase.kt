@@ -12,7 +12,7 @@ class AddTaskUseCase @Inject constructor(
     suspend operator fun invoke(
         title: String,
         description: String,
-        dueDate: LocalDateTime?,
+        dueDate: LocalDateTime,
         priority: Priority
     ): Result<Unit> {
         if (title.isBlank()) {

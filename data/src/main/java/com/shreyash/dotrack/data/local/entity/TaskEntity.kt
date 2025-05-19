@@ -14,7 +14,7 @@ data class TaskEntity(
     val title: String,
     val description: String,
     val isCompleted: Boolean,
-    val dueDate: LocalDateTime?,
+    val dueDate: LocalDateTime,
     val priority: Priority,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime
@@ -36,7 +36,7 @@ data class TaskEntity(
         fun createNew(
             title: String,
             description: String,
-            dueDate: LocalDateTime?,
+            dueDate: LocalDateTime,
             priority: Priority
         ): TaskEntity {
             val now = LocalDateTime.now()

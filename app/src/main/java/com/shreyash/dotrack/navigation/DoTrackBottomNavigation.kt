@@ -9,6 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun DoTrackBottomNavigation(
@@ -46,5 +49,16 @@ fun DoTrackBottomNavigation(
                 label = { Text(destination.title) }
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DoTrackBottomNavigationPreview() {
+    MaterialTheme {
+        DoTrackBottomNavigation(
+            navController = rememberNavController(),
+            currentDestination = null
+        )
     }
 }

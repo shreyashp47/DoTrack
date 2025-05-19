@@ -7,6 +7,9 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 import com.shreyash.dotrack.ui.categories.AddEditCategoryScreen
 import com.shreyash.dotrack.ui.categories.CategoriesScreen
 import com.shreyash.dotrack.ui.tasks.AddEditTaskScreen
@@ -117,5 +120,15 @@ fun DoTrackNavHost(
 //                 }
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DoTrackNavHostPreview() {
+    MaterialTheme {
+        DoTrackNavHost(
+            navController = rememberNavController()
+        )
     }
 }

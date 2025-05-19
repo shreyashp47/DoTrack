@@ -1,5 +1,7 @@
 package com.shreyash.dotrack.ui.tasks
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +41,9 @@ import com.shreyash.dotrack.core.util.Result
 import com.shreyash.dotrack.domain.model.Priority
 import com.shreyash.dotrack.domain.model.Task
 import java.time.format.DateTimeFormatter
+import androidx.compose.ui.tooling.preview.Preview
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,7 +53,7 @@ fun TasksScreen(
     viewModel: TasksViewModel = hiltViewModel()
 ) {
     val tasksState by viewModel.tasks.collectAsState()
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -143,7 +148,7 @@ fun TaskItem(
     modifier: Modifier = Modifier
 ) {
     val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
-    
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -161,9 +166,9 @@ fun TaskItem(
                 checked = task.isCompleted,
                 onCheckedChange = onCheckChange
             )
-            
+
             Spacer(modifier = Modifier.width(16.dp))
-            
+
             Column(
                 modifier = Modifier.weight(1f)
             ) {
@@ -174,7 +179,7 @@ fun TaskItem(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                
+
                 if (task.description.isNotBlank()) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
@@ -185,7 +190,7 @@ fun TaskItem(
                         textDecoration = if (task.isCompleted) TextDecoration.LineThrough else TextDecoration.None
                     )
                 }
-                
+
                 task.dueDate?.let {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
@@ -194,7 +199,7 @@ fun TaskItem(
                     )
                 }
             }
-            
+
             PriorityIndicator(priority = task.priority)
         }
     }
@@ -207,10 +212,87 @@ fun PriorityIndicator(priority: Priority) {
         Priority.MEDIUM -> MaterialTheme.colorScheme.tertiary
         Priority.LOW -> MaterialTheme.colorScheme.primary
     }
-    
+
     Icon(
         imageVector = Icons.Default.Check,
         contentDescription = "Priority ${priority.name}",
         tint = color
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PriorityIndicatorPreview() {
+    MaterialTheme {
+        PriorityIndicator(priority = Priority.HIGH)
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview(showBackground = true)
+@Composable
+fun TaskItemPreview() {
+    MaterialTheme {
+        TaskItem(
+            task = Task(
+                id = "1",
+                title = "Complete project",
+                description = "Finish the Android project by end of week",
+                isCompleted = false,
+                dueDate = LocalDateTime.now().plusDays(2),
+                priority = Priority.HIGH,
+                categoryId = null,
+                createdAt = LocalDateTime.now(),
+                updatedAt = LocalDateTime.now()
+            ),
+            onClick = {},
+            onCheckChange = {}
+        )
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview(showBackground = true)
+@Composable
+fun TaskListPreview() {
+    MaterialTheme {
+        TaskList(
+            tasks = listOf(
+                Task(
+                    id = "1",
+                    title = "Complete project",
+                    description = "Finish the Android project by end of week",
+                    isCompleted = false,
+                    dueDate = LocalDateTime.now().plusDays(2),
+                    priority = Priority.HIGH,
+                    categoryId = null,
+                    createdAt = LocalDateTime.now(),
+                    updatedAt = LocalDateTime.now()
+                ),
+                Task(
+                    id = "2",
+                    title = "Buy groceries",
+                    description = "Milk, eggs, bread",
+                    isCompleted = true,
+                    dueDate = LocalDateTime.now(),
+                    priority = Priority.MEDIUM,
+                    categoryId = null,createdAt = LocalDateTime.now(),
+                    updatedAt = LocalDateTime.now()
+                )
+            ),
+            onTaskClick = {},
+            onTaskCheckChange = { _, _ -> }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TasksScreenPreview() {
+    MaterialTheme {
+        TasksScreen(
+            onTaskClick = {},
+            onAddTaskClick = {}
+        )
+    }
 }
