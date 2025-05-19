@@ -7,10 +7,11 @@ data class Task(
     val title: String,
     val description: String,
     val isCompleted: Boolean,
-    val dueDate: LocalDateTime?,
+    val dueDate: LocalDateTime,
     val priority: Priority,
     val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime
+    val updatedAt: LocalDateTime,
+    val categoryId: Int?= null
 )
 
 enum class Priority {

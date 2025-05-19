@@ -1,5 +1,7 @@
 package com.shreyash.dotrack.ui.tasks
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,7 +44,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.shreyash.dotrack.core.util.Result
+import com.shreyash.dotrack.domain.model.Priority
+import com.shreyash.dotrack.domain.model.Task
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -266,5 +273,127 @@ fun TaskDetailScreen(
                 }
             }
         )
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+fun TaskDetailScreenPreview() {
+    MaterialTheme {
+        // Create a fake task for preview
+        val mockTask = Task(
+            id = "1",
+            title = "Complete project",
+            description = "Finish the Android project by end of week",
+            isCompleted = false,
+            dueDate = LocalDateTime.now().plusDays(2),
+            priority = Priority.HIGH,
+            createdAt = LocalDateTime.now().minusDays(2),
+            updatedAt = LocalDateTime.now()
+        )
+        
+        // Create a fake view model state
+        val taskState = Result.Success(mockTask)
+        
+        // Use the real screen but with a mocked state
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Task Details") },
+                    navigationIcon = {
+                        IconButton(onClick = {}) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = {}) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete Task"
+                            )
+                        }
+                    }
+                )
+            },
+            floatingActionButton = {
+                FloatingActionButton(onClick = {}) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit Task"
+                    )
+                }
+            }
+        ) { padding ->
+            // Display the task details directly
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(16.dp)
+            ) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Checkbox(
+                                checked = mockTask.isCompleted,
+                                onCheckedChange = {}
+                            )
+                            
+                            Spacer(modifier = Modifier.width(8.dp))
+                            
+                            Text(
+                                text = mockTask.title,
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        Text(
+                            text = "Description",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        Text(
+                            text = mockTask.description,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        Text(
+                            text = "Priority",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        Text(
+                            text = mockTask.priority.name,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
+            }
+        }
     }
 }

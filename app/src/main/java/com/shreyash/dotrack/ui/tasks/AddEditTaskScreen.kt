@@ -1,5 +1,7 @@
 package com.shreyash.dotrack.ui.tasks
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -51,6 +53,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -145,7 +148,7 @@ fun TaskForm(
     description: String,
     onDescriptionChange: (String) -> Unit,
     dueDate: LocalDateTime?,
-    onDueDateChange: (LocalDateTime?) -> Unit,
+    onDueDateChange: (LocalDateTime) -> Unit,
     priority: Priority,
     onPriorityChange: (Priority) -> Unit,
     modifier: Modifier = Modifier
@@ -271,11 +274,76 @@ fun TaskForm(
         Spacer(modifier = Modifier.height(16.dp))
         
         Button(
-            onClick = { onDueDateChange(null) },
+            onClick = { onDueDateChange(LocalDateTime.now()) },
             enabled = dueDate != null,
             modifier = Modifier.align(Alignment.End)
         ) {
             Text("Clear Due Date")
         }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+fun AddEditTaskScreenPreview() {
+    MaterialTheme {
+        // Create a simplified version of the screen for preview
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Add Task") },
+                    navigationIcon = {
+                        IconButton(onClick = {}) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                    }
+                )
+            },
+            floatingActionButton = {
+                FloatingActionButton(onClick = {}) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "Save Task"
+                    )
+                }
+            }
+        ) { padding ->
+            TaskForm(
+                title = "Sample Task",
+                onTitleChange = {},
+                description = "This is a sample task description for preview",
+                onDescriptionChange = {},
+                priority = Priority.MEDIUM,
+                onPriorityChange = {},
+                dueDate = LocalDateTime.now().plusDays(3),
+                //onDueDateClick = {},
+                onDueDateChange = {},
+                modifier = Modifier.padding(padding)
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TaskFormPreview() {
+    MaterialTheme {
+        TaskForm(
+            title = "Sample Task",
+            onTitleChange = {},
+            description = "This is a sample task description for preview",
+            onDescriptionChange = {},
+            priority = Priority.MEDIUM,
+            onPriorityChange = {},
+            dueDate = LocalDateTime.now().plusDays(3),
+            //onDueDateClick = {},
+            onDueDateChange = {},
+            modifier = Modifier.padding(16.dp)
+        )
     }
 }

@@ -1,5 +1,7 @@
 package com.shreyash.dotrack.ui.tasks
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -16,12 +18,12 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import javax.inject.Inject
-
-data class AddEditTaskUiState(
+@RequiresApi(Build.VERSION_CODES.O)
+data class AddEditTaskUiState  constructor(
     val id: String? = null,
     val title: String = "",
     val description: String = "",
-    val dueDate: LocalDateTime? = null,
+    val dueDate: LocalDateTime = LocalDateTime.now().plusDays(7),
     val priority: Priority = Priority.MEDIUM,
     val isCompleted: Boolean = false,
     val isLoading: Boolean = false,
@@ -31,6 +33,7 @@ data class AddEditTaskUiState(
     val updatedAt: LocalDateTime = LocalDateTime.now()
 )
 
+@RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class AddEditTaskViewModel @Inject constructor(
     private val getTaskByIdUseCase: GetTaskByIdUseCase,
@@ -81,7 +84,7 @@ class AddEditTaskViewModel @Inject constructor(
         uiState = uiState.copy(description = description)
     }
     
-    fun updateDueDate(dueDate: LocalDateTime?) {
+    fun updateDueDate(dueDate: LocalDateTime) {
         uiState = uiState.copy(dueDate = dueDate)
     }
     

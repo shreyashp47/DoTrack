@@ -7,6 +7,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.shreyash.dotrack.ui.categories.AddEditCategoryScreen
 import com.shreyash.dotrack.ui.categories.CategoriesScreen
 import com.shreyash.dotrack.ui.tasks.AddEditTaskScreen
 import com.shreyash.dotrack.ui.tasks.TaskDetailScreen
@@ -33,7 +37,7 @@ fun DoTrackNavHost(
                 }
             )
         }
-        
+
         // Categories screen
         composable(route = Categories.route) {
             CategoriesScreen(
@@ -46,7 +50,7 @@ fun DoTrackNavHost(
                 }
             )
         }
-        
+
         // Task detail screen
         composable(
             route = TaskDetail.routeWithArgs,
@@ -70,7 +74,7 @@ fun DoTrackNavHost(
                 }
             )
         }
-        
+
         // Add/Edit task screen
         composable(
             route = AddEditTask.routeWithArgs,
@@ -93,7 +97,7 @@ fun DoTrackNavHost(
                 }
             )
         }
-        
+
         // Add/Edit category screen
         composable(
             route = AddEditCategory.routeWithArgs,
@@ -106,15 +110,25 @@ fun DoTrackNavHost(
             )
         ) { backStackEntry ->
             val categoryId = backStackEntry.arguments?.getString(AddEditCategory.categoryIdArg)
-            // AddEditCategoryScreen(
-            //     categoryId = categoryId,
-            //     onBackClick = {
-            //         navController.popBackStack()
-            //     },
-            //     onCategorySaved = {
-            //         navController.popBackStack()
-            //     }
-            // )
+            AddEditCategoryScreen(
+                categoryId = categoryId,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+//                 onCategorySaved = {
+//                     navController.popBackStack()
+//                 }
+            )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DoTrackNavHostPreview() {
+    MaterialTheme {
+        DoTrackNavHost(
+            navController = rememberNavController()
+        )
     }
 }

@@ -38,6 +38,18 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.shreyash.dotrack.core.util.Result
 import com.shreyash.dotrack.domain.model.Category
+import androidx.compose.ui.tooling.preview.Preview
+
+@Preview(showBackground = true)
+@Composable
+fun CategoriesScreenPreview() {
+    MaterialTheme {
+        CategoriesScreen(
+            onCategoryClick = {},
+            onAddCategoryClick = {}
+        )
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -107,6 +119,33 @@ fun CategoriesScreen(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun CategoryListPreview() {
+    MaterialTheme {
+        CategoryList(
+            categories = listOf(
+                Category(
+                    id = "1",
+                    name = "Work",
+                    color = 0xFFE57373.toInt()
+                ),
+                Category(
+                    id = "2",
+                    name = "Personal",
+                    color = 0xFF81C784.toInt()
+                ),
+                Category(
+                    id = "3",
+                    name = "Shopping",
+                    color = 0xFF64B5F6.toInt()
+                )
+            ),
+            onCategoryClick = {}
+        )
+    }
+}
+
 @Composable
 fun CategoryList(
     categories: List<Category>,
@@ -122,6 +161,21 @@ fun CategoryList(
                 onClick = { onCategoryClick(category.id) }
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CategoryItemPreview() {
+    MaterialTheme {
+        CategoryItem(
+            category = Category(
+                id = "1",
+                name = "Work",
+                color = 0xFFE57373.toInt()
+            ),
+            onClick = {}
+        )
     }
 }
 

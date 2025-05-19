@@ -14,12 +14,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
-    tertiary = Pink80
+    tertiary = Pink80,
+    errorContainer = CardColorHighPriority,
+    tertiaryContainer = CardColorMediumPriority,
+    primaryContainer = CardColorLowPriority,
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -33,6 +44,10 @@ private val LightColorScheme = lightColorScheme(
     onTertiary = Color.White,
     onBackground = Color(0xFF1C1B1F),
     onSurface = Color(0xFF1C1B1F),
+    errorContainer = CardColorHighPriority,
+    tertiaryContainer = CardColorMediumPriority,
+    primaryContainer = CardColorLowPriority,
+
 )
 
 @Composable
@@ -64,4 +79,20 @@ fun DoTrackTheme(
         typography = Typography,
         content = content
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DoTrackThemePreview() {
+    DoTrackTheme {
+        Surface(
+            modifier = Modifier.size(100.dp, 100.dp)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Text("DoTrack Theme Preview")
+            }
+        }
+    }
 }

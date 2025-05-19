@@ -12,7 +12,7 @@ import com.shreyash.dotrack.data.local.entity.TaskEntity
 
 @Database(
     entities = [TaskEntity::class, CategoryEntity::class],
-    version = 1,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(DateTimeConverters::class, PriorityConverters::class)
