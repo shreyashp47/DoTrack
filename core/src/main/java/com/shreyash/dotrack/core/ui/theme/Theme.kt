@@ -27,7 +27,10 @@ import androidx.compose.ui.unit.dp
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
-    tertiary = Pink80
+    tertiary = Pink80,
+    errorContainer = CardColorHighPriority,
+    tertiaryContainer = CardColorMediumPriority,
+    primaryContainer = CardColorLowPriority,
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -41,6 +44,10 @@ private val LightColorScheme = lightColorScheme(
     onTertiary = Color.White,
     onBackground = Color(0xFF1C1B1F),
     onSurface = Color(0xFF1C1B1F),
+    errorContainer = CardColorHighPriority,
+    tertiaryContainer = CardColorMediumPriority,
+    primaryContainer = CardColorLowPriority,
+
 )
 
 @Composable

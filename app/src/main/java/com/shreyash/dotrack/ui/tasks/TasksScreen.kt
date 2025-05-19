@@ -1,7 +1,6 @@
 package com.shreyash.dotrack.ui.tasks
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -35,15 +35,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.shreyash.dotrack.core.util.Result
+import com.shreyash.dotrack.core.ui.theme.CardColorHighPriority
+import com.shreyash.dotrack.core.ui.theme.CardColorLowPriority
+import com.shreyash.dotrack.core.ui.theme.CardColorMediumPriority
 import com.shreyash.dotrack.domain.model.Priority
 import com.shreyash.dotrack.domain.model.Task
-import java.time.format.DateTimeFormatter
-import androidx.compose.ui.tooling.preview.Preview
-import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,7 +58,9 @@ fun TasksScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Tasks") }
+                title = { Text("Tasks") },
+                modifier = Modifier
+                    .statusBarsPadding() // Set a custom height
             )
         },
         floatingActionButton = {
@@ -80,6 +83,7 @@ fun TasksScreen(
                     CircularProgressIndicator()
                 }
             }
+
             tasksState.isSuccess() -> {
                 val tasks = tasksState.getOrNull() ?: emptyList()
                 if (tasks.isEmpty()) {
@@ -106,6 +110,7 @@ fun TasksScreen(
                     )
                 }
             }
+
             tasksState.isError() -> {
                 Box(
                     modifier = Modifier
@@ -148,7 +153,11 @@ fun TaskItem(
     modifier: Modifier = Modifier
 ) {
     val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
-
+    val color = when (task.priority) {
+        Priority.HIGH -> CardColorHighPriority
+        Priority.MEDIUM -> CardColorMediumPriority
+        Priority.LOW -> CardColorLowPriority
+    }
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -159,6 +168,7 @@ fun TaskItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .background(color)
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -220,38 +230,7 @@ fun PriorityIndicator(priority: Priority) {
     )
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PriorityIndicatorPreview() {
-    MaterialTheme {
-        PriorityIndicator(priority = Priority.HIGH)
-    }
-}
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-fun TaskItemPreview() {
-    MaterialTheme {
-        TaskItem(
-            task = Task(
-                id = "1",
-                title = "Complete project",
-                description = "Finish the Android project by end of week",
-                isCompleted = false,
-                dueDate = LocalDateTime.now().plusDays(2),
-                priority = Priority.HIGH,
-                categoryId = null,
-                createdAt = LocalDateTime.now(),
-                updatedAt = LocalDateTime.now()
-            ),
-            onClick = {},
-            onCheckChange = {}
-        )
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun TaskListPreview() {
@@ -276,7 +255,17 @@ fun TaskListPreview() {
                     isCompleted = true,
                     dueDate = LocalDateTime.now(),
                     priority = Priority.MEDIUM,
-                    categoryId = null,createdAt = LocalDateTime.now(),
+                    categoryId = null, createdAt = LocalDateTime.now(),
+                    updatedAt = LocalDateTime.now()
+                ),
+                Task(
+                    id = "3",
+                    title = "Buy groceries",
+                    description = "Milk, eggs, bread",
+                    isCompleted = true,
+                    dueDate = LocalDateTime.now(),
+                    priority = Priority.LOW,
+                    categoryId = null, createdAt = LocalDateTime.now(),
                     updatedAt = LocalDateTime.now()
                 )
             ),
