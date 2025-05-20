@@ -14,6 +14,8 @@ data class Task(
     val categoryId: Int?= null
 )
 
-enum class Priority {
-    LOW, MEDIUM, HIGH
+enum class Priority(val value: Int) {
+    LOW(1),
+    MEDIUM(2),
+    HIGH(3)
 }

@@ -46,7 +46,7 @@ fun DoTrackBottomNavigation(
                         contentDescription = destination.title
                     )
                 },
-                label = { Text(destination.title) }
+                //label = { Text(destination.title) }
             )
         }
     }

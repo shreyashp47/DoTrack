@@ -1,5 +1,7 @@
 package com.shreyash.dotrack.ui.tasks
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -17,6 +19,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -24,13 +28,20 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextDecoration
@@ -43,6 +54,7 @@ import com.shreyash.dotrack.core.ui.theme.CardColorLowPriority
 import com.shreyash.dotrack.core.ui.theme.CardColorMediumPriority
 import com.shreyash.dotrack.domain.model.Priority
 import com.shreyash.dotrack.domain.model.Task
+import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -54,13 +66,45 @@ fun TasksScreen(
     viewModel: TasksViewModel = hiltViewModel()
 ) {
     val tasksState by viewModel.tasks.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    
+    // Monitor wallpaper updates
+    LaunchedEffect(viewModel.wallpaperUpdated) {
+        if (viewModel.wallpaperUpdated) {
+            scope.launch {
+                snackbarHostState.showSnackbar("Wallpaper updated with your tasks")
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Tasks") },
-                modifier = Modifier
-                    .statusBarsPadding() // Set a custom height
+                actions = {
+                    IconButton(
+                        onClick = { viewModel.updateWallpaper() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Face,
+                            contentDescription = "Set as Wallpaper"
+                        )
+                    }
+                    IconButton(
+                        onClick = { viewModel.deleteAllTask() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete all tasks"
+                        )
+                    }
+                },
+                modifier = Modifier.statusBarsPadding(),
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
             )
         },
         floatingActionButton = {
@@ -70,7 +114,8 @@ fun TasksScreen(
                     contentDescription = "Add Task"
                 )
             }
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         when {
             tasksState.isLoading() -> {
@@ -224,7 +269,7 @@ fun PriorityIndicator(priority: Priority) {
     }
 
     Icon(
-        imageVector = Icons.Default.Check,
+        imageVector = Icons.Default.Delete,
         contentDescription = "Priority ${priority.name}",
         tint = color
     )
@@ -275,6 +320,7 @@ fun TaskListPreview() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun TasksScreenPreview() {
