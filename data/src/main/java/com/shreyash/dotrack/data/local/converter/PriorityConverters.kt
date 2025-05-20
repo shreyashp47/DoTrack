@@ -5,12 +5,13 @@ import com.shreyash.dotrack.domain.model.Priority
 
 class PriorityConverters {
     @TypeConverter
-    fun fromPriority(priority: Priority): String {
-        return priority.name
+    fun fromPriority(priority: Priority): Int {
+        return priority.value
     }
-    
+
     @TypeConverter
-    fun toPriority(value: String): Priority {
-        return Priority.valueOf(value)
+    fun toPriority(value: Int): Priority {
+        return Priority.values().first { it.value == value }
     }
 }
+
