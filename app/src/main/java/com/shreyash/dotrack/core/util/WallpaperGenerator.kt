@@ -99,15 +99,15 @@ class WallpaperGenerator @Inject constructor(
         val lineHeight = 120f
 
         // Draw header
-        val header = "DoTrack To-Do List"
-        val headerBounds = Rect()
-        headerPaint.getTextBounds(header, 0, header.length, headerBounds)
-        canvas.drawText(
-            header,
-            (width - headerBounds.width()) / 2f,
-            topPadding,
-            headerPaint
-        )
+//        val header = "DoTrack To-Do List"
+//        val headerBounds = Rect()
+//        headerPaint.getTextBounds(header, 0, header.length, headerBounds)
+//        canvas.drawText(
+//            header,
+//            (width - headerBounds.width()) / 2f,
+//            topPadding,
+//            headerPaint
+//        )
 
         // Start drawing tasks
         var y = topPadding + 80f

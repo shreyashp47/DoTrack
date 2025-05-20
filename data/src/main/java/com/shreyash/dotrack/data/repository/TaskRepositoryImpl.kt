@@ -76,7 +76,16 @@ class TaskRepositoryImpl @Inject constructor(
             Result.error(e)
         }
     }
-    
+
+    override suspend fun deleteAllTask(): Result<Unit> = withContext(ioDispatcher) {
+        return@withContext try {
+            taskDao.deleteAllTask()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.error(e)
+        }
+    }
+
     override suspend fun completeTask(id: String): Result<Unit> = withContext(ioDispatcher) {
         return@withContext try {
             taskDao.completeTask(id)

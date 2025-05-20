@@ -11,6 +11,7 @@ import com.shreyash.dotrack.core.util.Result
 import com.shreyash.dotrack.core.util.WallpaperGenerator
 import com.shreyash.dotrack.domain.model.Task
 import com.shreyash.dotrack.domain.usecase.task.CompleteTaskUseCase
+import com.shreyash.dotrack.domain.usecase.task.DeleteTaskUseCase
 import com.shreyash.dotrack.domain.usecase.task.GetTasksUseCase
 import com.shreyash.dotrack.domain.usecase.task.UncompleteTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,7 +27,8 @@ class TasksViewModel @Inject constructor(
     private val getTasksUseCase: GetTasksUseCase,
     private val completeTaskUseCase: CompleteTaskUseCase,
     private val uncompleteTaskUseCase: UncompleteTaskUseCase,
-    private val wallpaperGenerator: WallpaperGenerator
+    private val wallpaperGenerator: WallpaperGenerator,
+    private val deleteTaskUseCase: DeleteTaskUseCase
 ) : ViewModel() {
     
     val tasks: StateFlow<Result<List<Task>>> = getTasksUseCase()
@@ -71,11 +73,27 @@ class TasksViewModel @Inject constructor(
             }
         }
     }
+    /**
+     * Delete a specific task by ID
+     */
     fun deleteTask(id: String) {
-
+        viewModelScope.launch {
+            val result = deleteTaskUseCase(id)
+            if (result.isSuccess() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                updateWallpaper()
+            }
+        }
     }
 
+    /**
+     * Delete all tasks
+     */
     fun deleteAllTask() {
-
+        viewModelScope.launch {
+            val result = deleteTaskUseCase()
+            if (result.isSuccess() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                updateWallpaper()
+            }
+        }
     }
 }
