@@ -2,11 +2,9 @@ package com.shreyash.dotrack.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 
 interface DoTrackDestination {
@@ -25,8 +23,8 @@ object Home : DoTrackDestination {
 
 object Categories : DoTrackDestination {
     override val route = "categories"
-    override val selectedIcon = Icons.Filled.Menu
-    override val unselectedIcon = Icons.Outlined.Menu
+    override val selectedIcon = Icons.Filled.Settings
+    override val unselectedIcon = Icons.Outlined.Settings
     override val title = "Categories"
 }
 
@@ -35,7 +33,7 @@ object TaskDetail {
     const val route = "task"
     const val taskIdArg = "taskId"
     const val routeWithArgs = "$route/{$taskIdArg}"
-    
+
     fun createRoute(taskId: String) = "$route/$taskId"
 }
 
@@ -44,7 +42,7 @@ object AddEditTask {
     const val route = "add_edit_task"
     const val taskIdArg = "taskId"
     const val routeWithArgs = "$route?$taskIdArg={$taskIdArg}"
-    
+
     fun createRoute(taskId: String? = null) = if (taskId != null) {
         "$route?$taskIdArg=$taskId"
     } else {
@@ -57,7 +55,7 @@ object AddEditCategory {
     const val route = "add_edit_category"
     const val categoryIdArg = "categoryId"
     const val routeWithArgs = "$route?$categoryIdArg={$categoryIdArg}"
-    
+
     fun createRoute(categoryId: String? = null) = if (categoryId != null) {
         "$route?$categoryIdArg=$categoryId"
     } else {
