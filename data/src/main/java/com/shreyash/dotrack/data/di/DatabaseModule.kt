@@ -15,7 +15,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
-    
+
     @Provides
     @Singleton
     fun provideTaskDatabase(@ApplicationContext context: Context): TaskDatabase {
@@ -25,12 +25,12 @@ object DatabaseModule {
             "dotrack_database"
         ).build()
     }
-    
+
     @Provides
     fun provideTaskDao(database: TaskDatabase): TaskDao {
         return database.taskDao()
     }
-    
+
     @Provides
     fun provideCategoryDao(database: TaskDatabase): CategoryDao {
         return database.categoryDao()

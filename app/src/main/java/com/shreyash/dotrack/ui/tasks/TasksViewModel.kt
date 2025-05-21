@@ -1,7 +1,6 @@
 package com.shreyash.dotrack.ui.tasks
 
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -32,17 +31,17 @@ class TasksViewModel @Inject constructor(
     private val deleteTaskUseCase: DeleteTaskUseCase,
     private val getAutoWallpaperEnabledUseCase: GetAutoWallpaperEnabledUseCase
 ) : ViewModel() {
-    
+
     val tasks: StateFlow<Result<List<Task>>> = getTasksUseCase()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = Result.Loading
         )
-    
+
     var wallpaperUpdated by mutableStateOf(false)
         private set
-    
+
     fun completeTask(id: String) {
         viewModelScope.launch {
             val result = completeTaskUseCase(id)
@@ -55,7 +54,7 @@ class TasksViewModel @Inject constructor(
             }
         }
     }
-    
+
     fun uncompleteTask(id: String) {
         viewModelScope.launch {
             val result = uncompleteTaskUseCase(id)
@@ -68,14 +67,14 @@ class TasksViewModel @Inject constructor(
             }
         }
     }
-    
+
     /**
      * Update the wallpaper with the latest task list
      */
     fun updateWallpaper() {
         viewModelScope.launch {
             val tasksResult = getTasksUseCase().first()
-            
+
             if (tasksResult.isSuccess()) {
                 val tasks = tasksResult.getOrNull() ?: emptyList()
                 val wallpaperResult = wallpaperGenerator.generateAndSetWallpaper(tasks)
@@ -83,6 +82,7 @@ class TasksViewModel @Inject constructor(
             }
         }
     }
+
     /**
      * Delete a specific task by ID
      */

@@ -13,7 +13,7 @@ class UpdateCategoryUseCase @Inject constructor(
             val exception: Exception = Exception("Category name cannot be empty")
             return Result.Error(exception)
         }
-        
+
         return categoryRepository.updateCategory(category)
     }
 }

@@ -20,25 +20,25 @@ class TaskRepositoryImpl @Inject constructor(
     private val taskDao: TaskDao,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : TaskRepository {
-    
+
     override fun getTasks(): Flow<Result<List<Task>>> {
         return taskDao.getTasks()
             .map { entities -> Result.success(entities.map { it.toDomain() }) }
             .catch { e -> emit(Result.error(e)) }
             .flowOn(ioDispatcher)
     }
-    
+
     override fun getTaskById(id: String): Flow<Result<Task>> {
         return taskDao.getTaskById(id)
-            .map { entity -> 
-                entity?.let { 
-                    Result.success(it.toDomain()) 
+            .map { entity ->
+                entity?.let {
+                    Result.success(it.toDomain())
                 } ?: Result.error(NoSuchElementException("Task not found"))
             }
             .catch { e -> emit(Result.error(e)) }
             .flowOn(ioDispatcher)
     }
-    
+
     override suspend fun addTask(
         title: String,
         description: String,
@@ -58,7 +58,7 @@ class TaskRepositoryImpl @Inject constructor(
             Result.error(e)
         }
     }
-    
+
     override suspend fun updateTask(task: Task): Result<Unit> = withContext(ioDispatcher) {
         return@withContext try {
             taskDao.updateTask(TaskEntity.fromDomain(task))
@@ -67,7 +67,7 @@ class TaskRepositoryImpl @Inject constructor(
             Result.error(e)
         }
     }
-    
+
     override suspend fun deleteTask(id: String): Result<Unit> = withContext(ioDispatcher) {
         return@withContext try {
             taskDao.deleteTask(id)
@@ -94,7 +94,7 @@ class TaskRepositoryImpl @Inject constructor(
             Result.error(e)
         }
     }
-    
+
     override suspend fun uncompleteTask(id: String): Result<Unit> = withContext(ioDispatcher) {
         return@withContext try {
             taskDao.uncompleteTask(id)

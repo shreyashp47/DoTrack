@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
@@ -41,15 +40,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.shreyash.dotrack.core.util.Result
 import com.shreyash.dotrack.domain.model.Priority
 import com.shreyash.dotrack.domain.model.Task
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,11 +60,11 @@ fun TaskDetailScreen(
 ) {
     val taskState by viewModel.task.collectAsState()
     var showDeleteConfirmation by remember { mutableStateOf(false) }
-    
+
     LaunchedEffect(taskId) {
         viewModel.loadTask(taskId)
     }
-    
+
     LaunchedEffect(viewModel.deleteResult) {
         viewModel.deleteResult?.let { result ->
             if (result.isSuccess()) {
@@ -74,7 +72,7 @@ fun TaskDetailScreen(
             }
         }
     }
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -117,6 +115,7 @@ fun TaskDetailScreen(
                     CircularProgressIndicator()
                 }
             }
+
             taskState.isSuccess() -> {
                 val task = taskState.getOrNull()!!
                 Column(
@@ -147,88 +146,88 @@ fun TaskDetailScreen(
                                         }
                                     }
                                 )
-                                
+
                                 Spacer(modifier = Modifier.width(8.dp))
-                                
+
                                 Text(
                                     text = task.title,
                                     style = MaterialTheme.typography.headlineSmall,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
-                            
+
                             Spacer(modifier = Modifier.height(16.dp))
-                            
+
                             Text(
                                 text = "Description",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
-                            
+
                             Spacer(modifier = Modifier.height(8.dp))
-                            
+
                             Text(
                                 text = if (task.description.isNotBlank()) task.description else "No description",
                                 style = MaterialTheme.typography.bodyLarge
                             )
-                            
+
                             Spacer(modifier = Modifier.height(16.dp))
-                            
+
                             Text(
                                 text = "Priority",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
-                            
+
                             Spacer(modifier = Modifier.height(8.dp))
-                            
+
                             Text(
                                 text = task.priority.name,
                                 style = MaterialTheme.typography.bodyLarge
                             )
-                            
+
                             task.dueDate?.let {
                                 Spacer(modifier = Modifier.height(16.dp))
-                                
+
                                 Text(
                                     text = "Due Date",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold
                                 )
-                                
+
                                 Spacer(modifier = Modifier.height(8.dp))
-                                
+
                                 Text(
                                     text = it.format(DateTimeFormatter.ofPattern("MMM dd, yyyy")),
                                     style = MaterialTheme.typography.bodyLarge
                                 )
                             }
-                            
+
                             Spacer(modifier = Modifier.height(16.dp))
-                            
+
                             Text(
                                 text = "Created",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
-                            
+
                             Spacer(modifier = Modifier.height(8.dp))
-                            
+
                             Text(
                                 text = task.createdAt.format(DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm")),
                                 style = MaterialTheme.typography.bodyLarge
                             )
-                            
+
                             Spacer(modifier = Modifier.height(16.dp))
-                            
+
                             Text(
                                 text = "Last Updated",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
-                            
+
                             Spacer(modifier = Modifier.height(8.dp))
-                            
+
                             Text(
                                 text = task.updatedAt.format(DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm")),
                                 style = MaterialTheme.typography.bodyLarge
@@ -237,6 +236,7 @@ fun TaskDetailScreen(
                     }
                 }
             }
+
             taskState.isError() -> {
                 Box(
                     modifier = Modifier
@@ -249,7 +249,7 @@ fun TaskDetailScreen(
             }
         }
     }
-    
+
     if (showDeleteConfirmation) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirmation = false },
@@ -293,10 +293,10 @@ fun TaskDetailScreenPreview() {
             createdAt = LocalDateTime.now().minusDays(2),
             updatedAt = LocalDateTime.now()
         )
-        
+
         // Create a fake view model state
         val taskState = Result.Success(mockTask)
-        
+
         // Use the real screen but with a mocked state
         Scaffold(
             topBar = {
@@ -352,41 +352,41 @@ fun TaskDetailScreenPreview() {
                                 checked = mockTask.isCompleted,
                                 onCheckedChange = {}
                             )
-                            
+
                             Spacer(modifier = Modifier.width(8.dp))
-                            
+
                             Text(
                                 text = mockTask.title,
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold
                             )
                         }
-                        
+
                         Spacer(modifier = Modifier.height(16.dp))
-                        
+
                         Text(
                             text = "Description",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Text(
                             text = mockTask.description,
                             style = MaterialTheme.typography.bodyLarge
                         )
-                        
+
                         Spacer(modifier = Modifier.height(16.dp))
-                        
+
                         Text(
                             text = "Priority",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Text(
                             text = mockTask.priority.name,
                             style = MaterialTheme.typography.bodyLarge

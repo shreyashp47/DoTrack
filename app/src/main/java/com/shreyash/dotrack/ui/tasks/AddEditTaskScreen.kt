@@ -42,9 +42,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.shreyash.dotrack.core.util.Result
 import com.shreyash.dotrack.domain.model.Priority
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -53,7 +53,6 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,14 +65,14 @@ fun AddEditTaskScreen(
     val uiState = viewModel.uiState
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    
+
     // Load task if editing
     LaunchedEffect(taskId) {
         if (taskId != null) {
             viewModel.loadTask(taskId)
         }
     }
-    
+
     // Handle save result
     LaunchedEffect(uiState.saveResult) {
         uiState.saveResult?.let { result ->
@@ -88,7 +87,7 @@ fun AddEditTaskScreen(
             }
         }
     }
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -155,9 +154,9 @@ fun TaskForm(
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
     var isDropdownExpanded by remember { mutableStateOf(false) }
-    
+
     val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
-    
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -170,9 +169,9 @@ fun TaskForm(
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
-        
+
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         OutlinedTextField(
             value = description,
             onValueChange = onDescriptionChange,
@@ -182,9 +181,9 @@ fun TaskForm(
                 .height(120.dp),
             maxLines = 5
         )
-        
+
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         // Due Date Picker
         OutlinedTextField(
             value = dueDate?.format(dateFormatter) ?: "",
@@ -201,12 +200,13 @@ fun TaskForm(
                 }
             }
         )
-        
+
         if (showDatePicker) {
             val datePickerState = rememberDatePickerState(
-                initialSelectedDateMillis = dueDate?.atZone(ZoneId.systemDefault())?.toInstant()?.toEpochMilli()
+                initialSelectedDateMillis = dueDate?.atZone(ZoneId.systemDefault())?.toInstant()
+                    ?.toEpochMilli()
             )
-            
+
             DatePickerDialog(
                 onDismissRequest = { showDatePicker = false },
                 confirmButton = {
@@ -236,9 +236,9 @@ fun TaskForm(
                 DatePicker(state = datePickerState)
             }
         }
-        
+
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         // Priority Dropdown
         ExposedDropdownMenuBox(
             expanded = isDropdownExpanded,
@@ -254,7 +254,7 @@ fun TaskForm(
                     .fillMaxWidth()
                     .menuAnchor()
             )
-            
+
             ExposedDropdownMenu(
                 expanded = isDropdownExpanded,
                 onDismissRequest = { isDropdownExpanded = false }
@@ -270,9 +270,9 @@ fun TaskForm(
                 }
             }
         }
-        
+
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         Button(
             onClick = { onDueDateChange(LocalDateTime.now()) },
             enabled = dueDate != null,

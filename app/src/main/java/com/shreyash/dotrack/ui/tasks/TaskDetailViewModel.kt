@@ -26,15 +26,15 @@ class TaskDetailViewModel @Inject constructor(
     private val uncompleteTaskUseCase: UncompleteTaskUseCase,
     private val deleteTaskUseCase: DeleteTaskUseCase
 ) : ViewModel() {
-    
+
     private val _task = MutableStateFlow<Result<Task>>(Result.Loading)
     val task: StateFlow<Result<Task>> = _task.asStateFlow()
-    
+
     private var taskId: String? = null
-    
+
     var deleteResult by mutableStateOf<Result<Unit>?>(null)
         private set
-    
+
     fun loadTask(id: String) {
         taskId = id
         viewModelScope.launch {
@@ -43,7 +43,7 @@ class TaskDetailViewModel @Inject constructor(
             }
         }
     }
-    
+
     fun completeTask() {
         taskId?.let { id ->
             viewModelScope.launch {
@@ -51,7 +51,7 @@ class TaskDetailViewModel @Inject constructor(
             }
         }
     }
-    
+
     fun uncompleteTask() {
         taskId?.let { id ->
             viewModelScope.launch {
@@ -59,7 +59,7 @@ class TaskDetailViewModel @Inject constructor(
             }
         }
     }
-    
+
     fun deleteTask() {
         taskId?.let { id ->
             viewModelScope.launch {

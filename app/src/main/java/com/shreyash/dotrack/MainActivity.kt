@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -34,6 +33,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 @Composable
 fun DoTrackApp() {
     DoTrackTheme {
@@ -44,7 +44,9 @@ fun DoTrackApp() {
         val showBottomBar = currentDestination?.route in bottomNavDestinations.map { it.route }
 
         Scaffold(
-            modifier = Modifier.fillMaxSize().statusBarsPadding(),
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding(),
             bottomBar = {
                 if (showBottomBar) {
                     DoTrackBottomNavigation(
@@ -78,9 +80,10 @@ fun DoTrackAppPreview() {
             }
         ) { innerPadding ->
             // Simple placeholder for preview
-            Box(modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
+            Box(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Text("Preview Content")

@@ -34,11 +34,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.shreyash.dotrack.core.util.Result
 import com.shreyash.dotrack.domain.model.Category
-import androidx.compose.ui.tooling.preview.Preview
 
 @Preview(showBackground = true)
 @Composable
@@ -59,7 +58,7 @@ fun CategoriesScreen(
     viewModel: CategoriesViewModel = hiltViewModel()
 ) {
     val categoriesState by viewModel.categories.collectAsState()
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -86,6 +85,7 @@ fun CategoriesScreen(
                     CircularProgressIndicator()
                 }
             }
+
             categoriesState.isSuccess() -> {
                 val categories = categoriesState.getOrNull() ?: emptyList()
                 if (categories.isEmpty()) {
@@ -105,6 +105,7 @@ fun CategoriesScreen(
                     )
                 }
             }
+
             categoriesState.isError() -> {
                 Box(
                     modifier = Modifier
@@ -204,9 +205,9 @@ fun CategoryItem(
                     .clip(CircleShape)
                     .background(Color(category.color))
             )
-            
+
             Spacer(modifier = Modifier.width(16.dp))
-            
+
             Column(
                 modifier = Modifier.weight(1f)
             ) {

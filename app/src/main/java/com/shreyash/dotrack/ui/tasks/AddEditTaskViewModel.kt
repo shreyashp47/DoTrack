@@ -47,13 +47,13 @@ class AddEditTaskViewModel @Inject constructor(
     private val updateTaskUseCase: UpdateTaskUseCase,
     private val wallpaperGenerator: WallpaperGenerator
 ) : ViewModel() {
-    
+
     var uiState by mutableStateOf(AddEditTaskUiState())
         private set
-    
+
     fun loadTask(taskId: String) {
         uiState = uiState.copy(isLoading = true)
-        
+
         viewModelScope.launch {
             getTaskByIdUseCase(taskId).collectLatest { result ->
                 when (result) {
@@ -71,10 +71,12 @@ class AddEditTaskViewModel @Inject constructor(
                             isLoading = false
                         )
                     }
+
                     is Result.Error -> {
                         // Handle error
                         uiState = uiState.copy(isLoading = false)
                     }
+
                     is Result.Loading -> {
                         // Already set loading state
                     }
@@ -82,23 +84,23 @@ class AddEditTaskViewModel @Inject constructor(
             }
         }
     }
-    
+
     fun updateTitle(title: String) {
         uiState = uiState.copy(title = title)
     }
-    
+
     fun updateDescription(description: String) {
         uiState = uiState.copy(description = description)
     }
-    
+
     fun updateDueDate(dueDate: LocalDateTime) {
         uiState = uiState.copy(dueDate = dueDate)
     }
-    
+
     fun updatePriority(priority: Priority) {
         uiState = uiState.copy(priority = priority)
     }
-    
+
     fun saveTask() {
         if (uiState.title.isBlank()) {
             uiState = uiState.copy(
@@ -106,9 +108,9 @@ class AddEditTaskViewModel @Inject constructor(
             )
             return
         }
-        
+
         uiState = uiState.copy(isSaving = true)
-        
+
         viewModelScope.launch {
             val result = if (uiState.id == null) {
                 // Add new task
@@ -133,29 +135,29 @@ class AddEditTaskViewModel @Inject constructor(
                 )
                 updateTaskUseCase(task)
             }
-            
+
             if (result.isSuccess()) {
                 // Update wallpaper with the latest task list
                 updateWallpaper()
             }
-            
+
             uiState = uiState.copy(
                 isSaving = false,
                 saveResult = result
             )
         }
     }
-    
+
     /**
      * Update the wallpaper with the latest task list
      */
     private suspend fun updateWallpaper() {
         val tasksResult = getTasksUseCase().first()
-        
+
         if (tasksResult.isSuccess()) {
             val tasks = tasksResult.getOrNull() ?: emptyList()
             val wallpaperResult = wallpaperGenerator.generateAndSetWallpaper(tasks)
-            
+
             uiState = uiState.copy(
                 wallpaperUpdated = wallpaperResult.isSuccess()
             )

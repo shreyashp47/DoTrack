@@ -189,7 +189,6 @@ fun ColorPickerDialog(
                         val isSelected = colorOption.hex == currentColor
                         ColorItem(
                             colorHex = colorOption.hex,
-                            colorName = colorOption.name,
                             isSelected = isSelected,
                             onClick = { onColorSelected(colorOption.hex) }
                         )
@@ -214,7 +213,6 @@ fun ColorPickerDialog(
 @Composable
 fun ColorItem(
     colorHex: String,
-    colorName: String,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
@@ -248,14 +246,7 @@ fun ColorItem(
                 )
             }
         }
-
         Spacer(modifier = Modifier.height(4.dp))
-
-        Text(
-            text = colorName,
-            style = MaterialTheme.typography.bodySmall,
-            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-        )
     }
 }
 
