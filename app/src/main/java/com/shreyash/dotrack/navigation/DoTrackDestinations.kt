@@ -2,8 +2,10 @@ package com.shreyash.dotrack.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -23,9 +25,15 @@ object Home : DoTrackDestination {
 
 object Categories : DoTrackDestination {
     override val route = "categories"
+    override val selectedIcon = Icons.Filled.Menu
+    override val unselectedIcon = Icons.Outlined.Menu
+    override val title = "Categories"
+}
+object Settings : DoTrackDestination {
+    override val route = "settings"
     override val selectedIcon = Icons.Filled.Settings
     override val unselectedIcon = Icons.Outlined.Settings
-    override val title = "Categories"
+    override val title = "Settings"
 }
 
 // Task detail destination with arguments
@@ -63,4 +71,4 @@ object AddEditCategory {
     }
 }
 
-val bottomNavDestinations = listOf(Home, Categories)
+val bottomNavDestinations = listOf(Home, Settings)

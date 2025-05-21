@@ -17,6 +17,7 @@ interface TaskRepository {
     ): Result<Unit>
     suspend fun updateTask(task: Task): Result<Unit>
     suspend fun deleteTask(id: String): Result<Unit>
+    suspend fun deleteAllTask(): Result<Unit>
     suspend fun completeTask(id: String): Result<Unit>
     suspend fun uncompleteTask(id: String): Result<Unit>
 }

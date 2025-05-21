@@ -10,4 +10,8 @@ class DeleteTaskUseCase @Inject constructor(
     suspend operator fun invoke(id: String): Result<Unit> {
         return taskRepository.deleteTask(id)
     }
+
+    suspend operator fun invoke(): Result<Unit> {
+        return taskRepository.deleteAllTask()
+    }
 }

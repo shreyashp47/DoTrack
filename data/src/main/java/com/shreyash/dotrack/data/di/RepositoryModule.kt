@@ -2,8 +2,10 @@ package com.shreyash.dotrack.data.di
 
 import com.shreyash.dotrack.data.repository.CategoryRepositoryImpl
 import com.shreyash.dotrack.data.repository.TaskRepositoryImpl
+import com.shreyash.dotrack.data.repository.UserPreferencesRepositoryImpl
 import com.shreyash.dotrack.domain.repository.CategoryRepository
 import com.shreyash.dotrack.domain.repository.TaskRepository
+import com.shreyash.dotrack.domain.repository.UserPreferencesRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -25,4 +27,10 @@ abstract class RepositoryModule {
     abstract fun bindCategoryRepository(
         categoryRepositoryImpl: CategoryRepositoryImpl
     ): CategoryRepository
+    
+    @Binds
+    @Singleton
+    abstract fun bindUserPreferencesRepository(
+        userPreferencesRepositoryImpl: UserPreferencesRepositoryImpl
+    ): UserPreferencesRepository
 }

@@ -1,17 +1,18 @@
 package com.shreyash.dotrack.navigation
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.shreyash.dotrack.ui.categories.AddEditCategoryScreen
 import com.shreyash.dotrack.ui.categories.CategoriesScreen
+import com.shreyash.dotrack.ui.settings.SettingsScreen
 import com.shreyash.dotrack.ui.tasks.AddEditTaskScreen
 import com.shreyash.dotrack.ui.tasks.TaskDetailScreen
 import com.shreyash.dotrack.ui.tasks.TasksScreen
@@ -48,6 +49,11 @@ fun DoTrackNavHost(
                 onAddCategoryClick = {
                     navController.navigate(AddEditCategory.route)
                 }
+            )
+        }        // Categories screen
+        composable(route = Settings.route) {
+            SettingsScreen(
+
             )
         }
 

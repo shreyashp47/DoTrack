@@ -45,7 +45,11 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     kapt(libs.room.compiler)
-    
+
+    // DataStore Preferences
+    implementation (libs.androidx.datastore.preferences)
+
+
     // Retrofit & OkHttp
     implementation(libs.retrofit)
     implementation(libs.retrofit.moshi)
@@ -60,6 +64,8 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+
+
     
     // Testing
     testImplementation(libs.junit)
