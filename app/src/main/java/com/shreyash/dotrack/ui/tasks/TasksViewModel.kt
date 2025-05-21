@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.shreyash.dotrack.core.util.Result
 import com.shreyash.dotrack.core.util.WallpaperGenerator
 import com.shreyash.dotrack.domain.model.Task
+import com.shreyash.dotrack.domain.usecase.preferences.GetAutoWallpaperEnabledUseCase
 import com.shreyash.dotrack.domain.usecase.task.CompleteTaskUseCase
 import com.shreyash.dotrack.domain.usecase.task.DeleteTaskUseCase
 import com.shreyash.dotrack.domain.usecase.task.GetTasksUseCase
@@ -28,7 +29,8 @@ class TasksViewModel @Inject constructor(
     private val completeTaskUseCase: CompleteTaskUseCase,
     private val uncompleteTaskUseCase: UncompleteTaskUseCase,
     private val wallpaperGenerator: WallpaperGenerator,
-    private val deleteTaskUseCase: DeleteTaskUseCase
+    private val deleteTaskUseCase: DeleteTaskUseCase,
+    private val getAutoWallpaperEnabledUseCase: GetAutoWallpaperEnabledUseCase
 ) : ViewModel() {
     
     val tasks: StateFlow<Result<List<Task>>> = getTasksUseCase()
@@ -45,7 +47,11 @@ class TasksViewModel @Inject constructor(
         viewModelScope.launch {
             val result = completeTaskUseCase(id)
             if (result.isSuccess() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                updateWallpaper()
+                // Check if auto wallpaper is enabled
+                val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
+                if (autoWallpaperEnabled) {
+                    updateWallpaper()
+                }
             }
         }
     }
@@ -54,7 +60,11 @@ class TasksViewModel @Inject constructor(
         viewModelScope.launch {
             val result = uncompleteTaskUseCase(id)
             if (result.isSuccess() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                updateWallpaper()
+                // Check if auto wallpaper is enabled
+                val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
+                if (autoWallpaperEnabled) {
+                    updateWallpaper()
+                }
             }
         }
     }
@@ -80,7 +90,11 @@ class TasksViewModel @Inject constructor(
         viewModelScope.launch {
             val result = deleteTaskUseCase(id)
             if (result.isSuccess() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                updateWallpaper()
+                // Check if auto wallpaper is enabled
+                val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
+                if (autoWallpaperEnabled) {
+                    updateWallpaper()
+                }
             }
         }
     }
@@ -92,7 +106,11 @@ class TasksViewModel @Inject constructor(
         viewModelScope.launch {
             val result = deleteTaskUseCase()
             if (result.isSuccess() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                updateWallpaper()
+                // Check if auto wallpaper is enabled
+                val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
+                if (autoWallpaperEnabled) {
+                    updateWallpaper()
+                }
             }
         }
     }

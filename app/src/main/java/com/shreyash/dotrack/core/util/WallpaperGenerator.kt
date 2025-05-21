@@ -5,14 +5,21 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Rect
+import android.graphics.RectF
+import android.graphics.Shader
 import android.graphics.Typeface
-import android.os.Build
-import androidx.annotation.RequiresApi
+import androidx.compose.ui.graphics.toArgb
+import com.shreyash.dotrack.core.ui.theme.CardColorHighPriority
+import com.shreyash.dotrack.core.ui.theme.CardColorLowPriority
+import com.shreyash.dotrack.core.ui.theme.CardColorMediumPriority
 import com.shreyash.dotrack.domain.model.Priority
 import com.shreyash.dotrack.domain.model.Task
+import com.shreyash.dotrack.domain.usecase.preferences.GetWallpaperColorUseCase
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.first
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -20,19 +27,25 @@ import javax.inject.Singleton
 
 @Singleton
 class WallpaperGenerator @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val getWallpaperColorUseCase: GetWallpaperColorUseCase
 ) {
 
     private val wallpaperManager = WallpaperManager.getInstance(context)
     private val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
 
+    // Default end color for gradient
+    private val DEFAULT_END_COLOR = "#ffffff"
+
     /**
      * Generate a bitmap from the task list and set it as the wallpaper
      */
-    @RequiresApi(Build.VERSION_CODES.O)
     suspend fun generateAndSetWallpaper(tasks: List<Task>): Result<Unit> {
         return try {
-            val bitmap = generateTaskListBitmap(tasks)
+            // Get the user's preferred wallpaper color
+            val startColorHex = getWallpaperColorUseCase().first()
+
+            val bitmap = generateTaskListBitmap(tasks, startColorHex)
             wallpaperManager.setBitmap(bitmap)
             Result.Success(Unit)
         } catch (e: Exception) {
@@ -42,9 +55,9 @@ class WallpaperGenerator @Inject constructor(
 
     /**
      * Generate a bitmap from the task list
+     * @param startColorHex The hex color string for the gradient start color
      */
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun generateTaskListBitmap(tasks: List<Task>): Bitmap {
+    private fun generateTaskListBitmap(tasks: List<Task>, startColorHex: String): Bitmap {
         // Get screen dimensions
         val displayMetrics = context.resources.displayMetrics
         val width = displayMetrics.widthPixels
@@ -54,124 +67,133 @@ class WallpaperGenerator @Inject constructor(
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
 
-        // Fill background
-        canvas.drawColor(Color.BLACK)
+        // Draw glossy gradient background with user's preferred color
+        val gradient = LinearGradient(
+            0f, 0f, 0f, height.toFloat(),
+            Color.parseColor(startColorHex), // Start color from user preference
+            Color.parseColor(DEFAULT_END_COLOR), // End color
+            Shader.TileMode.CLAMP
+        )
+        val bgPaint = Paint().apply {
+            shader = gradient
+        }
+        canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), bgPaint)
+
+        // Determine text color based on background color brightness
+        val startColor = Color.parseColor(startColorHex)
+        val isDarkColor = isDarkColor(startColor)
 
         // Setup text paints
-        val headerPaint = Paint().apply {
-            color = Color.WHITE
-            textSize = 64f
-            typeface = Typeface.DEFAULT_BOLD
-            isAntiAlias = true
-        }
-
         val titlePaint = Paint().apply {
-            color = Color.WHITE
-            textSize = 48f
-            typeface = Typeface.DEFAULT_BOLD
+            color = Color.BLACK
+            textSize = 35f
+            typeface = Typeface.DEFAULT
             isAntiAlias = true
-        }
-
-        val descriptionPaint = Paint().apply {
-            color = Color.LTGRAY
-            textSize = 36f
-            isAntiAlias = true
+            setShadowLayer(1f, 1f, 1f,  Color.WHITE)
         }
 
         val datePaint = Paint().apply {
-            color = Color.GRAY
-            textSize = 32f
+            color = Color.BLACK
+            textSize = 26f
             isAntiAlias = true
+            //setShadowLayer(3f, 1f, 1f, if (isDarkColor) Color.BLACK else Color.WHITE)
         }
 
         val footerPaint = Paint().apply {
-            color = Color.GRAY
+            color = if (isDarkColor) Color.WHITE else Color.BLACK
             textSize = 30f
             isAntiAlias = true
+            setShadowLayer(4f, 1f, 1f, if (isDarkColor) Color.BLACK else Color.WHITE)
         }
 
         // Layout configuration
-        val topPadding = 400f
-        val leftPadding = 100f
+        val topPadding = 300f
+        val leftPadding = 80f
         val circleRadius = 20f
         val iconOffset = 40f
         val textLeftOffset = leftPadding + iconOffset + circleRadius + 20f
-        val lineHeight = 120f
+        val lineHeight = 100f
 
-        // Draw header
-//        val header = "DoTrack To-Do List"
-//        val headerBounds = Rect()
-//        headerPaint.getTextBounds(header, 0, header.length, headerBounds)
-//        canvas.drawText(
-//            header,
-//            (width - headerBounds.width()) / 2f,
-//            topPadding,
-//            headerPaint
-//        )
+        var y = topPadding
 
-        // Start drawing tasks
-        var y = topPadding + 80f
-
-        // Filter pending tasks
+        // Filter and sort pending tasks
         val pendingTasks = tasks.filter { !it.isCompleted }
             .sortedByDescending { it.priority.value }
 
         if (pendingTasks.isEmpty()) {
-            val noTasksText = "No pending tasks! 🎉"
+            val noTasksText = "No pending tasks 🎉"
             val textBounds = Rect()
-            headerPaint.getTextBounds(noTasksText, 0, noTasksText.length, textBounds)
-
+            titlePaint.getTextBounds(noTasksText, 0, noTasksText.length, textBounds)
             canvas.drawText(
                 noTasksText,
                 (width - textBounds.width()) / 2f,
                 height / 2f,
-                headerPaint
+                titlePaint
             )
         } else {
             for (task in pendingTasks) {
                 if (y > height - 200) break
 
-                // Draw priority circle
-                val priorityColor = when (task.priority) {
-                    Priority.HIGH -> Color.RED
-                    Priority.MEDIUM -> Color.YELLOW
-                    Priority.LOW -> Color.CYAN
+                // Choose background color based on priority
+                val bgColor = when (task.priority) {
+                    Priority.HIGH -> CardColorHighPriority.toArgb()
+                    Priority.MEDIUM -> CardColorMediumPriority.toArgb()
+                    Priority.LOW -> CardColorLowPriority.toArgb()
                 }
 
-                val priorityPaint = Paint().apply {
-                    color = priorityColor
+                val bgPaint = Paint().apply {
+                    color = bgColor
                     style = Paint.Style.FILL
+                    isAntiAlias = true
                 }
 
-                canvas.drawCircle(leftPadding, y + 20f, circleRadius, priorityPaint)
+                val itemHeight = 100f
+                val cornerRadius = 20f
 
-                // Draw title
-                canvas.drawText(task.title, textLeftOffset, y + 20f, titlePaint)
+                // Draw rounded rectangle for background
+                val rect = RectF(
+                    leftPadding,
+                    y,
+                    width - leftPadding,
+                    y + itemHeight
+                )
+                canvas.drawRoundRect(rect, cornerRadius, cornerRadius, bgPaint)
 
-                // Draw description
-//                if (task.description.isNotBlank()) {
-//                    val desc = task.description.take(40) + if (task.description.length > 40) "..." else ""
-//                    canvas.drawText(desc, textLeftOffset, y + 70f, descriptionPaint)
-//                }
+                // Draw title (left aligned)
+                canvas.drawText(task.title, leftPadding + 20f, y + 65f, titlePaint)
 
-                // Draw due date
+                // Draw due date (right aligned)
                 task.dueDate?.let {
                     val dueText = "Due: ${it.format(dateFormatter)}"
                     val dueWidth = datePaint.measureText(dueText)
-                    canvas.drawText(dueText, width - dueWidth - leftPadding, y + 20f, datePaint)
+                    canvas.drawText(
+                        dueText,
+                        width - dueWidth - leftPadding - 20f,
+                        y + 65f,
+                        datePaint
+                    )
                 }
 
-                y += lineHeight
+                y += itemHeight + 30f // spacing between rows
             }
         }
 
         // Draw footer
-        val footerText = "${pendingTasks.size} pending task${if (pendingTasks.size != 1) "s" else ""} • Updated: ${
-            LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm"))
-        }"
-
-        canvas.drawText(footerText, leftPadding, height - 100f, footerPaint)
+        val footerText =
+            "${pendingTasks.size} pending task${if (pendingTasks.size != 1) "s" else ""} • Updated on ${
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm"))
+            }"
+        canvas.drawText(footerText, leftPadding, y + 40f, footerPaint)
 
         return bitmap
+    }
+
+    /**
+     * Determine if a color is dark (to choose appropriate text color)
+     */
+    private fun isDarkColor(color: Int): Boolean {
+        val darkness =
+            1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255
+        return darkness >= 0.5
     }
 }
