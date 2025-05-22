@@ -28,4 +28,40 @@ interface UserPreferencesRepository {
      * @param colorHex A hex color string (e.g., "#3A0CA3")
      */
     suspend fun setWallpaperColor(colorHex: String): Result<Unit>
+    
+    /**
+     * Get the high priority task color as a Flow
+     * Returns a hex color string (e.g., "#FFE7EA")
+     */
+    fun getHighPriorityColor(): Flow<String>
+    
+    /**
+     * Set the high priority task color
+     * @param colorHex A hex color string (e.g., "#FFE7EA")
+     */
+    suspend fun setHighPriorityColor(colorHex: String): Result<Unit>
+    
+    /**
+     * Get the medium priority task color as a Flow
+     * Returns a hex color string (e.g., "#FFF5D6")
+     */
+    fun getMediumPriorityColor(): Flow<String>
+    
+    /**
+     * Set the medium priority task color
+     * @param colorHex A hex color string (e.g., "#FFF5D6")
+     */
+    suspend fun setMediumPriorityColor(colorHex: String): Result<Unit>
+    
+    /**
+     * Get the low priority task color as a Flow
+     * Returns a hex color string (e.g., "#DFF5E0")
+     */
+    fun getLowPriorityColor(): Flow<String>
+    
+    /**
+     * Set the low priority task color
+     * @param colorHex A hex color string (e.g., "#DFF5E0")
+     */
+    suspend fun setLowPriorityColor(colorHex: String): Result<Unit>
 }
