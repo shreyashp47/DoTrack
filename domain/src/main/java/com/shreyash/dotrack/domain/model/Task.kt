@@ -11,7 +11,7 @@ data class Task(
     val priority: Priority,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
-    val categoryId: Int?= null
+    val categoryId: Int? = null
 )
 
 enum class Priority(val value: Int) {

@@ -25,7 +25,7 @@ class UserPreferencesRepositoryImpl @Inject constructor(
         val AUTO_WALLPAPER_ENABLED = booleanPreferencesKey("auto_wallpaper_enabled")
         val WALLPAPER_COLOR = stringPreferencesKey("wallpaper_color")
     }
-    
+
     // Default wallpaper color
     private val DEFAULT_WALLPAPER_COLOR = "#3A0CA3"
 
@@ -53,7 +53,7 @@ class UserPreferencesRepositoryImpl @Inject constructor(
             Result.Error(e)
         }
     }
-    
+
     override fun getWallpaperColor(): Flow<String> {
         return dataStore.data
             .catch { exception ->
@@ -67,7 +67,7 @@ class UserPreferencesRepositoryImpl @Inject constructor(
                 preferences[PreferencesKeys.WALLPAPER_COLOR] ?: DEFAULT_WALLPAPER_COLOR
             }
     }
-    
+
     override suspend fun setWallpaperColor(colorHex: String): Result<Unit> {
         return try {
             dataStore.edit { preferences ->

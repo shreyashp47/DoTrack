@@ -48,11 +48,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.shreyash.dotrack.R
 import com.shreyash.dotrack.core.ui.theme.CardColorHighPriority
 import com.shreyash.dotrack.core.ui.theme.CardColorLowPriority
 import com.shreyash.dotrack.core.ui.theme.CardColorMediumPriority
@@ -115,7 +117,7 @@ fun TasksScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Tasks") },
+                title = { Text(text = stringResource(id = R.string.app_name)) },
                 actions = {
                     IconButton(
                         onClick = { viewModel.updateWallpaper() }

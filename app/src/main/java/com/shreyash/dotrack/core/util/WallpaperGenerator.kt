@@ -89,14 +89,13 @@ class WallpaperGenerator @Inject constructor(
             textSize = 35f
             typeface = Typeface.DEFAULT
             isAntiAlias = true
-            setShadowLayer(1f, 1f, 1f,  Color.WHITE)
+            setShadowLayer(1f, 1f, 1f, Color.WHITE)
         }
 
         val datePaint = Paint().apply {
             color = Color.BLACK
             textSize = 26f
             isAntiAlias = true
-            //setShadowLayer(3f, 1f, 1f, if (isDarkColor) Color.BLACK else Color.WHITE)
         }
 
         val footerPaint = Paint().apply {

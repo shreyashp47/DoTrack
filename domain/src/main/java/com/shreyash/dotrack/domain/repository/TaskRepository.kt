@@ -15,6 +15,7 @@ interface TaskRepository {
         dueDate: LocalDateTime,
         priority: Priority
     ): Result<Unit>
+
     suspend fun updateTask(task: Task): Result<Unit>
     suspend fun deleteTask(id: String): Result<Unit>
     suspend fun deleteAllTask(): Result<Unit>

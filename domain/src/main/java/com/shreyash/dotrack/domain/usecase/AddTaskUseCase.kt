@@ -18,7 +18,7 @@ class AddTaskUseCase @Inject constructor(
         if (title.isBlank()) {
             return Result.error(IllegalArgumentException("Title cannot be empty"))
         }
-        
+
         return taskRepository.addTask(
             title = title,
             description = description,

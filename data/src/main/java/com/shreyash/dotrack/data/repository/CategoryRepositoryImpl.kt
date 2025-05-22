@@ -18,47 +18,49 @@ class CategoryRepositoryImpl @Inject constructor(
     private val categoryDao: CategoryDao,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : CategoryRepository {
-    
+
     override fun getCategories(): Flow<Result<List<Category>>> {
         return categoryDao.getCategories()
             .map { entities -> Result.success(entities.map { it.toDomain() }) }
             .catch { e -> emit(Result.error(e)) }
             .flowOn(ioDispatcher)
     }
-    
+
     override fun getCategoryById(id: String): Flow<Result<Category>> {
         return categoryDao.getCategoryById(id)
-            .map { entity -> 
-                entity?.let { 
-                    Result.success(it.toDomain()) 
+            .map { entity ->
+                entity?.let {
+                    Result.success(it.toDomain())
                 } ?: Result.error(NoSuchElementException("Category not found"))
             }
             .catch { e -> emit(Result.error(e)) }
             .flowOn(ioDispatcher)
     }
-    
-    override suspend fun addCategory(name: String, color: Int): Result<Unit> = withContext(ioDispatcher) {
-        return@withContext try {
-            val category = CategoryEntity.createNew(
-                name = name,
-                color = color
-            )
-            categoryDao.insertCategory(category)
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.error(e)
+
+    override suspend fun addCategory(name: String, color: Int): Result<Unit> =
+        withContext(ioDispatcher) {
+            return@withContext try {
+                val category = CategoryEntity.createNew(
+                    name = name,
+                    color = color
+                )
+                categoryDao.insertCategory(category)
+                Result.success(Unit)
+            } catch (e: Exception) {
+                Result.error(e)
+            }
         }
-    }
-    
-    override suspend fun updateCategory(category: Category): Result<Unit> = withContext(ioDispatcher) {
-        return@withContext try {
-            categoryDao.updateCategory(CategoryEntity.fromDomain(category))
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.error(e)
+
+    override suspend fun updateCategory(category: Category): Result<Unit> =
+        withContext(ioDispatcher) {
+            return@withContext try {
+                categoryDao.updateCategory(CategoryEntity.fromDomain(category))
+                Result.success(Unit)
+            } catch (e: Exception) {
+                Result.error(e)
+            }
         }
-    }
-    
+
     override suspend fun deleteCategory(id: String): Result<Unit> = withContext(ioDispatcher) {
         return@withContext try {
             categoryDao.deleteCategory(id)

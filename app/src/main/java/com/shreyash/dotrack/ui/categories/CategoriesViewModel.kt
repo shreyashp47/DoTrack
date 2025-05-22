@@ -15,7 +15,7 @@ import javax.inject.Inject
 class CategoriesViewModel @Inject constructor(
     getCategoriesUseCase: GetCategoriesUseCase
 ) : ViewModel() {
-    
+
     val categories: StateFlow<Result<List<Category>>> = getCategoriesUseCase()
         .stateIn(
             scope = viewModelScope,
