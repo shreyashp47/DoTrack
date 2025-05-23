@@ -11,7 +11,7 @@ import com.shreyash.dotrack.data.util.DateTimeConverters
 
 @Database(
     entities = [TaskEntity::class, CategoryEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(DateTimeConverters::class)

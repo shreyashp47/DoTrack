@@ -14,8 +14,9 @@ data class TaskEntity(
     val title: String,
     val description: String,
     val isCompleted: Boolean,
-    val dueDate: LocalDateTime,
+    val dueDate: LocalDateTime? = null,
     val priority: Priority,
+    val reminderEnabled: Boolean = false,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime
 ) {
@@ -28,6 +29,7 @@ data class TaskEntity(
                 isCompleted = task.isCompleted,
                 dueDate = task.dueDate,
                 priority = task.priority,
+                reminderEnabled = task.reminderEnabled,
                 createdAt = task.createdAt,
                 updatedAt = task.updatedAt
             )
@@ -36,7 +38,7 @@ data class TaskEntity(
         fun createNew(
             title: String,
             description: String,
-            dueDate: LocalDateTime,
+            dueDate: LocalDateTime? = null,
             priority: Priority
         ): TaskEntity {
             val now = LocalDateTime.now()
@@ -62,6 +64,7 @@ data class TaskEntity(
             dueDate = dueDate,
             priority = priority,
             createdAt = createdAt,
+            reminderEnabled = reminderEnabled,
             updatedAt = updatedAt
         )
     }

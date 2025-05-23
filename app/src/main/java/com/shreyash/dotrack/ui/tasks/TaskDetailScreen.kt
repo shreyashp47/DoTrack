@@ -198,7 +198,7 @@ fun TaskDetailScreen(
                                 Spacer(modifier = Modifier.height(8.dp))
 
                                 Text(
-                                    text = it.format(DateTimeFormatter.ofPattern("MMM dd, yyyy")),
+                                    text = it.format(DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm")),
                                     style = MaterialTheme.typography.bodyLarge
                                 )
                             }

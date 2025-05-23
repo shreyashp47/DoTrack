@@ -239,7 +239,7 @@ fun TaskItem(
     onCheckChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
+    val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm")
     val color = when (task.priority) {
         Priority.HIGH -> CardColorHighPriority
         Priority.MEDIUM -> CardColorMediumPriority

@@ -207,7 +207,7 @@ fun SettingsScreen(
 
             SettingSwitchItem(
                 title = "Reminder",
-                subtitle = "Enable task reminders",
+                subtitle = "Enable notifications permissions",
                 checked = isNotificationEnabled,
                 onCheckedChange = { isNotificationEnabled = it }
             )

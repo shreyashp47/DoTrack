@@ -53,7 +53,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    
+
     // Compose
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
@@ -63,29 +63,34 @@ dependencies {
     implementation(libs.compose.activity)
     implementation(libs.compose.navigation)
     implementation(libs.compose.hilt.navigation)
-    
+
     // Lifecycle
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.lifecycle.viewmodel.compose)
-    
+
     // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
-    
+
+    implementation("androidx.work:work-runtime-ktx:2.10.1")
+
     // Color Picker
-    implementation("com.github.skydoves:colorpicker-compose:1.0.7")
-    
+    implementation(libs.colorpicker.compose)
+
     // Testing
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.coroutines.test)
-    
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
-    
+
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)
+    debugImplementation(libs.leakcanary.android)
+
+
 }

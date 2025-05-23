@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shreyash.dotrack.core.util.Result
 import com.shreyash.dotrack.core.util.WallpaperGenerator
+import com.shreyash.dotrack.domain.ReminderScheduler
 import com.shreyash.dotrack.domain.model.Priority
 import com.shreyash.dotrack.domain.model.Task
 import com.shreyash.dotrack.domain.usecase.task.AddTaskUseCase
@@ -22,14 +23,14 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import javax.inject.Inject
 
-@RequiresApi(Build.VERSION_CODES.O)
 data class AddEditTaskUiState constructor(
     val id: String? = null,
     val title: String = "",
     val description: String = "",
-    val dueDate: LocalDateTime = LocalDateTime.now().plusDays(7),
+    val dueDate: LocalDateTime? = null,
     val priority: Priority = Priority.MEDIUM,
     val isCompleted: Boolean = false,
+    val reminderEnabled: Boolean = false,
     val isLoading: Boolean = false,
     val isSaving: Boolean = false,
     val saveResult: Result<Unit>? = null,
@@ -38,14 +39,14 @@ data class AddEditTaskUiState constructor(
     val wallpaperUpdated: Boolean = false
 )
 
-@RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class AddEditTaskViewModel @Inject constructor(
     private val getTaskByIdUseCase: GetTaskByIdUseCase,
     private val getTasksUseCase: GetTasksUseCase,
     private val addTaskUseCase: AddTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
-    private val wallpaperGenerator: WallpaperGenerator
+    private val wallpaperGenerator: WallpaperGenerator,
+    private val reminderScheduler: ReminderScheduler
 ) : ViewModel() {
 
     var uiState by mutableStateOf(AddEditTaskUiState())
@@ -68,6 +69,7 @@ class AddEditTaskViewModel @Inject constructor(
                             isCompleted = task.isCompleted,
                             createdAt = task.createdAt,
                             updatedAt = task.updatedAt,
+                            reminderEnabled = task.reminderEnabled,
                             isLoading = false
                         )
                     }
@@ -93,12 +95,16 @@ class AddEditTaskViewModel @Inject constructor(
         uiState = uiState.copy(description = description)
     }
 
-    fun updateDueDate(dueDate: LocalDateTime) {
+    fun updateDueDate(dueDate: LocalDateTime?) {
         uiState = uiState.copy(dueDate = dueDate)
     }
 
     fun updatePriority(priority: Priority) {
         uiState = uiState.copy(priority = priority)
+    }
+    
+    fun updateReminderEnabled(enabled: Boolean) {
+        uiState = uiState.copy(reminderEnabled = enabled)
     }
 
     fun saveTask() {
@@ -131,6 +137,7 @@ class AddEditTaskViewModel @Inject constructor(
                     dueDate = uiState.dueDate,
                     priority = uiState.priority,
                     createdAt = uiState.createdAt,
+                    reminderEnabled = uiState.reminderEnabled,
                     updatedAt = now
                 )
                 updateTaskUseCase(task)
@@ -139,6 +146,13 @@ class AddEditTaskViewModel @Inject constructor(
             if (result.isSuccess()) {
                 // Update wallpaper with the latest task list
                 updateWallpaper()
+                if (uiState.reminderEnabled && uiState.dueDate != null) {
+                    reminderScheduler.scheduleReminder(
+                        taskId = uiState.id.toString(), // get the ID from result or generated in use case
+                        title = uiState.title,
+                        dueDate = uiState.dueDate!!
+                    )
+                }
             }
 
             uiState = uiState.copy(
