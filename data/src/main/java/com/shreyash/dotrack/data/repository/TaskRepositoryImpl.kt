@@ -43,14 +43,16 @@ class TaskRepositoryImpl @Inject constructor(
         title: String,
         description: String,
         dueDate: LocalDateTime?,
-        priority: Priority
+        priority: Priority,
+        reminderEnabled: Boolean
     ): Result<Unit> = withContext(ioDispatcher) {
         return@withContext try {
             val task = TaskEntity.createNew(
                 title = title,
                 description = description,
                 dueDate = dueDate,
-                priority = priority
+                priority = priority,
+                reminderEnabled = reminderEnabled
             )
             taskDao.insertTask(task)
             Result.success(Unit)

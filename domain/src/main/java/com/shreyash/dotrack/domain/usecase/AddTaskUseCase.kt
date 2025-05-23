@@ -13,7 +13,8 @@ class AddTaskUseCase @Inject constructor(
         title: String,
         description: String,
         dueDate: LocalDateTime,
-        priority: Priority
+        priority: Priority,
+        reminderEnabled: Boolean
     ): Result<Unit> {
         if (title.isBlank()) {
             return Result.error(IllegalArgumentException("Title cannot be empty"))
@@ -23,7 +24,8 @@ class AddTaskUseCase @Inject constructor(
             title = title,
             description = description,
             dueDate = dueDate,
-            priority = priority
+            priority = priority,
+            reminderEnabled =reminderEnabled
         )
     }
 }

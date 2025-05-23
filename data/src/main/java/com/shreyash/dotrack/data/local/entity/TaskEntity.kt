@@ -39,7 +39,8 @@ data class TaskEntity(
             title: String,
             description: String,
             dueDate: LocalDateTime? = null,
-            priority: Priority
+            priority: Priority,
+            reminderEnabled: Boolean = false
         ): TaskEntity {
             val now = LocalDateTime.now()
             return TaskEntity(
@@ -50,7 +51,8 @@ data class TaskEntity(
                 dueDate = dueDate,
                 priority = priority,
                 createdAt = now,
-                updatedAt = now
+                updatedAt = now,
+                reminderEnabled = reminderEnabled
             )
         }
     }

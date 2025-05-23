@@ -124,7 +124,8 @@ class AddEditTaskViewModel @Inject constructor(
                     title = uiState.title,
                     description = uiState.description,
                     dueDate = uiState.dueDate,
-                    priority = uiState.priority
+                    priority = uiState.priority,
+                    reminderEnabled = uiState.reminderEnabled
                 )
             } else {
                 // Update existing task
