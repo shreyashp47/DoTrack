@@ -4,16 +4,21 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -27,8 +32,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -42,8 +49,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.shreyash.dotrack.domain.model.Priority
 import kotlinx.coroutines.launch
@@ -133,6 +144,8 @@ fun AddEditTaskScreen(
                 onDueDateChange = viewModel::updateDueDate,
                 priority = uiState.priority,
                 onPriorityChange = viewModel::updatePriority,
+                reminderEnabled = uiState.reminderEnabled,
+                onReminderEnabledChange = viewModel::updateReminderEnabled,
                 modifier = Modifier.padding(padding)
             )
         }
@@ -147,15 +160,20 @@ fun TaskForm(
     description: String,
     onDescriptionChange: (String) -> Unit,
     dueDate: LocalDateTime?,
-    onDueDateChange: (LocalDateTime) -> Unit,
+    onDueDateChange: (LocalDateTime?) -> Unit,
     priority: Priority,
     onPriorityChange: (Priority) -> Unit,
+    reminderEnabled: Boolean = false,
+    onReminderEnabledChange: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
     var isDropdownExpanded by remember { mutableStateOf(false) }
+    var selectedDate by remember { mutableStateOf<LocalDate?>(dueDate?.toLocalDate()) }
+    var selectedTime by remember { mutableStateOf<LocalTime?>(dueDate?.toLocalTime() ?: LocalTime.of(12, 0)) }
 
-    val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
+    val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm")
 
     Column(
         modifier = modifier
@@ -186,9 +204,9 @@ fun TaskForm(
 
         // Due Date Picker
         OutlinedTextField(
-            value = dueDate?.format(dateFormatter) ?: "",
+            value = dueDate?.format(dateFormatter) ?: "No due date",
             onValueChange = {},
-            label = { Text("Due Date") },
+            label = { Text("Due Date (Optional)") },
             modifier = Modifier.fillMaxWidth(),
             readOnly = true,
             trailingIcon = {
@@ -201,6 +219,7 @@ fun TaskForm(
             }
         )
 
+        // Date Picker Dialog
         if (showDatePicker) {
             val datePickerState = rememberDatePickerState(
                 initialSelectedDateMillis = dueDate?.atZone(ZoneId.systemDefault())?.toInstant()
@@ -213,16 +232,16 @@ fun TaskForm(
                     TextButton(
                         onClick = {
                             datePickerState.selectedDateMillis?.let { millis ->
-                                val selectedDate = LocalDate.ofInstant(
+                                selectedDate = LocalDate.ofInstant(
                                     Instant.ofEpochMilli(millis),
                                     ZoneId.systemDefault()
                                 )
-                                onDueDateChange(LocalDateTime.of(selectedDate, LocalTime.NOON))
+                                showDatePicker = false
+                                showTimePicker = true
                             }
-                            showDatePicker = false
                         }
                     ) {
-                        Text("OK")
+                        Text("Next")
                     }
                 },
                 dismissButton = {
@@ -235,6 +254,24 @@ fun TaskForm(
             ) {
                 DatePicker(state = datePickerState)
             }
+        }
+        
+        // Time Picker Dialog
+        if (showTimePicker) {
+            TimePickerDialog(
+                onDismissRequest = { 
+                    showTimePicker = false 
+                    // If user cancels time selection, reset date selection too
+                    if (dueDate == null) selectedDate = null
+                },
+                onTimeSelected = { hour, minute ->
+                    selectedTime = LocalTime.of(hour, minute)
+                    selectedDate?.let { date ->
+                        onDueDateChange(LocalDateTime.of(date, selectedTime))
+                    }
+                    showTimePicker = false
+                }
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -273,12 +310,39 @@ fun TaskForm(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = { onDueDateChange(LocalDateTime.now()) },
-            enabled = dueDate != null,
-            modifier = Modifier.align(Alignment.End)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Clear Due Date")
+            // Reminder switch
+            if (dueDate != null) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Switch(
+                            checked = reminderEnabled,
+                            onCheckedChange = onReminderEnabledChange
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Enable reminder (30 min before)")
+                    }
+                    Text(
+                        text = "You'll receive a notification 30 minutes before the due time",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            
+            // Clear due date button
+            Button(
+                onClick = { onDueDateChange(null) },
+                enabled = dueDate != null,
+                modifier = Modifier.padding(start = 8.dp)
+            ) {
+                Text("Clear Due Date")
+            }
         }
     }
 }
@@ -345,5 +409,104 @@ fun TaskFormPreview() {
             onDueDateChange = {},
             modifier = Modifier.padding(16.dp)
         )
+    }
+}
+
+@Composable
+fun TimePickerDialog(
+    onDismissRequest: () -> Unit,
+    onTimeSelected: (hour: Int, minute: Int) -> Unit
+) {
+    var hour by remember { mutableStateOf(12) }
+    var minute by remember { mutableStateOf(0) }
+    
+    Dialog(onDismissRequest = onDismissRequest) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            shape = RoundedCornerShape(16.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Select Time",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Hour picker
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Hour:", modifier = Modifier.width(60.dp))
+                    Slider(
+                        value = hour.toFloat(),
+                        onValueChange = { hour = it.toInt() },
+                        valueRange = 0f..23f,
+                        steps = 23,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = hour.toString().padStart(2, '0'),
+                        modifier = Modifier.width(40.dp),
+                        textAlign = TextAlign.Center
+                    )
+                }
+                
+                // Minute picker
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Minute:", modifier = Modifier.width(60.dp))
+                    Slider(
+                        value = minute.toFloat(),
+                        onValueChange = { minute = it.toInt() },
+                        valueRange = 0f..59f,
+                        steps = 59,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = minute.toString().padStart(2, '0'),
+                        modifier = Modifier.width(40.dp),
+                        textAlign = TextAlign.Center
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(24.dp))
+                
+                // Display selected time
+                Text(
+                    text = "${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                
+                Spacer(modifier = Modifier.height(24.dp))
+                
+                // Action buttons
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    TextButton(onClick = onDismissRequest) {
+                        Text("Cancel")
+                    }
+                    
+                    Button(
+                        onClick = { onTimeSelected(hour, minute) }
+                    ) {
+                        Text("OK")
+                    }
+                }
+            }
+        }
     }
 }

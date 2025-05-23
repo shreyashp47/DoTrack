@@ -12,7 +12,7 @@ interface TaskRepository {
     suspend fun addTask(
         title: String,
         description: String,
-        dueDate: LocalDateTime,
+        dueDate: LocalDateTime? = null,
         priority: Priority
     ): Result<Unit>
 

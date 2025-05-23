@@ -34,7 +34,7 @@ class WallpaperGenerator @Inject constructor(
 ) {
 
     private val wallpaperManager = WallpaperManager.getInstance(context)
-    private val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
+    private val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy  HH:mm")
 
     // Default end color for gradient
     private val DEFAULT_END_COLOR = "#ffffff"
@@ -57,7 +57,8 @@ class WallpaperGenerator @Inject constructor(
                 mediumPriorityColorHex,
                 lowPriorityColorHex
             )
-            wallpaperManager.setBitmap(bitmap)
+            //only for system screen
+            wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
             Result.Success(Unit)
         } catch (e: Exception) {
             Result.Error(e)

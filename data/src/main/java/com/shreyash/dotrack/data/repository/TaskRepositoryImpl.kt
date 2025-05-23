@@ -42,7 +42,7 @@ class TaskRepositoryImpl @Inject constructor(
     override suspend fun addTask(
         title: String,
         description: String,
-        dueDate: LocalDateTime,
+        dueDate: LocalDateTime?,
         priority: Priority
     ): Result<Unit> = withContext(ioDispatcher) {
         return@withContext try {

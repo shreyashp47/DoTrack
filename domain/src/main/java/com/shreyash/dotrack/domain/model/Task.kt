@@ -7,8 +7,9 @@ data class Task(
     val title: String,
     val description: String,
     val isCompleted: Boolean,
-    val dueDate: LocalDateTime,
+    val dueDate: LocalDateTime? = null,
     val priority: Priority,
+    val reminderEnabled: Boolean = false,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
     val categoryId: Int? = null

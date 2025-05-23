@@ -1,5 +1,6 @@
 package com.shreyash.dotrack.ui.settings
 
+import com.shreyash.dotrack.R
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -41,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -205,7 +207,7 @@ fun SettingsScreen(
 
             SettingSwitchItem(
                 title = "Reminder",
-                subtitle = "Enable task reminders",
+                subtitle = "Enable notifications permissions",
                 checked = isNotificationEnabled,
                 onCheckedChange = { isNotificationEnabled = it }
             )
@@ -214,11 +216,18 @@ fun SettingsScreen(
             TextButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                tasksViewModel.updateWallpaper()
-            }) {
+                    tasksViewModel.updateWallpaper()
+                }) {
                 Text(
                     text = "Sync-up",
                     style = MaterialTheme.typography.bodyLarge
+                )
+                Spacer(
+                    modifier = Modifier.width(8.dp)
+                )
+                Icon(
+                    painterResource(id = R.drawable.ic_sync),
+                    contentDescription = "Sync up"
                 )
             }
         }
