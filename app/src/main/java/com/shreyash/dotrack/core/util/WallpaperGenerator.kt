@@ -11,12 +11,11 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
-import androidx.compose.ui.graphics.toArgb
-import com.shreyash.dotrack.core.ui.theme.CardColorHighPriority
-import com.shreyash.dotrack.core.ui.theme.CardColorLowPriority
-import com.shreyash.dotrack.core.ui.theme.CardColorMediumPriority
 import com.shreyash.dotrack.domain.model.Priority
 import com.shreyash.dotrack.domain.model.Task
+import com.shreyash.dotrack.domain.usecase.preferences.GetHighPriorityColorUseCase
+import com.shreyash.dotrack.domain.usecase.preferences.GetLowPriorityColorUseCase
+import com.shreyash.dotrack.domain.usecase.preferences.GetMediumPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetWallpaperColorUseCase
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
@@ -28,7 +27,10 @@ import javax.inject.Singleton
 @Singleton
 class WallpaperGenerator @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val getWallpaperColorUseCase: GetWallpaperColorUseCase
+    private val getWallpaperColorUseCase: GetWallpaperColorUseCase,
+    private val getHighPriorityColorUseCase: GetHighPriorityColorUseCase,
+    private val getMediumPriorityColorUseCase: GetMediumPriorityColorUseCase,
+    private val getLowPriorityColorUseCase: GetLowPriorityColorUseCase
 ) {
 
     private val wallpaperManager = WallpaperManager.getInstance(context)
@@ -42,10 +44,19 @@ class WallpaperGenerator @Inject constructor(
      */
     suspend fun generateAndSetWallpaper(tasks: List<Task>): Result<Unit> {
         return try {
-            // Get the user's preferred wallpaper color
+            // Get the user's preferred colors
             val startColorHex = getWallpaperColorUseCase().first()
+            val highPriorityColorHex = getHighPriorityColorUseCase().first()
+            val mediumPriorityColorHex = getMediumPriorityColorUseCase().first()
+            val lowPriorityColorHex = getLowPriorityColorUseCase().first()
 
-            val bitmap = generateTaskListBitmap(tasks, startColorHex)
+            val bitmap = generateTaskListBitmap(
+                tasks, 
+                startColorHex,
+                highPriorityColorHex,
+                mediumPriorityColorHex,
+                lowPriorityColorHex
+            )
             wallpaperManager.setBitmap(bitmap)
             Result.Success(Unit)
         } catch (e: Exception) {
@@ -56,8 +67,17 @@ class WallpaperGenerator @Inject constructor(
     /**
      * Generate a bitmap from the task list
      * @param startColorHex The hex color string for the gradient start color
+     * @param highPriorityColorHex The hex color string for high priority tasks
+     * @param mediumPriorityColorHex The hex color string for medium priority tasks
+     * @param lowPriorityColorHex The hex color string for low priority tasks
      */
-    private fun generateTaskListBitmap(tasks: List<Task>, startColorHex: String): Bitmap {
+    private fun generateTaskListBitmap(
+        tasks: List<Task>, 
+        startColorHex: String,
+        highPriorityColorHex: String,
+        mediumPriorityColorHex: String,
+        lowPriorityColorHex: String
+    ): Bitmap {
         // Get screen dimensions
         val displayMetrics = context.resources.displayMetrics
         val width = displayMetrics.widthPixels
@@ -135,9 +155,9 @@ class WallpaperGenerator @Inject constructor(
 
                 // Choose background color based on priority
                 val bgColor = when (task.priority) {
-                    Priority.HIGH -> CardColorHighPriority.toArgb()
-                    Priority.MEDIUM -> CardColorMediumPriority.toArgb()
-                    Priority.LOW -> CardColorLowPriority.toArgb()
+                    Priority.HIGH -> Color.parseColor(highPriorityColorHex)
+                    Priority.MEDIUM -> Color.parseColor(mediumPriorityColorHex)
+                    Priority.LOW -> Color.parseColor(lowPriorityColorHex)
                 }
 
                 val bgPaint = Paint().apply {

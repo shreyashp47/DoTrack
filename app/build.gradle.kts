@@ -73,6 +73,9 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
     
+    // Color Picker
+    implementation("com.github.skydoves:colorpicker-compose:1.0.7")
+    
     // Testing
     testImplementation(libs.junit)
     testImplementation(libs.mockk)

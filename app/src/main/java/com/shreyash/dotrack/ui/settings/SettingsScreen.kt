@@ -1,6 +1,6 @@
 package com.shreyash.dotrack.ui.settings
 
-import androidx.compose.foundation.BorderStroke
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,14 +15,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +46,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.github.skydoves.colorpicker.compose.AlphaTile
+import com.github.skydoves.colorpicker.compose.BrightnessSlider
+import com.github.skydoves.colorpicker.compose.ColorEnvelope
+import com.github.skydoves.colorpicker.compose.HsvColorPicker
+import com.github.skydoves.colorpicker.compose.rememberColorPickerController
+import com.shreyash.dotrack.domain.model.Priority
+import com.shreyash.dotrack.ui.tasks.TasksViewModel
 
 @Preview(showBackground = true)
 @Composable
@@ -72,15 +77,24 @@ fun SettingsScreen(
     // Show color picker dialog if needed
     if (viewModel.showColorPickerDialog) {
         ColorPickerDialog(
-            currentColor = currentWallpaperColor,
-            colorOptions = viewModel.colorOptions,
-            onColorSelected = {
-                viewModel.setWallpaperColor(it)
-                viewModel.hideColorPicker()
+            initialColor = viewModel.selectedColor,
+            title = when (viewModel.currentColorPickerMode) {
+                ColorPickerMode.WALLPAPER -> "Choose Wallpaper Color"
+                ColorPickerMode.HIGH_PRIORITY -> "Choose High Priority Color"
+                ColorPickerMode.MEDIUM_PRIORITY -> "Choose Medium Priority Color"
+                ColorPickerMode.LOW_PRIORITY -> "Choose Low Priority Color"
+            },
+            onColorSelected = { color ->
+                viewModel.updateSelectedColor(color)
+                viewModel.applySelectedColor()
             },
             onDismiss = { viewModel.hideColorPicker() }
         )
     }
+    LaunchedEffect(currentWallpaperColor) {
+        Log.d("WallpaperColor", "Updated color: $currentWallpaperColor")
+    }
+
 
     Scaffold(
         topBar = {
@@ -107,7 +121,7 @@ fun SettingsScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { viewModel.showColorPicker() }
+                    .clickable { viewModel.showWallpaperColorPicker() }
                     .padding(vertical = 12.dp)
             ) {
                 Column(
@@ -142,7 +156,52 @@ fun SettingsScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Priority Colors Section
+            Text(
+                text = "Task Priority Colors",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+
+            // High Priority Color
+            val currentHighPriorityColor by viewModel.highPriorityColor.collectAsState()
+            ColorSettingItem(
+                title = "High Priority",
+                subtitle = "Color for high priority tasks",
+                colorHex = currentHighPriorityColor,
+                onClick = { viewModel.showPriorityColorPicker(Priority.HIGH) }
+            )
+
+            // Medium Priority Color
+            val currentMediumPriorityColor by viewModel.mediumPriorityColor.collectAsState()
+            ColorSettingItem(
+                title = "Medium Priority",
+                subtitle = "Color for medium priority tasks",
+                colorHex = currentMediumPriorityColor,
+                onClick = { viewModel.showPriorityColorPicker(Priority.MEDIUM) }
+            )
+
+            // Low Priority Color
+            val currentLowPriorityColor by viewModel.lowPriorityColor.collectAsState()
+            ColorSettingItem(
+                title = "Low Priority",
+                subtitle = "Color for low priority tasks",
+                colorHex = currentLowPriorityColor,
+                onClick = { viewModel.showPriorityColorPicker(Priority.LOW) }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Notifications Section
+            Text(
+                text = "Notifications",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
 
             SettingSwitchItem(
                 title = "Reminder",
@@ -150,17 +209,31 @@ fun SettingsScreen(
                 checked = isNotificationEnabled,
                 onCheckedChange = { isNotificationEnabled = it }
             )
+
+            val tasksViewModel: TasksViewModel = hiltViewModel()
+            TextButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                tasksViewModel.updateWallpaper()
+            }) {
+                Text(
+                    text = "Sync-up",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
         }
     }
 }
 
 @Composable
 fun ColorPickerDialog(
-    currentColor: String,
-    colorOptions: List<ColorOption>,
-    onColorSelected: (String) -> Unit,
+    initialColor: Color,
+    title: String,
+    onColorSelected: (Color) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val controller = rememberColorPickerController()
+
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
@@ -170,83 +243,70 @@ fun ColorPickerDialog(
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Choose Wallpaper Color",
+                    text = title,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(colorOptions) { colorOption ->
-                        val isSelected = colorOption.hex == currentColor
-                        ColorItem(
-                            colorHex = colorOption.hex,
-                            isSelected = isSelected,
-                            onClick = { onColorSelected(colorOption.hex) }
-                        )
+                // Color picker
+                HsvColorPicker(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp),
+                    controller = controller,
+                    initialColor = initialColor,
+                    onColorChanged = { colorEnvelope: ColorEnvelope ->
+                        // Update the selected color in real-time if needed
                     }
-                }
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Brightness slider
+                BrightnessSlider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(30.dp),
+                    controller = controller
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Color preview
+                AlphaTile(
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(RoundedCornerShape(6.dp)),
+                    controller = controller
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Action buttons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     TextButton(onClick = onDismiss) {
                         Text("Cancel")
                     }
+
+                    Button(
+                        onClick = {
+                            onColorSelected(controller.selectedColor.value)
+                        }
+                    ) {
+                        Text("Apply")
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun ColorItem(
-    colorHex: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .clickable(onClick = onClick)
-            .padding(8.dp)
-    ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-                .background(Color(android.graphics.Color.parseColor(colorHex)))
-                .border(
-                    border = if (isSelected) {
-                        BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
-                    } else {
-                        BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
-                    },
-                    shape = CircleShape
-                )
-        ) {
-            if (isSelected) {
-                Icon(
-                    imageVector = Icons.Default.Done,
-                    contentDescription = "Selected",
-                    tint = Color.White,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(4.dp))
     }
 }
 
@@ -282,6 +342,55 @@ fun SettingSwitchItem(
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange
+        )
+    }
+}
+
+@Composable
+fun ColorSettingItem(
+    title: String,
+    subtitle: String? = null,
+    colorHex: String,
+    onClick: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 12.dp)
+    ) {
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge
+            )
+            if (subtitle != null) {
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
+        // Color preview
+        Box(
+            modifier = Modifier
+                .size(32.dp)
+                .clip(CircleShape)
+                .background(Color(android.graphics.Color.parseColor(colorHex)))
+                .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Icon(
+            imageVector = Icons.Default.Add,
+            contentDescription = "Choose color",
+            tint = MaterialTheme.colorScheme.primary
         )
     }
 }
