@@ -4,8 +4,7 @@ A modern task management application built with clean architecture and Jetpack C
 
 ## Features
 
-- **Task Management**: Create, edit, complete, and delete tasks
-- **Task Categories**: Organize tasks by categories
+- **Task Management**: Create, edit, complete, and delete tasks 
 - **Priority Levels**: Assign priority levels to tasks (High, Medium, Low)
 - **Due Dates**: Set and track task due dates
 - **Dynamic Wallpaper**: Automatically update your device wallpaper with pending tasks
@@ -48,7 +47,7 @@ DoTrack implements clean architecture principles with three main layers:
 - **UI**: Jetpack Compose with Material 3
 - **Dependency Injection**: Hilt
 - **Navigation**: Compose Navigation
-- **Local Storage**: Room Database for tasks and categories
+- **Local Storage**: Room Database for tasks  
 - **Preferences**: DataStore for user settings
 - **Concurrency**: Kotlin Coroutines & Flow
 - **Wallpaper**: Custom wallpaper generation with Android Canvas API
@@ -91,9 +90,8 @@ Users can personalize their experience:
 ### Creating Tasks
 
 1. Tap the "+" button on the Tasks screen
-2. Enter task details (title, description, priority, due date)
-3. Select a category (optional)
-4. Save the task
+2. Enter task details (title, description, priority, due date) 
+3. Save the task
 
 ### Managing Tasks
 
