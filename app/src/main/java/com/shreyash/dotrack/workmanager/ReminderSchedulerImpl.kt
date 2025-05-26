@@ -4,6 +4,9 @@ import android.content.Context
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import com.shreyash.dotrack.ReminderWorker
 import com.shreyash.dotrack.domain.ReminderScheduler
 import java.time.Duration
@@ -17,23 +20,29 @@ public class ReminderSchedulerImpl @Inject constructor(
 ) : ReminderScheduler {
 
     override fun scheduleReminder(taskId: String, title: String, dueDate: LocalDateTime) {
-        val triggerTime = dueDate.minusMinutes(30) // 🔔 30 minutes before
-        val delay = Duration.between(LocalDateTime.now(), triggerTime).toMillis()
-        if (delay > 0) {
-            val workRequest = OneTimeWorkRequestBuilder<ReminderWorker>()
-                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                .setInputData(workDataOf(
-                    "taskId" to taskId,
-                    "title" to title
-                ))
-                .addTag(taskId)
-                .build()
+        // Launch in a coroutine to avoid blocking the main thread
+        CoroutineScope(Dispatchers.IO).launch {
+            val triggerTime = dueDate.minusMinutes(30) // 🔔 30 minutes before
+            val delay = Duration.between(LocalDateTime.now(), triggerTime).toMillis()
+            if (delay > 0) {
+                val workRequest = OneTimeWorkRequestBuilder<ReminderWorker>()
+                    .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                    .setInputData(workDataOf(
+                        "taskId" to taskId,
+                        "title" to title
+                    ))
+                    .addTag(taskId)
+                    .build()
 
-            WorkManager.getInstance(context).enqueue(workRequest)
+                WorkManager.getInstance(context).enqueue(workRequest)
+            }
         }
     }
 
     override fun cancelReminder(taskId: String) {
-        WorkManager.getInstance(context).cancelAllWorkByTag(taskId)
+        // Launch in a coroutine to avoid blocking the main thread
+        CoroutineScope(Dispatchers.IO).launch {
+            WorkManager.getInstance(context).cancelAllWorkByTag(taskId)
+        }
     }
 }
