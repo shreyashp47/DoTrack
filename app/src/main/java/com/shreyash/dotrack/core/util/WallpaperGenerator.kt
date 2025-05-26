@@ -18,7 +18,9 @@ import com.shreyash.dotrack.domain.usecase.preferences.GetLowPriorityColorUseCas
 import com.shreyash.dotrack.domain.usecase.preferences.GetMediumPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetWallpaperColorUseCase
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -43,25 +45,27 @@ class WallpaperGenerator @Inject constructor(
      * Generate a bitmap from the task list and set it as the wallpaper
      */
     suspend fun generateAndSetWallpaper(tasks: List<Task>): Result<Unit> {
-        return try {
-            // Get the user's preferred colors
-            val startColorHex = getWallpaperColorUseCase().first()
-            val highPriorityColorHex = getHighPriorityColorUseCase().first()
-            val mediumPriorityColorHex = getMediumPriorityColorUseCase().first()
-            val lowPriorityColorHex = getLowPriorityColorUseCase().first()
+        return withContext(Dispatchers.IO) {
+            try {
+                // Get the user's preferred colors
+                val startColorHex = getWallpaperColorUseCase().first()
+                val highPriorityColorHex = getHighPriorityColorUseCase().first()
+                val mediumPriorityColorHex = getMediumPriorityColorUseCase().first()
+                val lowPriorityColorHex = getLowPriorityColorUseCase().first()
 
-            val bitmap = generateTaskListBitmap(
-                tasks, 
-                startColorHex,
-                highPriorityColorHex,
-                mediumPriorityColorHex,
-                lowPriorityColorHex
-            )
-            //only for system screen
-            wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-            Result.Success(Unit)
-        } catch (e: Exception) {
-            Result.Error(e)
+                val bitmap = generateTaskListBitmap(
+                    tasks, 
+                    startColorHex,
+                    highPriorityColorHex,
+                    mediumPriorityColorHex,
+                    lowPriorityColorHex
+                )
+                //only for system screen
+                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
+                Result.Success(Unit)
+            } catch (e: Exception) {
+                Result.Error(e)
+            }
         }
     }
 

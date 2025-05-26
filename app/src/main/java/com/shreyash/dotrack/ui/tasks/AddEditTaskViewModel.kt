@@ -1,7 +1,5 @@
 package com.shreyash.dotrack.ui.tasks
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -17,9 +15,11 @@ import com.shreyash.dotrack.domain.usecase.task.GetTaskByIdUseCase
 import com.shreyash.dotrack.domain.usecase.task.GetTasksUseCase
 import com.shreyash.dotrack.domain.usecase.task.UpdateTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -55,28 +55,32 @@ class AddEditTaskViewModel @Inject constructor(
     fun loadTask(taskId: String) {
         uiState = uiState.copy(isLoading = true)
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             getTaskByIdUseCase(taskId).collectLatest { result ->
                 when (result) {
                     is Result.Success -> {
                         val task = result.data
-                        uiState = uiState.copy(
-                            id = task.id,
-                            title = task.title,
-                            description = task.description,
-                            dueDate = task.dueDate,
-                            priority = task.priority,
-                            isCompleted = task.isCompleted,
-                            createdAt = task.createdAt,
-                            updatedAt = task.updatedAt,
-                            reminderEnabled = task.reminderEnabled,
-                            isLoading = false
-                        )
+                        withContext(Dispatchers.Main) {
+                            uiState = uiState.copy(
+                                id = task.id,
+                                title = task.title,
+                                description = task.description,
+                                dueDate = task.dueDate,
+                                priority = task.priority,
+                                isCompleted = task.isCompleted,
+                                createdAt = task.createdAt,
+                                updatedAt = task.updatedAt,
+                                reminderEnabled = task.reminderEnabled,
+                                isLoading = false
+                            )
+                        }
                     }
 
                     is Result.Error -> {
                         // Handle error
-                        uiState = uiState.copy(isLoading = false)
+                        withContext(Dispatchers.Main) {
+                            uiState = uiState.copy(isLoading = false)
+                        }
                     }
 
                     is Result.Loading -> {
@@ -102,7 +106,7 @@ class AddEditTaskViewModel @Inject constructor(
     fun updatePriority(priority: Priority) {
         uiState = uiState.copy(priority = priority)
     }
-    
+
     fun updateReminderEnabled(enabled: Boolean) {
         uiState = uiState.copy(reminderEnabled = enabled)
     }
@@ -117,14 +121,15 @@ class AddEditTaskViewModel @Inject constructor(
 
         uiState = uiState.copy(isSaving = true)
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val result = if (uiState.id == null) {
                 // Add new task
                 addTaskUseCase(
                     title = uiState.title,
                     description = uiState.description,
                     dueDate = uiState.dueDate,
-                    priority = uiState.priority
+                    priority = uiState.priority,
+                    reminderEnabled = uiState.reminderEnabled
                 )
             } else {
                 // Update existing task
@@ -155,10 +160,13 @@ class AddEditTaskViewModel @Inject constructor(
                 }
             }
 
-            uiState = uiState.copy(
-                isSaving = false,
-                saveResult = result
-            )
+            // Update UI state on the main thread
+            withContext(Dispatchers.Main) {
+                uiState = uiState.copy(
+                    isSaving = false,
+                    saveResult = result
+                )
+            }
         }
     }
 
@@ -172,9 +180,11 @@ class AddEditTaskViewModel @Inject constructor(
             val tasks = tasksResult.getOrNull() ?: emptyList()
             val wallpaperResult = wallpaperGenerator.generateAndSetWallpaper(tasks)
 
-            uiState = uiState.copy(
-                wallpaperUpdated = wallpaperResult.isSuccess()
-            )
+            withContext(Dispatchers.Main) {
+                uiState = uiState.copy(
+                    wallpaperUpdated = wallpaperResult.isSuccess()
+                )
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -46,6 +47,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -180,7 +182,10 @@ fun TasksScreen(
                             .padding(padding),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("No tasks yet. Add one!")
+                        Text(
+                            text = "No tasks yet. Add one!",
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
                     }
                 } else {
                     TaskList(
@@ -205,7 +210,10 @@ fun TasksScreen(
                         .padding(padding),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("Error: ${tasksState.exceptionOrNull()?.message}")
+                    Text(
+                        text = "Error: ${tasksState.exceptionOrNull()?.message}",
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
                 }
             }
         }
@@ -269,12 +277,16 @@ fun TaskItem(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
+                val isDarkTheme = isSystemInDarkTheme()
+                val textColor = if (isDarkTheme) Color.White else Color.Black
+                
                 Text(
                     text = task.title,
                     style = MaterialTheme.typography.titleMedium,
                     textDecoration = if (task.isCompleted) TextDecoration.LineThrough else TextDecoration.None,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    color = textColor
                 )
 
                 if (task.description.isNotBlank()) {
@@ -284,7 +296,8 @@ fun TaskItem(
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
-                        textDecoration = if (task.isCompleted) TextDecoration.LineThrough else TextDecoration.None
+                        textDecoration = if (task.isCompleted) TextDecoration.LineThrough else TextDecoration.None,
+                        color = textColor
                     )
                 }
 
@@ -292,7 +305,8 @@ fun TaskItem(
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "Due: ${it.format(dateFormatter)}",
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
+                        color = textColor
                     )
                 }
             }

@@ -13,7 +13,8 @@ interface TaskRepository {
         title: String,
         description: String,
         dueDate: LocalDateTime? = null,
-        priority: Priority
+        priority: Priority,
+        reminderEnabled: Boolean
     ): Result<Unit>
 
     suspend fun updateTask(task: Task): Result<Unit>

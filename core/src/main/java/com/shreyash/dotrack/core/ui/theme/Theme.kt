@@ -28,9 +28,16 @@ private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
     tertiary = Pink80,
-    errorContainer = CardColorHighPriority,
-    tertiaryContainer = CardColorMediumPriority,
-    primaryContainer = CardColorLowPriority,
+    background = Color(0xFF121212),
+    surface = Color(0xFF1E1E1E),
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onTertiary = Color.White,
+    onBackground = Color.White,
+    onSurface = Color.White,
+    errorContainer = CardColorHighPriorityDark,
+    tertiaryContainer = CardColorMediumPriorityDark,
+    primaryContainer = CardColorLowPriorityDark,
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -44,11 +51,10 @@ private val LightColorScheme = lightColorScheme(
     onTertiary = Color.White,
     onBackground = Color(0xFF1C1B1F),
     onSurface = Color(0xFF1C1B1F),
-    errorContainer = CardColorHighPriority,
-    tertiaryContainer = CardColorMediumPriority,
-    primaryContainer = CardColorLowPriority,
-
-    )
+    errorContainer = CardColorHighPriorityLight,
+    tertiaryContainer = CardColorMediumPriorityLight,
+    primaryContainer = CardColorLowPriorityLight,
+)
 
 @Composable
 fun DoTrackTheme(
@@ -66,12 +72,25 @@ fun DoTrackTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+    
+    // Set the priority card colors based on the current theme
+    val highPriorityCardColor = if (darkTheme) CardColorHighPriorityDark else CardColorHighPriorityLight
+    val mediumPriorityCardColor = if (darkTheme) CardColorMediumPriorityDark else CardColorMediumPriorityLight
+    val lowPriorityCardColor = if (darkTheme) CardColorLowPriorityDark else CardColorLowPriorityLight
+    
+    // Update the global color variables
+    SideEffect {
+        CardColorHighPriority = highPriorityCardColor
+        CardColorMediumPriority = mediumPriorityCardColor
+        CardColorLowPriority = lowPriorityCardColor
+    }
+    
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+            window.statusBarColor = colorScheme.background.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
 

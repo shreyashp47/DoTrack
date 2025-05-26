@@ -16,10 +16,12 @@ import com.shreyash.dotrack.domain.usecase.task.GetTasksUseCase
 import com.shreyash.dotrack.domain.usecase.task.UncompleteTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -43,9 +45,9 @@ class TasksViewModel @Inject constructor(
         private set
 
     fun completeTask(id: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val result = completeTaskUseCase(id)
-            if (result.isSuccess() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (result.isSuccess()) {
                 // Check if auto wallpaper is enabled
                 val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
                 if (autoWallpaperEnabled) {
@@ -56,9 +58,9 @@ class TasksViewModel @Inject constructor(
     }
 
     fun uncompleteTask(id: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val result = uncompleteTaskUseCase(id)
-            if (result.isSuccess() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (result.isSuccess()) {
                 // Check if auto wallpaper is enabled
                 val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
                 if (autoWallpaperEnabled) {
@@ -72,13 +74,16 @@ class TasksViewModel @Inject constructor(
      * Update the wallpaper with the latest task list
      */
     fun updateWallpaper() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val tasksResult = getTasksUseCase().first()
 
             if (tasksResult.isSuccess()) {
                 val tasks = tasksResult.getOrNull() ?: emptyList()
                 val wallpaperResult = wallpaperGenerator.generateAndSetWallpaper(tasks)
-                wallpaperUpdated = wallpaperResult.isSuccess()
+                // Update UI state on the main thread
+                withContext(Dispatchers.Main) {
+                    wallpaperUpdated = wallpaperResult.isSuccess()
+                }
             }
         }
     }
@@ -87,7 +92,7 @@ class TasksViewModel @Inject constructor(
      * Delete a specific task by ID
      */
     fun deleteTask(id: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val result = deleteTaskUseCase(id)
             if (result.isSuccess() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 // Check if auto wallpaper is enabled
@@ -103,7 +108,7 @@ class TasksViewModel @Inject constructor(
      * Delete all tasks
      */
     fun deleteAllTask() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val result = deleteTaskUseCase()
             if (result.isSuccess() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 // Check if auto wallpaper is enabled
