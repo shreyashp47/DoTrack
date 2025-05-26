@@ -45,7 +45,7 @@ class TasksViewModel @Inject constructor(
     fun completeTask(id: String) {
         viewModelScope.launch {
             val result = completeTaskUseCase(id)
-            if (result.isSuccess() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (result.isSuccess()) {
                 // Check if auto wallpaper is enabled
                 val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
                 if (autoWallpaperEnabled) {
@@ -58,7 +58,7 @@ class TasksViewModel @Inject constructor(
     fun uncompleteTask(id: String) {
         viewModelScope.launch {
             val result = uncompleteTaskUseCase(id)
-            if (result.isSuccess() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (result.isSuccess()) {
                 // Check if auto wallpaper is enabled
                 val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
                 if (autoWallpaperEnabled) {
