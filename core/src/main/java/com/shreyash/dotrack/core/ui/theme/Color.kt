@@ -10,10 +10,22 @@ val Pink80 = Color(0xFFEFB8C8)
 val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
-val CardColorHighPriority = Color(0xFFFFEBEE) // Light red background
-val CardColorMediumPriority = Color(0xFFFFF3E0) // Light orange background
-val CardColorLowPriority = Color(0xFFE8F5E9) // Light green background
+// Light theme priority card colors
+val CardColorHighPriorityLight = Color(0xFFFFEBEE) // Light red background
+val CardColorMediumPriorityLight = Color(0xFFFFF3E0) // Light orange background
+val CardColorLowPriorityLight = Color(0xFFE8F5E9) // Light green background
 
+// Dark theme priority card colors
+val CardColorHighPriorityDark = Color(0xFF5C2B2B) // Dark red background
+val CardColorMediumPriorityDark = Color(0xFF5C4A2B) // Dark orange background
+val CardColorLowPriorityDark = Color(0xFF2B5C2F) // Dark green background
+
+// Current theme priority card colors (set in Theme.kt based on dark/light mode)
+var CardColorHighPriority = Color(0xFFFFEBEE) // Will be replaced dynamically
+var CardColorMediumPriority = Color(0xFFFFF3E0) // Will be replaced dynamically
+var CardColorLowPriority = Color(0xFFE8F5E9) // Will be replaced dynamically
+
+// Wallpaper colors (always light since wallpapers are typically light)
 val WallpapersColorHighPriority = Color(0xFFFFE7EA) // Light red background
 val WallpapersColorMediumPriority = Color(0xFFFFF5D6) // Light orange background
 val WallpapersColorLowPriority = Color(0xFFDFF5E0) // Light green background

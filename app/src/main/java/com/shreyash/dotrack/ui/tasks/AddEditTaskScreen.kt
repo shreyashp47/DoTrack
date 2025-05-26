@@ -435,7 +435,8 @@ fun TimePickerDialog(
                 Text(
                     text = "Select Time",
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -445,7 +446,11 @@ fun TimePickerDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Hour:", modifier = Modifier.width(60.dp))
+                    Text(
+                        text = "Hour:", 
+                        modifier = Modifier.width(60.dp),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                     Slider(
                         value = hour.toFloat(),
                         onValueChange = { hour = it.toInt() },
@@ -456,7 +461,8 @@ fun TimePickerDialog(
                     Text(
                         text = hour.toString().padStart(2, '0'),
                         modifier = Modifier.width(40.dp),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
                 
@@ -465,7 +471,11 @@ fun TimePickerDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Minute:", modifier = Modifier.width(60.dp))
+                    Text(
+                        text = "Minute:", 
+                        modifier = Modifier.width(60.dp),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                     Slider(
                         value = minute.toFloat(),
                         onValueChange = { minute = it.toInt() },
