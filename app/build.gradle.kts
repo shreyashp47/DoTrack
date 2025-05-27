@@ -74,6 +74,10 @@ dependencies {
     kapt(libs.hilt.compiler)
 
     implementation("androidx.work:work-runtime-ktx:2.10.1")
+    implementation ("com.google.dagger:hilt-android:2.51") // or latest
+    kapt ("com.google.dagger:hilt-compiler:2.51")
+    implementation("androidx.hilt:hilt-work:1.1.0") // Hilt + WorkManager integration
+    kapt("androidx.hilt:hilt-compiler:1.1.0")        // Hilt code generation
 
     // Color Picker
     implementation(libs.colorpicker.compose)
