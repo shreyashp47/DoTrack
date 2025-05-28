@@ -4,6 +4,9 @@
 
     <!-- Permission to set wallpaper -->
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    
+    <!-- Permission for notifications (Android 13+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".DoTrackApplication"
