@@ -22,4 +22,5 @@ interface TaskRepository {
     suspend fun deleteAllTask(): Result<Unit>
     suspend fun completeTask(id: String): Result<Unit>
     suspend fun uncompleteTask(id: String): Result<Unit>
+    suspend fun disableReminder(id: String): Result<Unit>
 }

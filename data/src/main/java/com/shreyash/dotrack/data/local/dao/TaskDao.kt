@@ -42,4 +42,7 @@ interface TaskDao {
     
     @Query("UPDATE tasks SET isCompleted = 0 WHERE id = :id")
     suspend fun uncompleteTask(id: String)
+    
+    @Query("UPDATE tasks SET reminderEnabled = 0 WHERE id = :id")
+    suspend fun disableReminder(id: String)
 }

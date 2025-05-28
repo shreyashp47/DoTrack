@@ -7,10 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shreyash.dotrack.core.util.Result
 import com.shreyash.dotrack.core.util.WallpaperGenerator
+import com.shreyash.dotrack.domain.ReminderScheduler
 import com.shreyash.dotrack.domain.model.Task
 import com.shreyash.dotrack.domain.usecase.preferences.GetAutoWallpaperEnabledUseCase
 import com.shreyash.dotrack.domain.usecase.task.CompleteTaskUseCase
 import com.shreyash.dotrack.domain.usecase.task.DeleteTaskUseCase
+import com.shreyash.dotrack.domain.usecase.task.DisableReminderUseCase
 import com.shreyash.dotrack.domain.usecase.task.GetTaskByIdUseCase
 import com.shreyash.dotrack.domain.usecase.task.GetTasksUseCase
 import com.shreyash.dotrack.domain.usecase.task.UncompleteTaskUseCase
@@ -32,6 +34,8 @@ class TaskDetailViewModel @Inject constructor(
     private val wallpaperGenerator: WallpaperGenerator,
     private val getAutoWallpaperEnabledUseCase: GetAutoWallpaperEnabledUseCase,
     private val getTasksUseCase: GetTasksUseCase,
+    private val disableReminderUseCase: DisableReminderUseCase,
+    private val reminderScheduler: ReminderScheduler
 ) : ViewModel() {
 
     private val _task = MutableStateFlow<Result<Task>>(Result.Loading)
@@ -57,13 +61,21 @@ class TaskDetailViewModel @Inject constructor(
     fun completeTask() {
         taskId?.let { id ->
             viewModelScope.launch {
+                // Complete the task
                 val result = completeTaskUseCase(id)
                 if (result.isSuccess()) {
+                    // Disable the reminder for the completed task
+                    disableReminderUseCase(id)
+
                     // Check if auto wallpaper is enabled
                     val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
                     if (autoWallpaperEnabled) {
                         updateWallpaper()
                     }
+
+
+                    reminderScheduler.cancelReminder(id)
+
                 }
             }
         }

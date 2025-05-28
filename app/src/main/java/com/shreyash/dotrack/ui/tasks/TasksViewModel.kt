@@ -8,10 +8,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shreyash.dotrack.core.util.Result
 import com.shreyash.dotrack.core.util.WallpaperGenerator
+import com.shreyash.dotrack.domain.ReminderScheduler
 import com.shreyash.dotrack.domain.model.Task
 import com.shreyash.dotrack.domain.usecase.preferences.GetAutoWallpaperEnabledUseCase
 import com.shreyash.dotrack.domain.usecase.task.CompleteTaskUseCase
 import com.shreyash.dotrack.domain.usecase.task.DeleteTaskUseCase
+import com.shreyash.dotrack.domain.usecase.task.DisableReminderUseCase
 import com.shreyash.dotrack.domain.usecase.task.GetTasksUseCase
 import com.shreyash.dotrack.domain.usecase.task.UncompleteTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,7 +33,9 @@ class TasksViewModel @Inject constructor(
     private val uncompleteTaskUseCase: UncompleteTaskUseCase,
     private val wallpaperGenerator: WallpaperGenerator,
     private val deleteTaskUseCase: DeleteTaskUseCase,
-    private val getAutoWallpaperEnabledUseCase: GetAutoWallpaperEnabledUseCase
+    private val getAutoWallpaperEnabledUseCase: GetAutoWallpaperEnabledUseCase,
+    private val disableReminderUseCase: DisableReminderUseCase,
+    private val reminderScheduler: ReminderScheduler
 ) : ViewModel() {
 
     val tasks: StateFlow<Result<List<Task>>> = getTasksUseCase()
@@ -46,13 +50,20 @@ class TasksViewModel @Inject constructor(
 
     fun completeTask(id: String) {
         viewModelScope.launch(Dispatchers.IO) {
+            // Complete the task
             val result = completeTaskUseCase(id)
             if (result.isSuccess()) {
+                // Disable the reminder for the completed task
+                disableReminderUseCase(id)
+                
                 // Check if auto wallpaper is enabled
                 val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
                 if (autoWallpaperEnabled) {
                     updateWallpaper()
                 }
+
+                reminderScheduler.cancelReminder(id)
+
             }
         }
     }

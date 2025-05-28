@@ -105,4 +105,13 @@ class TaskRepositoryImpl @Inject constructor(
             Result.error(e)
         }
     }
+    
+    override suspend fun disableReminder(id: String): Result<Unit> = withContext(ioDispatcher) {
+        return@withContext try {
+            taskDao.disableReminder(id)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.error(e)
+        }
+    }
 }
