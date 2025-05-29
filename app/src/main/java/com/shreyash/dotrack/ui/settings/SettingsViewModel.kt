@@ -12,24 +12,39 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.qualifiers.ApplicationContext
+import com.shreyash.dotrack.core.ui.theme.DEFAULT_HIGH_PRIORITY_COLOR
+import com.shreyash.dotrack.core.ui.theme.DEFAULT_LOW_PRIORITY_COLOR
+import com.shreyash.dotrack.core.ui.theme.DEFAULT_MEDIUM_PRIORITY_COLOR
+import com.shreyash.dotrack.core.ui.theme.DEFAULT_TOP_COLOR
+import com.shreyash.dotrack.core.util.Result
+import com.shreyash.dotrack.core.util.WallpaperGenerator
+import com.shreyash.dotrack.domain.ReminderScheduler
 import com.shreyash.dotrack.domain.model.Priority
 import com.shreyash.dotrack.domain.usecase.preferences.GetAutoWallpaperEnabledUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetHighPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetLowPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetMediumPriorityColorUseCase
+import com.shreyash.dotrack.domain.usecase.preferences.GetSecondaryWallpaperColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetWallpaperColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetAutoWallpaperEnabledUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetHighPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetLowPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetMediumPriorityColorUseCase
+import com.shreyash.dotrack.domain.usecase.preferences.SetSecondaryWallpaperColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetWallpaperColorUseCase
+import com.shreyash.dotrack.domain.usecase.task.GetTasksUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
+
+
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
@@ -38,13 +53,20 @@ class SettingsViewModel @Inject constructor(
     private val setAutoWallpaperEnabledUseCase: SetAutoWallpaperEnabledUseCase,
     private val getWallpaperColorUseCase: GetWallpaperColorUseCase,
     private val setWallpaperColorUseCase: SetWallpaperColorUseCase,
+    private val setSecondaryWallpaperColorUseCase: SetSecondaryWallpaperColorUseCase,
+    private val getSecondaryWallpaperColorUseCase: GetSecondaryWallpaperColorUseCase,
     private val getHighPriorityColorUseCase: GetHighPriorityColorUseCase,
     private val setHighPriorityColorUseCase: SetHighPriorityColorUseCase,
     private val getMediumPriorityColorUseCase: GetMediumPriorityColorUseCase,
     private val setMediumPriorityColorUseCase: SetMediumPriorityColorUseCase,
     private val getLowPriorityColorUseCase: GetLowPriorityColorUseCase,
-    private val setLowPriorityColorUseCase: SetLowPriorityColorUseCase
+    private val setLowPriorityColorUseCase: SetLowPriorityColorUseCase,
+    private val wallpaperGenerator: WallpaperGenerator,
+    private val getTasksUseCase: GetTasksUseCase,
 ) : ViewModel() {
+
+
+    private val TAG = "SettingsViewModel"
 
     /**
      * Notification permission state
@@ -69,7 +91,14 @@ class SettingsViewModel @Inject constructor(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = "#3A0CA3" // Default blue color
+            initialValue = DEFAULT_TOP_COLOR // Default blue color
+        )
+
+    val wallpaperSecondaryColor: StateFlow<String> = getSecondaryWallpaperColorUseCase()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = DEFAULT_TOP_COLOR // Default blue color
         )
 
     /**
@@ -79,7 +108,7 @@ class SettingsViewModel @Inject constructor(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = "#FFE7EA" // Default high priority color
+            initialValue = DEFAULT_HIGH_PRIORITY_COLOR // Default high priority color
         )
 
     /**
@@ -89,7 +118,7 @@ class SettingsViewModel @Inject constructor(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = "#FFF5D6" // Default medium priority color
+            initialValue = DEFAULT_MEDIUM_PRIORITY_COLOR // Default medium priority color
         )
 
     /**
@@ -99,7 +128,7 @@ class SettingsViewModel @Inject constructor(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = "#DFF5E0" // Default low priority color
+            initialValue = DEFAULT_LOW_PRIORITY_COLOR // Default low priority color
         )
 
     /**
@@ -135,7 +164,21 @@ class SettingsViewModel @Inject constructor(
     fun setWallpaperColor(color: Color) {
         val colorHex = "#" + Integer.toHexString(color.toArgb()).substring(2)
         viewModelScope.launch {
-            setWallpaperColorUseCase(colorHex)
+            val result = setWallpaperColorUseCase(colorHex)
+            if (result.isSuccess()) {
+               updateWallpaper()
+            }
+        }
+    }
+
+    fun setSecondaryWallpaperColor(color: Color) {
+        val colorHex = "#" + Integer.toHexString(color.toArgb()).substring(2)
+        viewModelScope.launch {
+            val result = setSecondaryWallpaperColorUseCase(colorHex)
+            if (result.isSuccess()) {
+                updateWallpaper()
+            }
+
         }
     }
 
@@ -145,10 +188,13 @@ class SettingsViewModel @Inject constructor(
     fun setPriorityColor(priority: Priority, color: Color) {
         val colorHex = "#" + Integer.toHexString(color.toArgb()).substring(2)
         viewModelScope.launch {
-            when (priority) {
+            val result = when (priority) {
                 Priority.HIGH -> setHighPriorityColorUseCase(colorHex)
                 Priority.MEDIUM -> setMediumPriorityColorUseCase(colorHex)
                 Priority.LOW -> setLowPriorityColorUseCase(colorHex)
+            }
+            if (result.isSuccess()) {
+                updateWallpaper()
             }
         }
     }
@@ -170,7 +216,19 @@ class SettingsViewModel @Inject constructor(
         try {
             selectedColor = Color(android.graphics.Color.parseColor(currentColorHex))
         } catch (e: Exception) {
-            selectedColor = Color(0xFF3A0CA3) // Default if parsing fails
+            selectedColor = Color(0xFF1A2980) // Default if parsing fails
+        }
+        showColorPickerDialog = true
+    }
+
+    fun showSecondaryWallpaperColorPicker() {
+        currentColorPickerMode = ColorPickerMode.SECONDARY_WALLPAPER
+        // Initialize the color picker with the current wallpaper color
+        val currentColorHex = wallpaperSecondaryColor.value
+        try {
+            selectedColor = Color(android.graphics.Color.parseColor(currentColorHex))
+        } catch (e: Exception) {
+            selectedColor = Color(0xFF26D0CE) // Default if parsing fails
         }
         showColorPickerDialog = true
     }
@@ -210,6 +268,7 @@ class SettingsViewModel @Inject constructor(
     fun applySelectedColor() {
         when (currentColorPickerMode) {
             ColorPickerMode.WALLPAPER -> setWallpaperColor(selectedColor)
+            ColorPickerMode.SECONDARY_WALLPAPER -> setSecondaryWallpaperColor(selectedColor)
             ColorPickerMode.HIGH_PRIORITY -> setPriorityColor(Priority.HIGH, selectedColor)
             ColorPickerMode.MEDIUM_PRIORITY -> setPriorityColor(Priority.MEDIUM, selectedColor)
             ColorPickerMode.LOW_PRIORITY -> setPriorityColor(Priority.LOW, selectedColor)
@@ -223,7 +282,7 @@ class SettingsViewModel @Inject constructor(
     fun hideColorPicker() {
         showColorPickerDialog = false
     }
-    
+
     /**
      * Check if notification permission is granted
      */
@@ -238,12 +297,21 @@ class SettingsViewModel @Inject constructor(
             true
         }
     }
-    
+
     /**
      * Update notification permission state
      */
     fun updateNotificationPermissionState() {
         notificationPermissionState = checkNotificationPermission()
+    }
+    private suspend fun updateWallpaper() {
+        val tasksResult = getTasksUseCase().first()
+        val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
+        if (tasksResult.isSuccess() && autoWallpaperEnabled) {
+            val tasks = tasksResult.getOrNull() ?: emptyList()
+            val wallpaperResult = wallpaperGenerator.generateAndSetWallpaper(tasks)
+
+        }
     }
 }
 
@@ -252,6 +320,7 @@ class SettingsViewModel @Inject constructor(
  */
 enum class ColorPickerMode {
     WALLPAPER,
+    SECONDARY_WALLPAPER,
     HIGH_PRIORITY,
     MEDIUM_PRIORITY,
     LOW_PRIORITY

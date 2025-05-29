@@ -11,11 +11,14 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
+import androidx.core.graphics.ColorUtils
+import com.shreyash.dotrack.core.ui.theme.DEFAULT_BOTTOM_COLOR
 import com.shreyash.dotrack.domain.model.Priority
 import com.shreyash.dotrack.domain.model.Task
 import com.shreyash.dotrack.domain.usecase.preferences.GetHighPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetLowPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetMediumPriorityColorUseCase
+import com.shreyash.dotrack.domain.usecase.preferences.GetSecondaryWallpaperColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetWallpaperColorUseCase
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +33,7 @@ import javax.inject.Singleton
 class WallpaperGenerator @Inject constructor(
     @ApplicationContext private val context: Context,
     private val getWallpaperColorUseCase: GetWallpaperColorUseCase,
+    private val getSecondaryWallpaperColorUseCase: GetSecondaryWallpaperColorUseCase,
     private val getHighPriorityColorUseCase: GetHighPriorityColorUseCase,
     private val getMediumPriorityColorUseCase: GetMediumPriorityColorUseCase,
     private val getLowPriorityColorUseCase: GetLowPriorityColorUseCase
@@ -38,8 +42,6 @@ class WallpaperGenerator @Inject constructor(
     private val wallpaperManager = WallpaperManager.getInstance(context)
     private val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy  HH:mm")
 
-    // Default end color for gradient
-    private val DEFAULT_END_COLOR = "#ffffff"
 
     /**
      * Generate a bitmap from the task list and set it as the wallpaper
@@ -49,6 +51,7 @@ class WallpaperGenerator @Inject constructor(
             try {
                 // Get the user's preferred colors
                 val startColorHex = getWallpaperColorUseCase().first()
+                val secondaryStartColorHex = getSecondaryWallpaperColorUseCase().first()
                 val highPriorityColorHex = getHighPriorityColorUseCase().first()
                 val mediumPriorityColorHex = getMediumPriorityColorUseCase().first()
                 val lowPriorityColorHex = getLowPriorityColorUseCase().first()
@@ -56,6 +59,7 @@ class WallpaperGenerator @Inject constructor(
                 val bitmap = generateTaskListBitmap(
                     tasks, 
                     startColorHex,
+                    secondaryStartColorHex,
                     highPriorityColorHex,
                     mediumPriorityColorHex,
                     lowPriorityColorHex
@@ -77,26 +81,25 @@ class WallpaperGenerator @Inject constructor(
      * @param lowPriorityColorHex The hex color string for low priority tasks
      */
     private fun generateTaskListBitmap(
-        tasks: List<Task>, 
+        tasks: List<Task>,
         startColorHex: String,
+        endColorHex: String,
         highPriorityColorHex: String,
         mediumPriorityColorHex: String,
         lowPriorityColorHex: String
     ): Bitmap {
-        // Get screen dimensions
         val displayMetrics = context.resources.displayMetrics
         val width = displayMetrics.widthPixels
         val height = displayMetrics.heightPixels
 
-        // Create bitmap and canvas
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
 
-        // Draw glossy gradient background with user's preferred color
+        // Background gradient
         val gradient = LinearGradient(
             0f, 0f, 0f, height.toFloat(),
-            Color.parseColor(startColorHex), // Start color from user preference
-            Color.parseColor(DEFAULT_END_COLOR), // End color
+            Color.parseColor(startColorHex),
+            Color.parseColor(endColorHex),
             Shader.TileMode.CLAMP
         )
         val bgPaint = Paint().apply {
@@ -104,43 +107,40 @@ class WallpaperGenerator @Inject constructor(
         }
         canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), bgPaint)
 
-        // Determine text color based on background color brightness
+        // Determine appropriate text color
         val startColor = Color.parseColor(startColorHex)
-        val isDarkColor = isDarkColor(startColor)
+        val isDark = isDarkColor(startColor)
 
-        // Setup text paints
+        // Paints
         val titlePaint = Paint().apply {
-            color = Color.BLACK
-            textSize = 35f
-            typeface = Typeface.DEFAULT
+            color = if (isDark) Color.WHITE else Color.BLACK
+            textSize = 38f
+            typeface = Typeface.DEFAULT_BOLD
             isAntiAlias = true
-            setShadowLayer(1f, 1f, 1f, Color.WHITE)
         }
 
         val datePaint = Paint().apply {
-            color = Color.BLACK
+            color = if (isDark) Color.WHITE else Color.WHITE
             textSize = 26f
             isAntiAlias = true
         }
 
         val footerPaint = Paint().apply {
-            color = if (isDarkColor) Color.WHITE else Color.BLACK
-            textSize = 30f
+            color = if (isDark) Color.WHITE else Color.BLACK
+            textSize = 26f
             isAntiAlias = true
-            setShadowLayer(4f, 1f, 1f, if (isDarkColor) Color.BLACK else Color.WHITE)
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
         }
 
-        // Layout configuration
+        // Layout
         val topPadding = 300f
         val leftPadding = 80f
-        val circleRadius = 20f
-        val iconOffset = 40f
-        val textLeftOffset = leftPadding + iconOffset + circleRadius + 20f
-        val lineHeight = 100f
+        val itemHeight = 100f
+        val cornerRadius = 24f
+        val spacing = 30f
 
         var y = topPadding
 
-        // Filter and sort pending tasks
         val pendingTasks = tasks.filter { !it.isCompleted }
             .sortedByDescending { it.priority.value }
 
@@ -158,51 +158,55 @@ class WallpaperGenerator @Inject constructor(
             for (task in pendingTasks) {
                 if (y > height - 200) break
 
-                // Choose background color based on priority
-                val bgColor = when (task.priority) {
+                val baseColor = when (task.priority) {
                     Priority.HIGH -> Color.parseColor(highPriorityColorHex)
                     Priority.MEDIUM -> Color.parseColor(mediumPriorityColorHex)
                     Priority.LOW -> Color.parseColor(lowPriorityColorHex)
                 }
 
-                val bgPaint = Paint().apply {
-                    color = bgColor
-                    style = Paint.Style.FILL
-                    isAntiAlias = true
-                }
-
-                val itemHeight = 100f
-                val cornerRadius = 20f
-
-                // Draw rounded rectangle for background
                 val rect = RectF(
                     leftPadding,
                     y,
                     width - leftPadding,
                     y + itemHeight
                 )
-                canvas.drawRoundRect(rect, cornerRadius, cornerRadius, bgPaint)
 
-                // Draw title (left aligned)
-                canvas.drawText(task.title, leftPadding + 20f, y + 65f, titlePaint)
+                // Glossy-style gradient on card
+                val glossyGradient = LinearGradient(
+                    rect.left, rect.top, rect.right, rect.bottom,
+                    ColorUtils.blendARGB(baseColor, Color.WHITE, 0.2f),
+                    baseColor,
+                    Shader.TileMode.CLAMP
+                )
 
-                // Draw due date (right aligned)
+                val taskPaint = Paint().apply {
+                    shader = glossyGradient
+                    isAntiAlias = true
+                }
+
+                // Draw glossy task card
+                canvas.drawRoundRect(rect, cornerRadius, cornerRadius, taskPaint)
+
+                // Task title
+                canvas.drawText(task.title, rect.left + 24f, y + 65f, titlePaint)
+
+                // Due date
                 task.dueDate?.let {
                     val dueText = "Due: ${it.format(dateFormatter)}"
                     val dueWidth = datePaint.measureText(dueText)
                     canvas.drawText(
                         dueText,
-                        width - dueWidth - leftPadding - 20f,
+                        rect.right - dueWidth - 24f,
                         y + 65f,
                         datePaint
                     )
                 }
 
-                y += itemHeight + 30f // spacing between rows
+                y += itemHeight + spacing
             }
         }
 
-        // Draw footer
+        // Footer
         val footerText =
             "${pendingTasks.size} pending task${if (pendingTasks.size != 1) "s" else ""} • Updated on ${
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm"))
