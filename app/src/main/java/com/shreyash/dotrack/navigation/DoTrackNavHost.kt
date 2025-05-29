@@ -13,7 +13,7 @@ import androidx.navigation.navArgument
 import com.shreyash.dotrack.ui.categories.AddEditCategoryScreen
 import com.shreyash.dotrack.ui.categories.CategoriesScreen
 import com.shreyash.dotrack.ui.settings.SettingsScreen
-import com.shreyash.dotrack.ui.tasks.AddEditTaskScreen
+import com.shreyash.dotrack.ui.tasks.addedit.AddEditTaskScreen
 import com.shreyash.dotrack.ui.tasks.TaskDetailScreen
 import com.shreyash.dotrack.ui.tasks.TasksScreen
 
