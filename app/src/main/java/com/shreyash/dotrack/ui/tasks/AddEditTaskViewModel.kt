@@ -152,6 +152,7 @@ class AddEditTaskViewModel @Inject constructor(
                 // Update wallpaper with the latest task list
                 updateWallpaper()
                 if (uiState.reminderEnabled && uiState.dueDate != null) {
+                    reminderScheduler.cancelReminder(uiState.id.toString())
                     reminderScheduler.scheduleReminder(
                         taskId = uiState.id.toString(), // get the ID from result or generated in use case
                         title = uiState.title,

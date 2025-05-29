@@ -2,6 +2,10 @@ package com.shreyash.dotrack.ui.settings
 
 import com.shreyash.dotrack.R
 import android.util.Log
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,6 +24,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -72,9 +77,19 @@ fun SettingsScreen(
     // Collect states from ViewModel
     val isAutoWallpaperEnabled by viewModel.autoWallpaperEnabled.collectAsState()
     val currentWallpaperColor by viewModel.wallpaperColor.collectAsState()
-
-    // Local state for notification (not implemented yet)
-    var isNotificationEnabled by rememberSaveable { mutableStateOf(false) }
+    
+    // Notification permission state
+    val isNotificationEnabled = viewModel.notificationPermissionState
+    
+    // Permission request dialog state
+    var showPermissionDialog by rememberSaveable { mutableStateOf(false) }
+    
+    // Permission launcher
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        viewModel.updateNotificationPermissionState()
+    }
 
     // Show color picker dialog if needed
     if (viewModel.showColorPickerDialog) {
@@ -95,6 +110,11 @@ fun SettingsScreen(
     }
     LaunchedEffect(currentWallpaperColor) {
         Log.d("WallpaperColor", "Updated color: $currentWallpaperColor")
+    }
+    
+    // Update notification permission state when the screen is displayed
+    LaunchedEffect(Unit) {
+        viewModel.updateNotificationPermissionState()
     }
 
 
@@ -206,11 +226,46 @@ fun SettingsScreen(
             )
 
             SettingSwitchItem(
-                title = "Reminder",
+                title = "Permission",
                 subtitle = "Enable notifications permissions",
                 checked = isNotificationEnabled,
-                onCheckedChange = { isNotificationEnabled = it }
+                onCheckedChange = { 
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        if (!isNotificationEnabled) {
+                            // Show permission dialog
+                            showPermissionDialog = true
+                        }
+                    }
+                }
             )
+            
+            // Permission request dialog
+            if (showPermissionDialog) {
+                AlertDialog(
+                    onDismissRequest = { showPermissionDialog = false },
+                    title = { Text("Notification Permission") },
+                    text = { Text("DoTrack needs notification permission to send you reminders for your tasks. Would you like to grant this permission?") },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                showPermissionDialog = false
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                    permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                }
+                            }
+                        ) {
+                            Text("Grant Permission")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = { showPermissionDialog = false }
+                        ) {
+                            Text("Not Now")
+                        }
+                    }
+                )
+            }
 
             val tasksViewModel: TasksViewModel = hiltViewModel()
             TextButton(

@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.shreyash.dotrack.ReminderWorker
+import com.shreyash.dotrack.TrackConstants.getReminderTime
 import com.shreyash.dotrack.domain.ReminderScheduler
 import java.time.Duration
 import java.time.LocalDateTime
@@ -22,7 +23,7 @@ public class ReminderSchedulerImpl @Inject constructor(
     override fun scheduleReminder(taskId: String, title: String, dueDate: LocalDateTime) {
         // Launch in a coroutine to avoid blocking the main thread
         CoroutineScope(Dispatchers.IO).launch {
-            val triggerTime = dueDate.minusMinutes(30) // 🔔 30 minutes before
+            val triggerTime = dueDate.minusMinutes(getReminderTime()) // 🔔 30 minutes before
             val delay = Duration.between(LocalDateTime.now(), triggerTime).toMillis()
             if (delay > 0) {
                 val workRequest = OneTimeWorkRequestBuilder<ReminderWorker>()

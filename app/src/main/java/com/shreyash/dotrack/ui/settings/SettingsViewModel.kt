@@ -1,12 +1,18 @@
 package com.shreyash.dotrack.ui.settings
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.qualifiers.ApplicationContext
 import com.shreyash.dotrack.domain.model.Priority
 import com.shreyash.dotrack.domain.usecase.preferences.GetAutoWallpaperEnabledUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetHighPriorityColorUseCase
@@ -27,6 +33,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val getAutoWallpaperEnabledUseCase: GetAutoWallpaperEnabledUseCase,
     private val setAutoWallpaperEnabledUseCase: SetAutoWallpaperEnabledUseCase,
     private val getWallpaperColorUseCase: GetWallpaperColorUseCase,
@@ -38,6 +45,12 @@ class SettingsViewModel @Inject constructor(
     private val getLowPriorityColorUseCase: GetLowPriorityColorUseCase,
     private val setLowPriorityColorUseCase: SetLowPriorityColorUseCase
 ) : ViewModel() {
+
+    /**
+     * Notification permission state
+     */
+    var notificationPermissionState by mutableStateOf(checkNotificationPermission())
+        private set
 
     /**
      * Auto wallpaper enabled state
@@ -209,6 +222,28 @@ class SettingsViewModel @Inject constructor(
      */
     fun hideColorPicker() {
         showColorPickerDialog = false
+    }
+    
+    /**
+     * Check if notification permission is granted
+     */
+    fun checkNotificationPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            // For versions below Android 13, notification permissions were granted by default
+            true
+        }
+    }
+    
+    /**
+     * Update notification permission state
+     */
+    fun updateNotificationPermissionState() {
+        notificationPermissionState = checkNotificationPermission()
     }
 }
 

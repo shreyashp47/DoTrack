@@ -60,8 +60,8 @@ class ReminderWorker(context: Context, params: WorkerParameters) : Worker(contex
         // Build the notification
         val notification = NotificationCompat.Builder(applicationContext, channelId)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle("Task Reminder")
-            .setContentText(title)
+            .setContentTitle(title)
+            .setContentText("Reminder for pending task")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setContentIntent(pendingIntent)
