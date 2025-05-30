@@ -1,6 +1,7 @@
-package com.shreyash.dotrack.ui.tasks
+package com.shreyash.dotrack.ui.tasks.addedit
 
 import android.os.Build
+import android.widget.NumberPicker
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,7 +33,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
@@ -50,10 +50,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.SelectableDates
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.shreyash.dotrack.domain.model.Priority
@@ -221,9 +223,17 @@ fun TaskForm(
 
         // Date Picker Dialog
         if (showDatePicker) {
+            val todayInMillis = remember {
+                LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            }
+
             val datePickerState = rememberDatePickerState(
-                initialSelectedDateMillis = dueDate?.atZone(ZoneId.systemDefault())?.toInstant()
-                    ?.toEpochMilli()
+                initialSelectedDateMillis = todayInMillis,
+                selectableDates = object : SelectableDates {
+                    override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                        return utcTimeMillis > todayInMillis
+                    }
+                }
             )
 
             DatePickerDialog(
@@ -259,6 +269,7 @@ fun TaskForm(
         // Time Picker Dialog
         if (showTimePicker) {
             TimePickerDialog(
+                selectedDate = selectedDate ?: LocalDate.now(),
                 onDismissRequest = { 
                     showTimePicker = false 
                     // If user cancels time selection, reset date selection too
@@ -393,130 +404,3 @@ fun AddEditTaskScreenPreview() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun TaskFormPreview() {
-    MaterialTheme {
-        TaskForm(
-            title = "Sample Task",
-            onTitleChange = {},
-            description = "This is a sample task description for preview",
-            onDescriptionChange = {},
-            priority = Priority.MEDIUM,
-            onPriorityChange = {},
-            dueDate = LocalDateTime.now().plusDays(3),
-            //onDueDateClick = {},
-            onDueDateChange = {},
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Composable
-fun TimePickerDialog(
-    onDismissRequest: () -> Unit,
-    onTimeSelected: (hour: Int, minute: Int) -> Unit
-) {
-    var hour by remember { mutableStateOf(12) }
-    var minute by remember { mutableStateOf(0) }
-    
-    Dialog(onDismissRequest = onDismissRequest) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Select Time",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                // Hour picker
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Hour:", 
-                        modifier = Modifier.width(60.dp),
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Slider(
-                        value = hour.toFloat(),
-                        onValueChange = { hour = it.toInt() },
-                        valueRange = 0f..23f,
-                        steps = 23,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Text(
-                        text = hour.toString().padStart(2, '0'),
-                        modifier = Modifier.width(40.dp),
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-                
-                // Minute picker
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Minute:", 
-                        modifier = Modifier.width(60.dp),
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Slider(
-                        value = minute.toFloat(),
-                        onValueChange = { minute = it.toInt() },
-                        valueRange = 0f..59f,
-                        steps = 59,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Text(
-                        text = minute.toString().padStart(2, '0'),
-                        modifier = Modifier.width(40.dp),
-                        textAlign = TextAlign.Center
-                    )
-                }
-                
-                Spacer(modifier = Modifier.height(24.dp))
-                
-                // Display selected time
-                Text(
-                    text = "${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                
-                Spacer(modifier = Modifier.height(24.dp))
-                
-                // Action buttons
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    TextButton(onClick = onDismissRequest) {
-                        Text("Cancel")
-                    }
-                    
-                    Button(
-                        onClick = { onTimeSelected(hour, minute) }
-                    ) {
-                        Text("OK")
-                    }
-                }
-            }
-        }
-    }
-}

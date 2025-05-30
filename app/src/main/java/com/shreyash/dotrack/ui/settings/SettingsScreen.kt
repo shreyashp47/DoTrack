@@ -1,9 +1,8 @@
 package com.shreyash.dotrack.ui.settings
 
-import com.shreyash.dotrack.R
-import android.util.Log
 import android.Manifest
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -58,6 +57,7 @@ import com.github.skydoves.colorpicker.compose.BrightnessSlider
 import com.github.skydoves.colorpicker.compose.ColorEnvelope
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
+import com.shreyash.dotrack.R
 import com.shreyash.dotrack.domain.model.Priority
 import com.shreyash.dotrack.ui.tasks.TasksViewModel
 
@@ -72,18 +72,20 @@ fun SettingsScreenPreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    viewModel: SettingsViewModel = hiltViewModel()
+    viewModel: SettingsViewModel = hiltViewModel(),
+    tasksViewModel: TasksViewModel = hiltViewModel()
 ) {
     // Collect states from ViewModel
     val isAutoWallpaperEnabled by viewModel.autoWallpaperEnabled.collectAsState()
     val currentWallpaperColor by viewModel.wallpaperColor.collectAsState()
-    
+    val secondaryWallpaperColor by viewModel.wallpaperSecondaryColor.collectAsState()
+
     // Notification permission state
     val isNotificationEnabled = viewModel.notificationPermissionState
-    
+
     // Permission request dialog state
     var showPermissionDialog by rememberSaveable { mutableStateOf(false) }
-    
+
     // Permission launcher
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -97,6 +99,7 @@ fun SettingsScreen(
             initialColor = viewModel.selectedColor,
             title = when (viewModel.currentColorPickerMode) {
                 ColorPickerMode.WALLPAPER -> "Choose Wallpaper Color"
+                ColorPickerMode.SECONDARY_WALLPAPER -> "Choose Secondary Wallpaper Color"
                 ColorPickerMode.HIGH_PRIORITY -> "Choose High Priority Color"
                 ColorPickerMode.MEDIUM_PRIORITY -> "Choose Medium Priority Color"
                 ColorPickerMode.LOW_PRIORITY -> "Choose Low Priority Color"
@@ -111,7 +114,10 @@ fun SettingsScreen(
     LaunchedEffect(currentWallpaperColor) {
         Log.d("WallpaperColor", "Updated color: $currentWallpaperColor")
     }
-    
+    LaunchedEffect(secondaryWallpaperColor) {
+        Log.d("WallpaperColor", "Updated color: $secondaryWallpaperColor")
+    }
+
     // Update notification permission state when the screen is displayed
     LaunchedEffect(Unit) {
         viewModel.updateNotificationPermissionState()
@@ -143,7 +149,6 @@ fun SettingsScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { viewModel.showWallpaperColorPicker() }
                     .padding(vertical = 12.dp)
             ) {
                 Column(
@@ -165,17 +170,21 @@ fun SettingsScreen(
                     modifier = Modifier
                         .size(32.dp)
                         .clip(CircleShape)
+                        .clickable { viewModel.showWallpaperColorPicker() }
                         .background(Color(android.graphics.Color.parseColor(currentWallpaperColor)))
                         .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
-
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Choose color",
-                    tint = MaterialTheme.colorScheme.primary
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(CircleShape)
+                        .clickable { viewModel.showSecondaryWallpaperColorPicker() }
+                        .background(Color(android.graphics.Color.parseColor(secondaryWallpaperColor)))
+                        .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
                 )
+
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -229,7 +238,7 @@ fun SettingsScreen(
                 title = "Permission",
                 subtitle = "Enable notifications permissions",
                 checked = isNotificationEnabled,
-                onCheckedChange = { 
+                onCheckedChange = {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         if (!isNotificationEnabled) {
                             // Show permission dialog
@@ -238,7 +247,7 @@ fun SettingsScreen(
                     }
                 }
             )
-            
+
             // Permission request dialog
             if (showPermissionDialog) {
                 AlertDialog(
@@ -267,7 +276,6 @@ fun SettingsScreen(
                 )
             }
 
-            val tasksViewModel: TasksViewModel = hiltViewModel()
             TextButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
@@ -294,7 +302,7 @@ fun ColorPickerDialog(
     initialColor: Color,
     title: String,
     onColorSelected: (Color) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     val controller = rememberColorPickerController()
 
@@ -364,6 +372,7 @@ fun ColorPickerDialog(
                     Button(
                         onClick = {
                             onColorSelected(controller.selectedColor.value)
+
                         }
                     ) {
                         Text("Apply")
@@ -458,3 +467,4 @@ fun ColorSettingItem(
         )
     }
 }
+

@@ -1,7 +1,6 @@
 package com.shreyash.dotrack.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Wallpapers
 
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
@@ -30,3 +29,10 @@ val WallpapersColorHighPriority = Color(0xFFFFE7EA) // Light red background
 val WallpapersColorMediumPriority = Color(0xFFFFF5D6) // Light orange background
 val WallpapersColorLowPriority = Color(0xFFDFF5E0) // Light green background
 
+const val DEFAULT_TOP_COLOR = "#1A2980"
+const val DEFAULT_BOTTOM_COLOR = "#26D0CE"
+
+
+const val DEFAULT_HIGH_PRIORITY_COLOR = "#FF9A8B"     // Light coral (attention but friendly)
+const val DEFAULT_MEDIUM_PRIORITY_COLOR = "#FFD580"  // Warm pastel yellow (subtle alert)
+const val DEFAULT_LOW_PRIORITY_COLOR = "#CFFFB0"     // Pale mint green (soft, low urgency)

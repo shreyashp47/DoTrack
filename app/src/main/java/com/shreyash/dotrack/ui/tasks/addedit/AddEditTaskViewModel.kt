@@ -1,4 +1,4 @@
-package com.shreyash.dotrack.ui.tasks
+package com.shreyash.dotrack.ui.tasks.addedit
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,6 +10,7 @@ import com.shreyash.dotrack.core.util.WallpaperGenerator
 import com.shreyash.dotrack.domain.ReminderScheduler
 import com.shreyash.dotrack.domain.model.Priority
 import com.shreyash.dotrack.domain.model.Task
+import com.shreyash.dotrack.domain.usecase.preferences.GetAutoWallpaperEnabledUseCase
 import com.shreyash.dotrack.domain.usecase.task.AddTaskUseCase
 import com.shreyash.dotrack.domain.usecase.task.GetTaskByIdUseCase
 import com.shreyash.dotrack.domain.usecase.task.GetTasksUseCase
@@ -46,7 +47,8 @@ class AddEditTaskViewModel @Inject constructor(
     private val addTaskUseCase: AddTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
     private val wallpaperGenerator: WallpaperGenerator,
-    private val reminderScheduler: ReminderScheduler
+    private val reminderScheduler: ReminderScheduler,
+    private val getAutoWallpaperEnabledUseCase: GetAutoWallpaperEnabledUseCase,
 ) : ViewModel() {
 
     var uiState by mutableStateOf(AddEditTaskUiState())
@@ -177,7 +179,8 @@ class AddEditTaskViewModel @Inject constructor(
     private suspend fun updateWallpaper() {
         val tasksResult = getTasksUseCase().first()
 
-        if (tasksResult.isSuccess()) {
+        val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
+        if (tasksResult.isSuccess() && autoWallpaperEnabled) {
             val tasks = tasksResult.getOrNull() ?: emptyList()
             val wallpaperResult = wallpaperGenerator.generateAndSetWallpaper(tasks)
 

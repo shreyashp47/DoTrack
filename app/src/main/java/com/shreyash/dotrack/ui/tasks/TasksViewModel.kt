@@ -1,6 +1,7 @@
 package com.shreyash.dotrack.ui.tasks
 
 import android.os.Build
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -38,6 +39,7 @@ class TasksViewModel @Inject constructor(
     private val reminderScheduler: ReminderScheduler
 ) : ViewModel() {
 
+    private val TAG = "TasksViewModel"
     val tasks: StateFlow<Result<List<Task>>> = getTasksUseCase()
         .stateIn(
             scope = viewModelScope,
@@ -86,6 +88,7 @@ class TasksViewModel @Inject constructor(
      */
     fun updateWallpaper() {
         viewModelScope.launch(Dispatchers.IO) {
+            Log.d(TAG, "Updating wallpaper...")
             val tasksResult = getTasksUseCase().first()
 
             if (tasksResult.isSuccess()) {

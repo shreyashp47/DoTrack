@@ -22,13 +22,15 @@ interface UserPreferencesRepository {
      * Returns a hex color string (e.g., "#3A0CA3")
      */
     fun getWallpaperColor(): Flow<String>
+    fun getSecondaryWallpaperColor(): Flow<String>
 
     /**
      * Set the wallpaper color
      * @param colorHex A hex color string (e.g., "#3A0CA3")
      */
     suspend fun setWallpaperColor(colorHex: String): Result<Unit>
-    
+    suspend fun setSecondaryWallpaperColor(colorHex: String): Result<Unit>
+
     /**
      * Get the high priority task color as a Flow
      * Returns a hex color string (e.g., "#FFE7EA")
