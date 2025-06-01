@@ -120,7 +120,7 @@ class WallpaperGenerator @Inject constructor(
         }
 
         val datePaint = Paint().apply {
-            color = if (isDark) Color.WHITE else Color.WHITE
+            color = if (isDark) Color.WHITE else Color.BLACK
             textSize = 26f
             isAntiAlias = true
         }

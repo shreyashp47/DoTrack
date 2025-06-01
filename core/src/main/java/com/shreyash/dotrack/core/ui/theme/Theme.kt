@@ -13,7 +13,9 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,6 +25,21 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+
+// CompositionLocal for priority card colors
+data class PriorityCardColors(
+    val high: Color,
+    val medium: Color,
+    val low: Color
+)
+
+val LocalPriorityCardColors = compositionLocalOf {
+    PriorityCardColors(
+        high = CardColorHighPriorityLight,
+        medium = CardColorMediumPriorityLight,
+        low = CardColorLowPriorityLight
+    )
+}
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -74,31 +91,38 @@ fun DoTrackTheme(
     }
     
     // Set the priority card colors based on the current theme
-    val highPriorityCardColor = if (darkTheme) CardColorHighPriorityDark else CardColorHighPriorityLight
-    val mediumPriorityCardColor = if (darkTheme) CardColorMediumPriorityDark else CardColorMediumPriorityLight
-    val lowPriorityCardColor = if (darkTheme) CardColorLowPriorityDark else CardColorLowPriorityLight
+    val priorityCardColors = PriorityCardColors(
+        high = if (darkTheme) CardColorHighPriorityDark else CardColorHighPriorityLight,
+        medium = if (darkTheme) CardColorMediumPriorityDark else CardColorMediumPriorityLight,
+        low = if (darkTheme) CardColorLowPriorityDark else CardColorLowPriorityLight
+    )
     
-    // Update the global color variables
+    // Update the global color variables for backward compatibility
     SideEffect {
-        CardColorHighPriority = highPriorityCardColor
-        CardColorMediumPriority = mediumPriorityCardColor
-        CardColorLowPriority = lowPriorityCardColor
+        CardColorHighPriority = priorityCardColors.high
+        CardColorMediumPriority = priorityCardColors.medium
+        CardColorLowPriority = priorityCardColors.low
     }
     
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.background.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+            val context = view.context
+            if (context is Activity) {
+                val window = context.window
+                window.statusBarColor = colorScheme.background.toArgb()
+                WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+            }
         }
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    CompositionLocalProvider(LocalPriorityCardColors provides priorityCardColors) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }
 
 @Preview(showBackground = true)
