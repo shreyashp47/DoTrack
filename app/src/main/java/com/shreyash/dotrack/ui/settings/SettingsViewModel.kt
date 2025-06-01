@@ -16,9 +16,7 @@ import com.shreyash.dotrack.core.ui.theme.DEFAULT_HIGH_PRIORITY_COLOR
 import com.shreyash.dotrack.core.ui.theme.DEFAULT_LOW_PRIORITY_COLOR
 import com.shreyash.dotrack.core.ui.theme.DEFAULT_MEDIUM_PRIORITY_COLOR
 import com.shreyash.dotrack.core.ui.theme.DEFAULT_TOP_COLOR
-import com.shreyash.dotrack.core.util.Result
 import com.shreyash.dotrack.core.util.WallpaperGenerator
-import com.shreyash.dotrack.domain.ReminderScheduler
 import com.shreyash.dotrack.domain.model.Priority
 import com.shreyash.dotrack.domain.usecase.preferences.GetAutoWallpaperEnabledUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetHighPriorityColorUseCase
@@ -35,15 +33,12 @@ import com.shreyash.dotrack.domain.usecase.preferences.SetWallpaperColorUseCase
 import com.shreyash.dotrack.domain.usecase.task.GetTasksUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
-
 
 
 @HiltViewModel
@@ -166,7 +161,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             val result = setWallpaperColorUseCase(colorHex)
             if (result.isSuccess()) {
-               updateWallpaper()
+                updateWallpaper()
             }
         }
     }
@@ -304,6 +299,7 @@ class SettingsViewModel @Inject constructor(
     fun updateNotificationPermissionState() {
         notificationPermissionState = checkNotificationPermission()
     }
+
     private suspend fun updateWallpaper() {
         val tasksResult = getTasksUseCase().first()
         val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
