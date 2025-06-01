@@ -19,10 +19,10 @@ val CardColorHighPriorityDark = Color(0xFF5C2B2B) // Dark red background
 val CardColorMediumPriorityDark = Color(0xFF5C4A2B) // Dark orange background
 val CardColorLowPriorityDark = Color(0xFF2B5C2F) // Dark green background
 
-// Current theme priority card colors (set in Theme.kt based on dark/light mode)
-var CardColorHighPriority = Color(0xFFFFEBEE) // Will be replaced dynamically
-var CardColorMediumPriority = Color(0xFFFFF3E0) // Will be replaced dynamically
-var CardColorLowPriority = Color(0xFFE8F5E9) // Will be replaced dynamically
+// Current theme priority card colors (default to light theme)
+var CardColorHighPriority = CardColorHighPriorityLight
+var CardColorMediumPriority = CardColorMediumPriorityLight
+var CardColorLowPriority = CardColorLowPriorityLight
 
 // Wallpaper colors (always light since wallpapers are typically light)
 val WallpapersColorHighPriority = Color(0xFFFFE7EA) // Light red background
