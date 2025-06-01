@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.shreyash.dotrack">
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Permission to set wallpaper -->
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
+
+    <!-- Permission for notifications (Android 13+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
@@ -12,54 +15,20 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_app_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_app_icon_round"
+        android:roundIcon="@mipmap/ic_app_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.DoTrack"
         tools:targetApi="31">
-
-        <!-- DARK MODE ALIAS (disabled by default) -->
-        <activity-alias
-            android:name=".DarkIcon"
-            android:enabled="false"
-            android:exported="true"
-            android:icon="@mipmap/ic_dark_app_icon"
-            android:label="@string/app_name"
-            android:targetActivity=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity-alias>
-
-        <!-- LIGHT MODE ALIAS (enabled by default) -->
-        <activity-alias
-            android:name=".LightIcon"
-            android:enabled="true"
-            android:exported="true"
-            android:icon="@mipmap/ic_app_icon"
-            android:label="@string/app_name"
-            android:targetActivity=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity-alias>
-
-        <!-- Main activity with fallback launcher intent filter -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:launchMode="singleTop"
-            android:enabled="true"
-            android:configChanges="uiMode">
-
-            <!-- Fallback launcher intent filter (lower priority) -->
-            <intent-filter android:priority="-1000">
+            android:launchMode="singleTop">
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Optional: Deep link for task notification -->
+            <!-- Deep link intent filter for task notifications -->
             <intent-filter>
                 <action android:name="com.shreyash.dotrack.OPEN_TASK" />
                 <category android:name="android.intent.category.DEFAULT" />
