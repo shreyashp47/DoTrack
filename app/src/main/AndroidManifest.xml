@@ -19,6 +19,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DoTrack"
         tools:targetApi="31">
+
+        <!-- ✅ REMOVE default WorkManager initializer -->
+        <meta-data
+            android:name="androidx.work.WorkManagerInitializer"
+            android:value="androidx.startup"
+            tools:node="remove" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

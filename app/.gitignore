@@ -1,1 +1,5 @@
 /build
+/.idea/
+/.zencoder
+/data/build
+/domain/build

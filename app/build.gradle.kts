@@ -1,3 +1,7 @@
+import java.util.Properties
+import java.io.FileInputStream
+
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,6 +10,22 @@ plugins {
     alias(libs.plugins.compose.compiler)
 }
 
+
+
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("keystore_details/keystore.properties")
+
+
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+} else {
+    println("keystore.properties file not found. Using environment variables.")
+
+    keystoreProperties["storeFile"] = System.getenv("ANDROID_KEYSTORE_PATH") ?: ""
+    keystoreProperties["storePassword"] = System.getenv("ANDROID_KEYSTORE_PASSWORD") ?: ""
+    keystoreProperties["keyAlias"] = System.getenv("ANDROID_KEY_ALIAS") ?: ""
+    keystoreProperties["keyPassword"] = System.getenv("ANDROID_KEY_PASSWORD") ?: ""
+}
 android {
     namespace = "com.shreyash.dotrack"
     compileSdk = 35
@@ -15,38 +35,80 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.09"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Optional: Limit APK size by targeting only needed locales
+        resourceConfigurations += listOf("en", "hi") // add/remove as per your app
+    }
+
+    signingConfigs {
+        create("release") {
+            val storeFilePath = keystoreProperties["storeFile"] as String
+            if (storeFilePath.isNotEmpty()) {
+                storeFile = file(storeFilePath)
+            }
+            storePassword = keystoreProperties["storePassword"] as String
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+        }
     }
 
     buildTypes {
         debug {
             isDebuggable = true
-        }
-        release {
-
             isMinifyEnabled = false
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+        }
+
+        create("staging") {
+            initWith(getByName("debug"))
+            isDebuggable = true
+            isMinifyEnabled = true
+            isShrinkResources = true
+            applicationIdSuffix = ".staging"
+            versionNameSuffix = "-staging"
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
+                "proguard-rules-staging.pro", // staging-specific
+            )
+        }
+
+        release {
+            isDebuggable = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
+        buildConfig = true
+
     }
+
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 }
+
 
 dependencies {
     implementation(project(":core"))
@@ -77,11 +139,10 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
 
+    // WorkManager
     implementation("androidx.work:work-runtime-ktx:2.10.1")
-    implementation ("com.google.dagger:hilt-android:2.51") // or latest
-    kapt ("com.google.dagger:hilt-compiler:2.51")
-    implementation("androidx.hilt:hilt-work:1.1.0") // Hilt + WorkManager integration
-    kapt("androidx.hilt:hilt-compiler:1.1.0")        // Hilt code generation
+    implementation("androidx.hilt:hilt-work:1.2.0") // Hilt + WorkManager integration
+    kapt("androidx.hilt:hilt-compiler:1.2.0")        // Hilt code generation
 
     // Color Picker
     implementation(libs.colorpicker.compose)

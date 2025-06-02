@@ -13,7 +13,11 @@
 .externalNativeBuild
 .cxx
 local.properties
-
+/data/build
+/app/build
+/domain/build
 # Project exclude paths
 /.idea/
 /.zencoder
+/.kotlin/
+/app/release
