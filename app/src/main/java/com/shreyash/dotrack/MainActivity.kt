@@ -1,11 +1,7 @@
 package com.shreyash.dotrack
 
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -24,7 +20,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.shreyash.dotrack.core.ui.theme.DoTrackTheme
-import com.shreyash.dotrack.core.util.switchAppIcon
 import com.shreyash.dotrack.navigation.DeepLinkHandler
 import com.shreyash.dotrack.navigation.DoTrackBottomNavigation
 import com.shreyash.dotrack.navigation.DoTrackNavHost
@@ -36,16 +31,10 @@ class MainActivity : ComponentActivity() {
 
     // Store the intent to handle it after the UI is ready
     private var pendingIntent: Intent? = null
-    
-    // Track the current theme to detect changes
-    private var currentNightMode: Int = Configuration.UI_MODE_NIGHT_UNDEFINED
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
-        currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        Log.d("ThemeTest", "Is dark mode: ${currentNightMode == Configuration.UI_MODE_NIGHT_YES}")
 
         // Store the initial intent if it exists
         if (intent?.action == DeepLinkHandler.ACTION_OPEN_TASK) {
@@ -54,28 +43,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             DoTrackApp(pendingIntent)
-        }
-        
-        // Switch app icon on first launch with a delay
-        Handler(Looper.getMainLooper()).postDelayed({
-            switchAppIcon(this)
-        }, 1000) // 1 second delay on first launch
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        
-        val newNightMode = newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        
-        // Only switch icon if the night mode actually changed
-        if (newNightMode != currentNightMode) {
-            Log.d("ThemeTest", "Theme changed from $currentNightMode to $newNightMode")
-            currentNightMode = newNightMode
-            
-            // Switch app icon with a delay to avoid conflicts during configuration change
-            Handler(Looper.getMainLooper()).postDelayed({
-                switchAppIcon(this)
-            }, 1500) // 1.5 second delay during configuration change
         }
     }
 
