@@ -23,7 +23,7 @@ public class ReminderSchedulerImpl @Inject constructor(
     override fun scheduleReminder(taskId: String, title: String, dueDate: LocalDateTime) {
         // Launch in a coroutine to avoid blocking the main thread
         CoroutineScope(Dispatchers.IO).launch {
-            val triggerTime = dueDate.minusMinutes(1) // 🔔 30 minutes before
+            val triggerTime = dueDate.minusMinutes(getReminderTime()) // 🔔 30 minutes before
             val delay = Duration.between(LocalDateTime.now(), triggerTime).toMillis()
             if (delay > 0) {
                 val workRequest = OneTimeWorkRequestBuilder<ReminderWorker>()
