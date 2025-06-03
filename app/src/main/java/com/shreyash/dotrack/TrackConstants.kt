@@ -8,11 +8,8 @@ object TrackConstants {
     const val REMINDER_TIME = 30L
 
     fun getReminderTime(): Long {
-        return REMINDER_TIME // Use production time for release builds
+        return  REMINDER_TIME
     }
 
-    fun TrackLogs(message: String){
-        // Only log in debug builds - ProGuard will remove this in release
-        Log.d("TRACK", message)
-    }
+
 }

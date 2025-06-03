@@ -1,6 +1,5 @@
-import java.util.Properties
 import java.io.FileInputStream
-
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -9,8 +8,6 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.compose.compiler)
 }
-
-
 
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("keystore_details/keystore.properties")
@@ -38,11 +35,7 @@ android {
         versionName = "1.09"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        // Optional: Limit APK size by targeting only needed locales
-        resourceConfigurations += listOf("en", "hi") // add/remove as per your app
     }
-
     signingConfigs {
         create("release") {
             val storeFilePath = keystoreProperties["storeFile"] as String
@@ -54,7 +47,6 @@ android {
             keyPassword = keystoreProperties["keyPassword"] as String
         }
     }
-
     buildTypes {
         debug {
             isDebuggable = true
@@ -62,21 +54,6 @@ android {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
         }
-
-        create("staging") {
-            initWith(getByName("debug"))
-            isDebuggable = true
-            isMinifyEnabled = true
-            isShrinkResources = true
-            applicationIdSuffix = ".staging"
-            versionNameSuffix = "-staging"
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
-                "proguard-rules-staging.pro", // staging-specific
-            )
-        }
-
         release {
             isDebuggable = false
             isMinifyEnabled = true
@@ -88,27 +65,20 @@ android {
             )
         }
     }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-
     kotlinOptions {
         jvmTarget = "11"
     }
-
     buildFeatures {
         compose = true
-        buildConfig = true
-
     }
-
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 }
-
 
 dependencies {
     implementation(project(":core"))
@@ -141,8 +111,10 @@ dependencies {
 
     // WorkManager
     implementation("androidx.work:work-runtime-ktx:2.10.1")
-    implementation("androidx.hilt:hilt-work:1.2.0") // Hilt + WorkManager integration
-    kapt("androidx.hilt:hilt-compiler:1.2.0")        // Hilt code generation
+    implementation ("com.google.dagger:hilt-android:2.51") // or latest
+    kapt ("com.google.dagger:hilt-compiler:2.51")
+    implementation("androidx.hilt:hilt-work:1.1.0") // Hilt + WorkManager integration
+    kapt("androidx.hilt:hilt-compiler:1.1.0")        // Hilt code generation
 
     // Color Picker
     implementation(libs.colorpicker.compose)

@@ -23,3 +23,4 @@ class DoTrackApplication : Application(), Configuration.Provider {
             .build()
 
 }
+
