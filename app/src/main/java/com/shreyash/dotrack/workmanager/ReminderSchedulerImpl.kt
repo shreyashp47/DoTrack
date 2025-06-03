@@ -29,8 +29,8 @@ public class ReminderSchedulerImpl @Inject constructor(
                 val workRequest = OneTimeWorkRequestBuilder<ReminderWorker>()
                     .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                     .setInputData(workDataOf(
-                        "taskId" to taskId,
-                        "title" to title
+                        ReminderWorker.KEY_TASK_ID to taskId,
+                        ReminderWorker.KEY_TITLE to title
                     ))
                     .addTag(taskId)
                     .build()

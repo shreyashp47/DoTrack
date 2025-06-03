@@ -14,10 +14,11 @@ val CardColorHighPriorityLight = Color(0xFFFFEBEE) // Light red background
 val CardColorMediumPriorityLight = Color(0xFFFFF3E0) // Light orange background
 val CardColorLowPriorityLight = Color(0xFFE8F5E9) // Light green background
 
-// Dark theme priority card colors
-val CardColorHighPriorityDark = Color(0xFF5C2B2B) // Dark red background
-val CardColorMediumPriorityDark = Color(0xFF5C4A2B) // Dark orange background
-val CardColorLowPriorityDark = Color(0xFF2B5C2F) // Dark green background
+val CardColorHighPriorityDark = Color(0xCCAD1F2D)   // 80% opacity
+val CardColorMediumPriorityDark = Color(0xCCB76E22)
+val CardColorLowPriorityDark = Color(0xCC1E7F5C)
+
+
 
 // Current theme priority card colors (default to light theme)
 var CardColorHighPriority = CardColorHighPriorityLight
