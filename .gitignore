@@ -17,3 +17,8 @@ local.properties
 # Project exclude paths
 /.idea/
 /.zencoder
+/.kotlin/
+/app/release
+/data/build
+/domain/build
+/core/build

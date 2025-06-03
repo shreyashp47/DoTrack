@@ -32,7 +32,7 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.09"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -109,6 +109,7 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
 
+    // WorkManager
     implementation("androidx.work:work-runtime-ktx:2.10.1")
     implementation ("com.google.dagger:hilt-android:2.51") // or latest
     kapt ("com.google.dagger:hilt-compiler:2.51")
