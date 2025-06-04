@@ -48,7 +48,14 @@ jobs:
           APK_DIR="app/build/outputs/apk/release"
           OLD_APK=$(find $APK_DIR -name "*.apk" | head -n 1)
           NEW_APK="$APK_DIR/DoTrack-v${{ github.event.inputs.versionName }}-release.apk"
-          mv "$OLD_APK" "$NEW_APK"
+
+          if [[ "$OLD_APK" != "$NEW_APK" ]]; then
+            mv "$OLD_APK" "$NEW_APK"
+            echo "✅ Renamed APK to: $(basename "$NEW_APK")"
+          else
+            echo "ℹ️ APK already has correct name: $(basename "$OLD_APK")"
+          fi
+      
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4.6.2
