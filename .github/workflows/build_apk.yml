@@ -1,0 +1,57 @@
+name: Build APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      versionName:
+        description: 'Version Name (e.g., 1.09)'
+        required: true
+        default: '1.09'
+      versionCode:
+        description: 'Version Code (e.g., 9)'
+        required: true
+        default: '9'
+      branch:
+        description: 'Branch to build (e.g., main)'
+        required: true
+        default: 'main'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Grant execute permission to gradlew
+        run: chmod +x ./gradlew
+
+      - name: Inject versionName and versionCode
+        run: |
+          sed -i "s/versionName = \".*\"/versionName = \"${{ github.event.inputs.versionName }}\"/" app/build.gradle.kts
+          sed -i "s/versionCode = .*/versionCode = ${{ github.event.inputs.versionCode }}/" app/build.gradle.kts
+
+      - name: Build APK (assembleRelease)
+        run: ./gradlew assembleRelease
+
+      - name: Rename APK file
+        run: |
+          APK_DIR="app/build/outputs/apk/release"
+          OLD_APK=$(find $APK_DIR -name "*.apk" | head -n 1)
+          NEW_APK="$APK_DIR/DoTrack-v${{ github.event.inputs.versionName }}-release.apk"
+          mv "$OLD_APK" "$NEW_APK"
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: DoTrack-APK-v${{ github.event.inputs.versionName }}
+          path: app/build/outputs/apk/release/DoTrack-v${{ github.event.inputs.versionName }}-release.apk
