@@ -1,0 +1,57 @@
+name: Build AAB Bundle
+
+on:
+  workflow_dispatch:
+    inputs:
+      versionName:
+        description: 'Version Name (e.g., 1.09)'
+        required: true
+        default: '1.09'
+      versionCode:
+        description: 'Version Code (e.g., 9)'
+        required: true
+        default: '9'
+      branch:
+        description: 'Branch to build (e.g., main)'
+        required: true
+        default: 'main'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Grant execute permission to gradlew
+        run: chmod +x ./gradlew
+
+      - name: Inject versionName and versionCode
+        run: |
+          sed -i "s/versionName = \".*\"/versionName = \"${{ github.event.inputs.versionName }}\"/" app/build.gradle.kts
+          sed -i "s/versionCode = .*/versionCode = ${{ github.event.inputs.versionCode }}/" app/build.gradle.kts
+
+      - name: Build AAB (bundleRelease)
+        run: ./gradlew bundleRelease
+
+      - name: Rename AAB file
+        run: |
+          BUNDLE_DIR="app/build/outputs/bundle/release"
+          OLD_AAB=$(find $BUNDLE_DIR -name "*.aab" | head -n 1)
+          NEW_AAB="$BUNDLE_DIR/DoTrack-v${{ github.event.inputs.versionName }}-release.aab"
+          mv "$OLD_AAB" "$NEW_AAB"
+
+      - name: Upload AAB Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: DoTrack-AAB-v${{ github.event.inputs.versionName }}
+          path: app/build/outputs/bundle/release/DoTrack-v${{ github.event.inputs.versionName }}-release.aab

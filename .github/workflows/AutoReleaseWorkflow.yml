@@ -1,0 +1,80 @@
+name: Android CI/CD - Live Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Select the branch to build from. Valid options:'
+        required: true
+        default: 'main'
+
+jobs:
+  generate-android-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout selected branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4.2.2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+
+      - name: Build APKs and AABs
+        run: ./gradlew assembleRelease --stacktrace
+
+      # StoreLive APK - Amazon store
+      - name: Get StoreLive APK name
+        id: storelive_apk
+        run: |
+          FILE=$(find app/build/outputs/apk/storeLive/release -name "*.apk" | head -n 1)
+          FILENAME=$(basename "$FILE")
+          ARTIFACT_NAME="Amazon-$FILENAME"
+          echo "apk_path=$FILE" >> $GITHUB_OUTPUT
+          echo "apk_name=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
+
+      - name: Upload Amazon Store StoreLive APK Artifact
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: ${{ steps.storelive_apk.outputs.apk_name }}
+          path: ${{ steps.storelive_apk.outputs.apk_path }}
+          retention-days: 30
+
+      # ManagedLive APK - Elo & M2
+      - name: Get ManagedLive APK name
+        id: managedlive_apk
+        run: |
+          FILE=$(find app/build/outputs/apk/managedLive/release -name "*.apk" | head -n 1)
+          FILENAME=$(basename "$FILE")
+          ARTIFACT_NAME="$FILENAME"  # Just the original name
+          echo "apk_path=$FILE" >> $GITHUB_OUTPUT
+          echo "apk_name=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
+
+      - name: Upload Elo and M2 ManagedLive APK Artifact
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: ${{ steps.managedlive_apk.outputs.apk_name }}
+          path: ${{ steps.managedlive_apk.outputs.apk_path }}
+          retention-days: 30
+
+      # StoreLive AAB - Google Play
+      - name: Get StoreLive AAB name
+        id: storelive_aab
+        run: |
+          FILE=$(find app/build/outputs/bundle/storeLiveRelease -name "*.aab" | head -n 1)
+          FILENAME=$(basename "$FILE")
+          ARTIFACT_NAME="Googleplay-$FILENAME"
+          echo "aab_path=$FILE" >> $GITHUB_OUTPUT
+          echo "aab_name=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
+
+      - name: Upload Google Play StoreLive AAB Artifact
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: ${{ steps.storelive_aab.outputs.aab_name }}
+          path: ${{ steps.storelive_aab.outputs.aab_path }}
+          retention-days: 30

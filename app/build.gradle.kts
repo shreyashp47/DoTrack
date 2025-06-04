@@ -12,17 +12,16 @@ plugins {
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("keystore_details/keystore.properties")
 
-
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 } else {
     println("keystore.properties file not found. Using environment variables.")
-
     keystoreProperties["storeFile"] = System.getenv("ANDROID_KEYSTORE_PATH") ?: ""
     keystoreProperties["storePassword"] = System.getenv("ANDROID_KEYSTORE_PASSWORD") ?: ""
     keystoreProperties["keyAlias"] = System.getenv("ANDROID_KEY_ALIAS") ?: ""
     keystoreProperties["keyPassword"] = System.getenv("ANDROID_KEY_PASSWORD") ?: ""
 }
+
 android {
     namespace = "com.shreyash.dotrack"
     compileSdk = 35
@@ -31,22 +30,24 @@ android {
         applicationId = "com.shreyash.dotrack"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
+        versionCode = 9
         versionName = "1.09"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
     signingConfigs {
         create("release") {
-            val storeFilePath = keystoreProperties["storeFile"] as String
+            val storeFilePath = keystoreProperties.getProperty("storeFile", "")
             if (storeFilePath.isNotEmpty()) {
                 storeFile = file(storeFilePath)
             }
-            storePassword = keystoreProperties["storePassword"] as String
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
+            storePassword = keystoreProperties.getProperty("storePassword", "")
+            keyAlias = keystoreProperties.getProperty("keyAlias", "")
+            keyPassword = keystoreProperties.getProperty("keyPassword", "")
         }
     }
+
     buildTypes {
         debug {
             isDebuggable = true
@@ -61,22 +62,37 @@ android {
             signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
+                "proguard-rules.pro"
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
     }
+
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
+    }
+
+    // ✅ Custom output APK name logic
+    applicationVariants.all {
+        if (buildType.name == "release") {
+            outputs.all {
+                val outputImpl = this as com.android.build.gradle.internal.api.ApkVariantOutputImpl
+                outputImpl.outputFileName = "DoTrack-v${versionName}-${buildType.name}.apk"
+
+            }
+        }
     }
 }
 
@@ -111,10 +127,8 @@ dependencies {
 
     // WorkManager
     implementation("androidx.work:work-runtime-ktx:2.10.1")
-    implementation ("com.google.dagger:hilt-android:2.51") // or latest
-    kapt ("com.google.dagger:hilt-compiler:2.51")
-    implementation("androidx.hilt:hilt-work:1.1.0") // Hilt + WorkManager integration
-    kapt("androidx.hilt:hilt-compiler:1.1.0")        // Hilt code generation
+    implementation("androidx.hilt:hilt-work:1.1.0")
+    kapt("androidx.hilt:hilt-compiler:1.1.0")
 
     // Color Picker
     implementation(libs.colorpicker.compose)
@@ -132,6 +146,4 @@ dependencies {
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)
     debugImplementation(libs.leakcanary.android)
-
-
 }
