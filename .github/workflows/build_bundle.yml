@@ -1,23 +1,23 @@
-name: Build AAB Bundle
+name: Build and Deploy to Play Store
 
 on:
   workflow_dispatch:
     inputs:
-      versionName:
-        description: 'Version Name (e.g., 1.09)'
+      deploymentType:
+        description: 'Deployment Type'
         required: true
-        default: '1.09'
-      versionCode:
-        description: 'Version Code (e.g., 9)'
-        required: true
-        default: '9'
+        type: choice
+        options:
+          - 'internal'
+          - 'live'
+        default: 'internal'
       branch:
         description: 'Branch to build (e.g., main)'
         required: true
         default: 'main'
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,6 +25,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.branch }}
+          fetch-depth: 0  # Needed for version calculation
 
       - name: Set up JDK
         uses: actions/setup-java@v4.2.2
@@ -35,23 +36,95 @@ jobs:
       - name: Grant execute permission to gradlew
         run: chmod +x ./gradlew
 
-      - name: Inject versionName and versionCode
+      - name: Get latest version from Play Store
+        id: get_version
         run: |
-          sed -i "s/versionName = \".*\"/versionName = \"${{ github.event.inputs.versionName }}\"/" app/build.gradle.kts
-          sed -i "s/versionCode = .*/versionCode = ${{ github.event.inputs.versionCode }}/" app/build.gradle.kts
+          # Get current version from build.gradle.kts
+          CURRENT_VERSION_NAME=$(grep 'versionName = ' app/build.gradle.kts | sed 's/.*versionName = "\(.*\)".*/\1/')
+          CURRENT_VERSION_CODE=$(grep 'versionCode = ' app/build.gradle.kts | sed 's/.*versionCode = \(.*\)/\1/')
+          
+          # Auto-increment version code
+          NEW_VERSION_CODE=$((CURRENT_VERSION_CODE + 1))
+          
+          # For version name, increment the patch version (e.g., 1.09 -> 1.10)
+          IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION_NAME"
+          MAJOR=${VERSION_PARTS[0]}
+          MINOR=${VERSION_PARTS[1]}
+          NEW_MINOR=$((MINOR + 1))
+          NEW_VERSION_NAME="$MAJOR.$(printf "%02d" $NEW_MINOR)"
+          
+          echo "current_version_name=$CURRENT_VERSION_NAME" >> $GITHUB_OUTPUT
+          echo "current_version_code=$CURRENT_VERSION_CODE" >> $GITHUB_OUTPUT
+          echo "new_version_name=$NEW_VERSION_NAME" >> $GITHUB_OUTPUT
+          echo "new_version_code=$NEW_VERSION_CODE" >> $GITHUB_OUTPUT
+          
+          echo "Current Version: $CURRENT_VERSION_NAME ($CURRENT_VERSION_CODE)"
+          echo "New Version: $NEW_VERSION_NAME ($NEW_VERSION_CODE)"
+
+      - name: Update version in build.gradle.kts
+        run: |
+          sed -i "s/versionName = \".*\"/versionName = \"${{ steps.get_version.outputs.new_version_name }}\"/" app/build.gradle.kts
+          sed -i "s/versionCode = .*/versionCode = ${{ steps.get_version.outputs.new_version_code }}/" app/build.gradle.kts
+
+      - name: Setup keystore
+        run: |
+          # Create keystore directory if it doesn't exist
+          mkdir -p keystore_details
+          
+          # The build.gradle.kts already handles environment variables as fallback
+          # So we just need to set the environment variables
+          echo "Keystore will be loaded from environment variables"
+
+      - name: Decode and setup keystore
+        run: |
+          # Decode keystore from base64 secret and save it
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > keystore_details/release.keystore
 
       - name: Build AAB (bundleRelease)
+        env:
+          ANDROID_KEYSTORE_PATH: ${{ github.workspace }}/keystore_details/release.keystore
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: ./gradlew bundleRelease
 
       - name: Rename AAB file
         run: |
           BUNDLE_DIR="app/build/outputs/bundle/release"
           OLD_AAB=$(find $BUNDLE_DIR -name "*.aab" | head -n 1)
-          NEW_AAB="$BUNDLE_DIR/DoTrack-v${{ github.event.inputs.versionName }}-release.aab"
+          NEW_AAB="$BUNDLE_DIR/DoTrack-v${{ steps.get_version.outputs.new_version_name }}-release.aab"
           mv "$OLD_AAB" "$NEW_AAB"
+
+      - name: Upload to Google Play Store
+        uses: r0adkll/upload-google-play@v1.1.3
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.shreyash.dotrack
+          releaseFiles: app/build/outputs/bundle/release/DoTrack-v${{ steps.get_version.outputs.new_version_name }}-release.aab
+          track: ${{ github.event.inputs.deploymentType == 'internal' && 'internal' || 'production' }}
+          status: ${{ github.event.inputs.deploymentType == 'internal' && 'draft' || 'completed' }}
+          inAppUpdatePriority: 2
+          releaseName: DoTrack v${{ steps.get_version.outputs.new_version_name }}
+          whatsNewDirectory: whatsnew/
 
       - name: Upload AAB Artifact
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: DoTrack-AAB-v${{ github.event.inputs.versionName }}
-          path: app/build/outputs/bundle/release/DoTrack-v${{ github.event.inputs.versionName }}-release.aab
+          name: DoTrack-AAB-v${{ steps.get_version.outputs.new_version_name }}
+          path: app/build/outputs/bundle/release/DoTrack-v${{ steps.get_version.outputs.new_version_name }}-release.aab
+
+      - name: Create Release Tag
+        if: github.event.inputs.deploymentType == 'live'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -a "v${{ steps.get_version.outputs.new_version_name }}" -m "Release v${{ steps.get_version.outputs.new_version_name }}"
+          git push origin "v${{ steps.get_version.outputs.new_version_name }}"
+
+      - name: Update version in repository
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add app/build.gradle.kts
+          git commit -m "Bump version to ${{ steps.get_version.outputs.new_version_name }} (${{ steps.get_version.outputs.new_version_code }})" || exit 0
+          git push origin ${{ github.event.inputs.branch }}
