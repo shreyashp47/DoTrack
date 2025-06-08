@@ -110,13 +110,14 @@ Users can personalize their experience:
 
 Here are some screenshots of the application:
 
-![Task List Screen](https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_093726.png)
-
-![Add Task Screen](https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_092713.png)
-
-![Settings Screen](https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_093753.png)
-
-![Wallpaper Preview](https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_093813.png)
+<table>
+  <tr>
+    <td><img src="https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_093726.png" alt="Task List Screen" width="200"/></td>
+    <td><img src="https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_092713.png" alt="Add Task Screen" width="200"/></td>
+    <td><img src="https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_093753.png" alt="Settings Screen" width="200"/></td>
+    <td><img src="https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_093813.png" alt="Wallpaper Preview" width="200"/></td>
+  </tr>
+</table>
 
 ## License
 
