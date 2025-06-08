@@ -106,6 +106,18 @@ Users can personalize their experience:
 3. Tap "Wallpaper Color" to choose your preferred color theme
 4. Changes will be applied to the next wallpaper update
 
+## Screenshots
+
+Here are some screenshots of the application:
+
+![Task List Screen](URL_TO_TASK_LIST_SCREENSHOT)
+
+![Add Task Screen](URL_TO_ADD_TASK_SCREENSHOT)
+
+![Settings Screen](URL_TO_SETTINGS_SCREENSHOT)
+
+![Wallpaper Preview](URL_TO_WALLPAPER_PREVIEW)
+
 ## License
 
 [MIT License](LICENSE)
