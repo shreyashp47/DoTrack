@@ -119,6 +119,3 @@ Here are some screenshots of the application:
   </tr>
 </table>
 
-## License
-
-[MIT License](LICENSE)
