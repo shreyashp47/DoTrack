@@ -20,8 +20,23 @@ interface TaskDao {
         createdAt DESC """)
     fun getTasks(): Flow<List<TaskEntity>>
 
+    @Query("""
+    SELECT * FROM tasks 
+    WHERE isCompleted = 0
+    ORDER BY 
+        CASE priority 
+            WHEN 'HIGH' THEN 1 
+            WHEN 'MEDIUM' THEN 2 
+            WHEN 'LOW' THEN 3 
+            ELSE 4 
+        END ASC, 
+        createdAt DESC
+""")
+    fun getPendingTasksSync(): List<TaskEntity>
 
-    
+
+
+
     @Query("SELECT * FROM tasks WHERE id = :id")
     fun getTaskById(id: String): Flow<TaskEntity?>
     
