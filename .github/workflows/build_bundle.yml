@@ -102,7 +102,7 @@ jobs:
           packageName: com.shreyash.dotrack
           releaseFiles: app/build/outputs/bundle/release/DoTrack-v${{ steps.get_version.outputs.new_version_name }}-release.aab
           track: ${{ github.event.inputs.deploymentType == 'internal' && 'internal' || 'production' }}
-          status: ${{ github.event.inputs.deploymentType == 'internal' && 'draft' || 'completed' }}
+          status: 'completed' # Changed from conditional to always 'completed' or 'inProgress' if you need it published
           inAppUpdatePriority: 2
           releaseName: DoTrack v${{ steps.get_version.outputs.new_version_name }}
           whatsNewDirectory: whatsnew/
