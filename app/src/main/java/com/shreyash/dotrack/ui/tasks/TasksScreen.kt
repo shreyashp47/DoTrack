@@ -225,7 +225,7 @@ fun TaskList(
     tasks: List<Task>,
     onTaskClick: (String) -> Unit,
     onTaskCheckChange: (Task, Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     LazyColumn(
         modifier = modifier

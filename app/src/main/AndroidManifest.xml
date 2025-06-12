@@ -38,7 +38,40 @@
                 <action android:name="com.shreyash.dotrack.OPEN_TASK" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+            
+            <!-- Intent filter for the widget task click action -->
+            <intent-filter>
+                <action android:name="com.shreyash.dotrack.ACTION_VIEW_TASK" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
+        
+        <!-- Widget Provider -->
+        <receiver
+            android:name=".widget.TaskWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/task_widget_info" />
+        </receiver>
+        
+        <!-- Widget Click Receiver -->
+        <receiver
+            android:name=".widget.TaskWidgetClickReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.shreyash.dotrack.ACTION_WIDGET_TASK_CLICK" />
+                <action android:name="com.shreyash.dotrack.ACTION_WIDGET_TASK_COMPLETE" />
+            </intent-filter>
+        </receiver>
+        
+        <!-- Widget Service -->
+        <service
+            android:name=".widget.TaskWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
     </application>
 
 </manifest>
