@@ -412,7 +412,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 [![Email](https://img.shields.io/badge/Email-support%40dotrack.app-red?style=for-the-badge&logo=gmail)](shreyashp47@gmail.com)
 [![GitHub Issues](https://img.shields.io/badge/GitHub-Issues-black?style=for-the-badge&logo=github)](https://github.com/shreyashp47/DoTrack/issues)
-[![LinkedIn](https://img.shields.io/badge/Twitter-@DoTrackApp-blue?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/shreyashpattewardeveloper/)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-@DoTrackApp-blue?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/shreyashpattewardeveloper/)
 
 **⭐ Star this repo if you find it helpful!**
 
