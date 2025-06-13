@@ -136,10 +136,14 @@ Powered by **GitHub Actions**:
 
 ## 🖼️ Screenshots
 
-![Task List](https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_093726.png)
-![Add Task](https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_092713.png)
-![Settings](https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_095253.png)
-![Wallpaper Preview](https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_093813.png)
+<table>
+  <tr>
+    <td><img src="https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_093726.png" width="200"/></td>
+    <td><img src="https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_092713.png" width="200"/></td>
+    <td><img src="https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_095253.png" width="200"/></td>
+    <td><img src="https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_093813.png" width="200"/></td>
+  </tr>
+</table>
 
 ---
 
