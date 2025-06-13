@@ -1,9 +1,9 @@
 # DoTrack 📱✨
 
 <div align="center"> 
-
-![DoTrack Logo](https://github.com/user-attachments/assets/194a210c-3b5a-4c5d-a96a-bdeefadc0e18)
-
+<meta property="twitter:image" content="https://github.com/shreyashp47/DoTrack/blob/main/SS/Creative Studio Name LinkedIn Article Cover Image (1).png">
+<img src="https://github.com/shreyashp47/DoTrack/blob/main/SS/Creative Studio Name LinkedIn Article Cover Image (1).png" />
+ 
 **A modern task management application that transforms your device wallpaper into a dynamic task list**
 
 [![Android](https://img.shields.io/badge/Platform-Android-green.svg)](https://android.com)
