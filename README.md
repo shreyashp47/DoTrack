@@ -1,8 +1,8 @@
 # DoTrack 📱✨
 
 <div align="center"> 
-<meta property="twitter:image" content="https://github.com/shreyashp47/DoTrack/blob/main/SS/ogimage.png">
-<img src="https://github.com/shreyashp47/DoTrack/blob/main/SS/ogimage.png" />
+<meta property="twitter:image" content="https://github.com/shreyashp47/DoTrack/blob/main/SS/coverimage.png">
+<img src="https://github.com/shreyashp47/DoTrack/blob/main/SS/coverimage.png" />
  
 **A modern task management application that transforms your device wallpaper into a dynamic task list**
 
