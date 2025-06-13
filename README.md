@@ -1,260 +1,429 @@
-# DoTrack
+# DoTrack 📱✨
 
-A modern task management application built with clean architecture and Jetpack Compose that transforms your device wallpaper into a dynamic task list.
+<div align="center"> 
 
-## Features
+![DoTrack Logo](https://github.com/user-attachments/assets/194a210c-3b5a-4c5d-a96a-bdeefadc0e18)
 
-- **Task Management**: Create, edit, complete, and delete tasks 
-- **Priority Levels**: Assign priority levels to tasks (High, Medium, Low)
-- **Due Dates**: Set and track task due dates
-- **Dynamic Wallpaper**: Automatically update your device wallpaper with pending tasks
-- **Customizable Themes**: Choose from multiple color themes for your task wallpaper
-- **User Preferences**: Configure app behavior including auto wallpaper updates
+**A modern task management application that transforms your device wallpaper into a dynamic task list**
 
+[![Android](https://img.shields.io/badge/Platform-Android-green.svg)](https://android.com)
+[![API](https://img.shields.io/badge/API-26%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=26)
+[![Kotlin](https://img.shields.io/badge/Kotlin-100%25-blue.svg)](https://kotlinlang.org)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Build Status](https://github.com/shreyashp47/DoTrack/workflows/CI/badge.svg)](https://github.com/shreyashp47/DoTrack/actions)
 
+[📱 Download APK](https://github.com/shreyashp47/DoTrack/releases) • [📖 Documentation](docs/) • [🐛 Report Bug](https://github.com/shreyashp47/DoTrack/issues) • [💡 Request Feature](https://github.com/shreyashp47/DoTrack/issues)
 
-## Architecture
+</div>
 
-### Clean Architecture
+---
 
-DoTrack implements clean architecture principles with three main layers:
-
-1. **Presentation Layer (UI)**: 
-   - Jetpack Compose UI components
-   - ViewModels that manage UI state
-   - Navigation components
-
-2. **Domain Layer**:
-   - Business logic encapsulated in use cases
-   - Repository interfaces
-   - Domain models
-
-3. **Data Layer**:
-   - Repository implementations
-   - Data sources (Room database, DataStore)
-   - Data models and mappers
-
-### Key Technologies
-
-- **Pattern**: MVVM (Model-View-ViewModel)
-- **UI**: Jetpack Compose with Material 3
-- **Dependency Injection**: Hilt
-- **Navigation**: Compose Navigation
-- **Local Storage**: Room Database for tasks  
-- **Preferences**: DataStore for user settings
-- **Concurrency**: Kotlin Coroutines & Flow
-- **Wallpaper**: Custom wallpaper generation with Android Canvas API
-
-## Key Features Implementation
-
-### Dynamic Wallpaper
-
-The app can automatically update your device wallpaper with your pending tasks:
-
-- Tasks are rendered on a custom gradient background
-- Text colors adapt based on background brightness
-- Tasks are sorted by priority
-- Wallpaper updates when tasks are added, completed, or deleted
-
-### Customizable Themes
-
-Users can personalize their experience:
-
-- Choose from multiple color themes for the wallpaper background
-- Toggle automatic wallpaper updates
-- Settings are persisted using DataStore
-
-## Development Setup
-
-### Requirements
-- Android Studio Meerkat | 2024.3.1 or newer
-- JDK 11
-- Android SDK 35
-- Minimum Android version: API 26 (Android 8.0)
-
-### Building the app
-1. Clone the repository
-2. Open the project in Android Studio
-3. Sync Gradle files
-4. Run the app on an emulator or physical device
-
-## CI/CD Pipeline
-
-DoTrack uses GitHub Actions for Continuous Integration and Continuous Deployment:
-
-- **Automated Builds**: Every pull request and push to main branch triggers a build to ensure code quality
-- **Version Management**: Automatic version incrementation for each release
-- **Release Management**: Streamlined process for creating release builds
-- **Google Play Deployment**: Automated deployment to Google Play Store (internal testing and production)
-
-The CI/CD pipeline handles:
-1. Building the Android App Bundle (AAB)
-2. Signing the release with proper keystore credentials
-3. Deploying to Google Play Store (internal testing or production)
-4. Creating release tags in GitHub
-5. Updating version numbers in the repository
-
-## Usage
-
-### Creating Tasks
-
-1. Tap the "+" button on the Tasks screen
-2. Enter task details (title, description, priority, due date) 
-3. Save the task
-
-### Managing Tasks
-
-- Swipe to complete/uncomplete tasks
-- Tap on a task to view details
-- Long press for additional options
-
-### Customizing Wallpaper
-
-1. Navigate to Settings
-2. Toggle "Auto Wallpaper Updates" to enable/disable automatic updates
-3. Tap "Wallpaper Color" to choose your preferred color theme
-4. Changes will be applied to the next wallpaper update
-
-## Project Structure
-
-The project follows a multi-module clean architecture approach:
-
-- **app**: Main application module containing UI components and navigation
-- **core**: Common utilities, UI components, and base classes shared across modules
-- **domain**: Business logic, use cases, and domain models
-- **data**: Data sources, repositories, and data mapping
-
-app/src/main/java/com/shreyash/dotrack/
-├── core
-│   └── util
-│       ├── SwitchIcon.kt
-│       └── WallpaperGenerator.kt
-├── DoTrackApplication.kt
-├── MainActivity.kt
-├── navigation
-│   ├── DeepLinkHandler.kt
-│   ├── DoTrackBottomNavigation.kt
-│   ├── DoTrackDestinations.kt
-│   └── DoTrackNavHost.kt
-├── ReminderWorker.kt
-├── TrackConstants.kt
-├── ui
-│   ├── categories
-│   │   ├── AddEditCategoryScreen.kt
-│   │   ├── CategoriesScreen.kt
-│   │   └── CategoriesViewModel.kt
-│   ├── settings
-│   │   ├── SettingsScreen.kt
-│   │   └── SettingsViewModel.kt
-│   └── tasks
-│       ├── addedit
-│       │   ├── AddEditTaskScreen.kt
-│       │   ├── AddEditTaskViewModel.kt
-│       │   └── TimePickerDialog.kt
-│       ├── TaskDetailScreen.kt
-│       ├── TaskDetailViewModel.kt
-│       ├── TasksScreen.kt
-│       └── TasksViewModel.kt
-└── workmanager
-├── ReminderModule.kt
-├── ReminderSchedulerImpl.kt
-└── TaskRepositoryEntryPoint.kt
-
-
-
-core/src/main/java/com/shreyash/dotrack
-└── core
-├── di
-│   └── DispatcherModule.kt
-├── ui
-│   ├── components
-│   │   └── LoadingIndicator.kt
-│   └── theme
-│       ├── Color.kt
-│       ├── Theme.kt
-│       └── Type.kt
-└── util
-└── Result.kt
-
-
-data/src/main/java/com/shreyash/dotrack
-└── data
-├── di
-│   ├── DatabaseModule.kt
-│   ├── DataStoreModule.kt
-│   ├── RepositoryModule.kt
-│   └── WorkManagerModule.kt
-├── local
-│   ├── converter
-│   │   ├── DateTimeConverters.kt
-│   │   └── PriorityConverters.kt
-│   ├── dao
-│   │   ├── CategoryDao.kt
-│   │   └── TaskDao.kt
-│   ├── entity
-│   │   ├── CategoryEntity.kt
-│   │   └── TaskEntity.kt
-│   └── TaskDatabase.kt
-├── repository
-│   ├── CategoryRepositoryImpl.kt
-│   ├── TaskRepositoryImpl.kt
-│   └── UserPreferencesRepositoryImpl.kt
-└── util
-└── DateTimeConverters.kt
-
-domain/src/main/java/com/shreyash/dotrack
-└── domain
-├── model
-│   ├── Category.kt
-│   └── Task.kt
-├── ReminderScheduler.kt
-├── repository
-│   ├── CategoryRepository.kt
-│   ├── TaskRepository.kt
-│   └── UserPreferencesRepository.kt
-└── usecase
-├── AddTaskUseCase.kt
-├── category
-│   ├── AddCategoryUseCase.kt
-│   ├── DeleteCategoryUseCase.kt
-│   ├── GetCategoriesUseCase.kt
-│   ├── GetCategoryByIdUseCase.kt
-│   └── UpdateCategoryUseCase.kt
-├── GetTasksUseCase.kt
-├── preferences
-│   ├── GetAutoWallpaperEnabledUseCase.kt
-│   ├── GetHighPriorityColorUseCase.kt
-│   ├── GetLowPriorityColorUseCase.kt
-│   ├── GetMediumPriorityColorUseCase.kt
-│   ├── GetSecondaryWallpaperColorUseCase.kt
-│   ├── GetWallpaperColorUseCase.kt
-│   ├── SetAutoWallpaperEnabledUseCase.kt
-│   ├── SetHighPriorityColorUseCase.kt
-│   ├── SetLowPriorityColorUseCase.kt
-│   ├── SetMediumPriorityColorUseCase.kt
-│   ├── SetSecondaryWallpaperColorUseCase.kt
-│   └── SetWallpaperColorUseCase.kt
-└── task
-├── AddTaskUseCase.kt
-├── CompleteTaskUseCase.kt
-├── DeleteTaskUseCase.kt
-├── DisableReminderUseCase.kt
-├── GetTaskByIdUseCase.kt
-├── GetTasksUseCase.kt
-├── UncompleteTaskUseCase.kt
-└── UpdateTaskUseCase.kt
-
-
-## Screenshots
-
-Here are some screenshots of the application:
+## 🌟 Features
 
 <table>
-  <tr>
-    <td><img src="https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_093726.png" alt="Task List Screen" width="200"/></td>
-    <td><img src="https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_092713.png" alt="Add Task Screen" width="200"/></td>
-    <td><img src="https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_095253.png" alt="Settings Screen" width="200"/></td>
-    <td><img src="https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_093813.png" alt="Wallpaper Preview" width="200"/></td>
-  </tr>
+<tr>
+<td width="50%">
+
+### 📋 **Task Management**
+- ✅ Create, edit, complete, and delete tasks
+- 🎯 Priority levels (High, Medium, Low)
+- 📅 Due dates and time tracking
+- 🏷️ Category organization
+- 🔔 Smart reminder notifications
+
+</td>
+<td width="50%">
+
+### 🎨 **Dynamic Wallpaper**
+- 🖼️ Auto-update device wallpaper with tasks
+- 🌈 Customizable color themes
+- 📱 Adaptive text colors for readability
+- ⚡ Real-time wallpaper sync
+- 🎛️ Manual sync control
+
+</td>
+</tr>
 </table>
 
+---
+
+## 📸 Screenshots
+
+<div align="center">
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_093726.png" alt="Tasks Screen" width="200"/>
+      <br><b>Tasks Overview</b>
+    </td>
+    <td align="center">
+      <img src="https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_092713.png" alt="Add Task" width="200"/>
+      <br><b>Add/Edit Task</b>
+    </td>
+    <td align="center">
+      <img src="https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_095253.png" alt="Settings" width="200"/>
+      <br><b>Settings</b>
+    </td>
+    <td align="center">
+      <img src="https://github.com/shreyashp47/DoTrack/blob/main/SS/Screenshot_20250608_093813.png" alt="Wallpaper" width="200"/>
+      <br><b>Dynamic Wallpaper</b>
+    </td>
+  </tr>
+</table>
+</div>
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- **Android Studio**: Meerkat | 2024.3.1 or newer
+- **JDK**: 11 or higher
+- **Android SDK**: API 35
+- **Minimum Android**: API 26 (Android 8.0)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/shreyashp47/DoTrack.git
+   cd DoTrack
+   ```
+
+2. **Open in Android Studio**
+   ```bash
+   # Open Android Studio and select "Open an existing project"
+   # Navigate to the cloned directory
+   ```
+
+3. **Sync and Build**
+   ```bash
+   # In Android Studio:
+   # 1. Sync Gradle files
+   # 2. Build → Make Project
+   # 3. Run on emulator or device
+   ```
+
+### 📱 Download APK
+
+Get the latest release from our [Releases page](https://github.com/shreyashp47/DoTrack/releases)
+
+---
+
+## 🏗️ Architecture
+
+DoTrack follows **Clean Architecture** principles with a multi-module approach:
+
+```
+📦 DoTrack
+├── 🎨 app/                 # Presentation Layer
+│   ├── ui/                 # Compose UI Components
+│   ├── navigation/         # Navigation Logic
+│   └── workmanager/        # Background Tasks
+├── 🧠 domain/              # Business Logic Layer
+│   ├── model/              # Domain Models
+│   ├── repository/         # Repository Interfaces
+│   └── usecase/            # Business Use Cases
+├── 💾 data/                # Data Layer
+│   ├── local/              # Room Database
+│   ├── repository/         # Repository Implementations
+│   └── di/                 # Dependency Injection
+└── 🔧 core/                # Shared Components
+    ├── ui/                 # Common UI Components
+    └── util/               # Utilities
+```
+
+### 🛠️ Tech Stack
+
+<table>
+<tr>
+<td><b>Architecture</b></td>
+<td>MVVM + Clean Architecture</td>
+</tr>
+<tr>
+<td><b>UI Framework</b></td>
+<td>Jetpack Compose + Material 3</td>
+</tr>
+<tr>
+<td><b>Dependency Injection</b></td>
+<td>Hilt</td>
+</tr>
+<tr>
+<td><b>Navigation</b></td>
+<td>Compose Navigation</td>
+</tr>
+<tr>
+<td><b>Database</b></td>
+<td>Room</td>
+</tr>
+<tr>
+<td><b>Preferences</b></td>
+<td>DataStore</td>
+</tr>
+<tr>
+<td><b>Concurrency</b></td>
+<td>Kotlin Coroutines + Flow</td>
+</tr>
+<tr>
+<td><b>Background Tasks</b></td>
+<td>WorkManager</td>
+</tr>
+<tr>
+<td><b>Testing</b></td>
+<td>JUnit, MockK, Espresso</td>
+</tr>
+</table>
+
+---
+
+## 📖 How to Use
+
+### 🆕 Creating Your First Task
+
+1. **Open DoTrack** and tap the **➕ Add** button
+2. **Fill in task details**:
+   - 📝 **Title**: What needs to be done?
+   - 📄 **Description**: Additional details (optional)
+   - 🎯 **Priority**: High, Medium, or Low
+   - 📅 **Due Date**: Set a deadline
+   - 🔔 **Reminder**: Get notified before due time
+   - 🏷️ **Category**: Organize your tasks
+
+3. **Save** and watch it appear on your task list!
+
+### ✅ Managing Tasks
+
+| Action | How To |
+|--------|--------|
+| **Complete Task** | Tap the checkbox ☑️ |
+| **Edit Task** | Tap on task → Edit icon ✏️ |
+| **Delete Task** | Task details → Delete icon 🗑️ |
+| **View Details** | Tap on any task |
+
+### 🎨 Customizing Your Experience
+
+#### Dynamic Wallpaper Setup
+1. Go to **Settings** ⚙️
+2. Enable **"Auto Wallpaper Updates"**
+3. Choose your **"Wallpaper Color"**
+4. Grant wallpaper permission when prompted
+5. Your tasks will now appear on your home screen! 🎉
+
+#### Personalizing Colors
+- **Wallpaper Background**: Settings → Wallpaper Color
+- **Priority Colors**: Settings → Task Priority Colors
+- **Categories**: Categories screen → Create custom categories
+
+### 🔔 Setting Up Reminders
+
+1. **Enable notifications** in Settings
+2. When creating/editing tasks, toggle **"Enable Reminder"**
+3. Set a **due date and time**
+4. Get notified **30 minutes before** the deadline
+
+---
+
+## 📁 Project Structure
+
+<details>
+<summary><b>🔍 Detailed File Structure</b></summary>
+
+```
+DoTrack/
+├── 📱 app/src/main/java/com/shreyash/dotrack/
+│   ├── 🎨 ui/
+│   │   ├── tasks/
+│   │   │   ├── TasksScreen.kt
+│   │   │   ├── TasksViewModel.kt
+│   │   │   ├── TaskDetailScreen.kt
+│   │   │   └── addedit/
+│   │   │       ├── AddEditTaskScreen.kt
+│   │   │       └── AddEditTaskViewModel.kt
+│   │   ├── categories/
+│   │   │   ├── CategoriesScreen.kt
+│   │   │   └── CategoriesViewModel.kt
+│   │   └── settings/
+│   │       ├── SettingsScreen.kt
+│   │       └── SettingsViewModel.kt
+│   ├── 🧭 navigation/
+│   │   ├── DoTrackNavHost.kt
+│   │   ├── DoTrackDestinations.kt
+│   │   └── DoTrackBottomNavigation.kt
+│   ├── ⚙️ workmanager/
+│   │   ├── ReminderSchedulerImpl.kt
+│   │   └── ReminderModule.kt
+│   ├── 🔧 core/util/
+│   │   └── WallpaperGenerator.kt
+│   ├── DoTrackApplication.kt
+│   └── MainActivity.kt
+│
+├── 🧠 domain/src/main/java/com/shreyash/dotrack/domain/
+│   ├── 📋 model/
+│   │   ├── Task.kt
+│   │   └── Category.kt
+│   ├── 🏪 repository/
+│   │   ├── TaskRepository.kt
+│   │   ├── CategoryRepository.kt
+│   │   └── UserPreferencesRepository.kt
+│   └── 🎯 usecase/
+│       ├── task/
+│       │   ├── AddTaskUseCase.kt
+│       │   ├── GetTasksUseCase.kt
+│       │   ├── UpdateTaskUseCase.kt
+│       │   └── DeleteTaskUseCase.kt
+│       ├── category/
+│       │   └── [Category Use Cases]
+│       └── preferences/
+│           └── [Preference Use Cases]
+│
+├── 💾 data/src/main/java/com/shreyash/dotrack/data/
+│   ├── 🗄️ local/
+│   │   ├── entity/
+│   │   │   ├── TaskEntity.kt
+│   │   │   └── CategoryEntity.kt
+│   │   ├── dao/
+│   │   │   ├── TaskDao.kt
+│   │   │   └── CategoryDao.kt
+│   │   └── TaskDatabase.kt
+│   ├── 🏪 repository/
+│   │   ├── TaskRepositoryImpl.kt
+│   │   ├── CategoryRepositoryImpl.kt
+│   │   └── UserPreferencesRepositoryImpl.kt
+│   └── 💉 di/
+│       ├── DatabaseModule.kt
+│       ├── RepositoryModule.kt
+│       └── DataStoreModule.kt
+│
+└── 🔧 core/src/main/java/com/shreyash/dotrack/core/
+    ├── 🎨 ui/
+    │   ├── components/
+    │   │   └── LoadingIndicator.kt
+    │   └── theme/
+    │       ├── Color.kt
+    │       ├── Theme.kt
+    │       └── Type.kt
+    └── 🛠️ util/
+        └── Result.kt
+```
+
+</details>
+
+---
+
+## 🔄 CI/CD Pipeline
+
+DoTrack uses **GitHub Actions** for automated deployment:
+
+```mermaid
+graph LR
+    A[Push to main] --> B[Build & Test]
+    B --> C[Generate APK]
+    C --> D[Sign Release]
+    D --> E[Deploy to Play Store]
+    E --> F[Create GitHub Release]
+```
+
+### Pipeline Features
+- ✅ **Automated Builds** on every PR and push
+- 🔢 **Version Management** with auto-increment
+- 📦 **Release Management** with signed APKs
+- 🚀 **Google Play Deployment** (Internal Testing & Production)
+- 🏷️ **GitHub Releases** with changelog
+
+---
+
+## 🧪 Testing
+
+### Running Tests
+
+```bash
+# Unit Tests
+./gradlew test
+
+# Instrumented Tests
+./gradlew connectedAndroidTest
+
+# All Tests
+./gradlew check
+```
+
+### Test Coverage
+
+- **Unit Tests**: Domain layer business logic
+- **Integration Tests**: Repository implementations
+- **UI Tests**: Compose UI components
+- **End-to-End Tests**: Complete user workflows
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+
+### Development Workflow
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to the branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
+
+### Code Style
+
+- Follow [Kotlin Coding Conventions](https://kotlinlang.org/docs/coding-conventions.html)
+- Use [ktlint](https://ktlint.github.io/) for formatting
+- Write meaningful commit messages
+- Add tests for new features
+
+---
+
+## 📚 Documentation
+
+| Document | Description |
+|----------|-------------|
+| [📖 User Guide](docs/USER_GUIDE.md) | Complete user manual |
+| [🛠️ Developer Guide](docs/DEVELOPER_GUIDE.md) | Development setup and guidelines |
+| [📋 API Documentation](docs/DOCUMENTATION.md) | Code documentation |
+| [🔄 Workflow Guide](docs/WORKFLOW.md) | CI/CD and release process |
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- **Material Design 3** for the beautiful UI components
+- **Android Jetpack** for the robust architecture components
+- **Kotlin Coroutines** for seamless asynchronous programming
+- **Open Source Community** for the amazing libraries and tools
+
+---
+
+## 📞 Support & Contact
+
+<div align="center">
+
+**Need help or have suggestions?**
+
+[![Email](https://img.shields.io/badge/Email-support%40dotrack.app-red?style=for-the-badge&logo=gmail)](shreyashp47@gmail.com)
+[![GitHub Issues](https://img.shields.io/badge/GitHub-Issues-black?style=for-the-badge&logo=github)](https://github.com/shreyashp47/DoTrack/issues)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-@DoTrackApp-blue?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/shreyashpattewardeveloper/)
+
+**⭐ Star this repo if you find it helpful!**
+
+</div>
+
+---
+
+<div align="center">
+
+**Made with ❤️ by [Shreyash](https://github.com/shreyashp47)**
+
+*DoTrack - Transform your productivity, one task at a time* ✨
+
+</div>
