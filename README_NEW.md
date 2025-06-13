@@ -1,8 +1,8 @@
 # DoTrack 📱✨
 
-<div align="center">
+<div align="center"> 
 
-![DoTrack Logo](https://via.placeholder.com/200x200/4CAF50/FFFFFF?text=DoTrack)
+![DoTrack Logo](https://github.com/user-attachments/assets/194a210c-3b5a-4c5d-a96a-bdeefadc0e18)
 
 **A modern task management application that transforms your device wallpaper into a dynamic task list**
 
@@ -410,9 +410,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Need help or have suggestions?**
 
-[![Email](https://img.shields.io/badge/Email-support%40dotrack.app-red?style=for-the-badge&logo=gmail)](mailto:support@dotrack.app)
+[![Email](https://img.shields.io/badge/Email-support%40dotrack.app-red?style=for-the-badge&logo=gmail)](shreyashp47@gmail.com)
 [![GitHub Issues](https://img.shields.io/badge/GitHub-Issues-black?style=for-the-badge&logo=github)](https://github.com/shreyashp47/DoTrack/issues)
-[![Twitter](https://img.shields.io/badge/Twitter-@DoTrackApp-blue?style=for-the-badge&logo=twitter)](https://twitter.com/DoTrackApp)
+[![LinkedIn](https://img.shields.io/badge/Twitter-@DoTrackApp-blue?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/shreyashpattewardeveloper/)
 
 **⭐ Star this repo if you find it helpful!**
 
