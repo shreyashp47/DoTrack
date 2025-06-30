@@ -2,6 +2,8 @@ package com.shreyash.dotrack.widget
 
 import android.content.Context
 import android.content.Intent
+import android.text.TextUtils
+import android.view.View
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import com.shreyash.dotrack.R
@@ -22,9 +24,9 @@ class TaskWidgetService : RemoteViewsService() {
 class TaskWidgetItemFactory(
     private val context: Context
 ) : RemoteViewsService.RemoteViewsFactory {
-    
+
     private var tasks: List<Task> = emptyList()
-    
+
     override fun onCreate() {
         // No initialization needed
     }
@@ -39,7 +41,7 @@ class TaskWidgetItemFactory(
                 title = entity.title,
                 isCompleted = entity.isCompleted,
                 dueDate = entity.dueDate,
-                priority = entity.priority ,
+                priority = entity.priority,
                 reminderEnabled = entity.reminderEnabled,
                 createdAt = entity.createdAt,
                 updatedAt = entity.updatedAt,
@@ -58,51 +60,71 @@ class TaskWidgetItemFactory(
         if (position >= tasks.size) {
             return RemoteViews(context.packageName, R.layout.task_widget_item)
         }
-        
+
         val task = tasks[position]
         val rv = RemoteViews(context.packageName, R.layout.task_widget_item)
-        
+
         // Set the task title and description
         rv.setTextViewText(R.id.widget_task_title, task.title)
-        rv.setTextViewText(R.id.widget_task_description, task.description)
-        
-        // Set task checkbox image
-        rv.setImageViewResource(R.id.widget_task_checkbox, 
-            if (task.isCompleted) R.drawable.checkbox_checked
-            else R.drawable.checkbox_unchecked)
-        
-        // Format the due date
-        val dueDateText = if (task.dueDate != null) {
-            val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.getDefault())
-            "Due: ${task.dueDate?.format(dateFormatter)}"
-        } else {
-            "No due date"
+        if (!TextUtils.isEmpty(task.description)) {
+            rv.setTextViewText(R.id.widget_task_description, task.description)
+            rv.setViewVisibility(R.id.widget_task_description, View.VISIBLE)
         }
-        rv.setTextViewText(R.id.widget_task_due, dueDateText)
-        
+
+        // Set task checkbox image
+        rv.setImageViewResource(
+            R.id.widget_task_checkbox,
+            if (task.isCompleted) R.drawable.checkbox_checked
+            else R.drawable.checkbox_unchecked
+        )
+
+        if (task.dueDate != null) {
+            val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.getDefault())
+
+            rv.setViewVisibility(R.id.widget_task_due, View.VISIBLE)
+            rv.setTextViewText(R.id.widget_task_due, "Due: ${task.dueDate?.format(dateFormatter)}")
+        } else {
+            rv.setViewVisibility(R.id.widget_task_due, View.GONE)
+
+        }
+
         // Set background color based on priority
         when (task.priority) {
             Priority.HIGH -> {
-                rv.setInt(R.id.task_background, "setBackgroundResource", R.drawable.task_background_high)
-                rv.setImageViewResource(R.id.widget_priority_indicator, R.drawable.ic_priority_high)
+                rv.setInt(
+                    R.id.task_background,
+                    "setBackgroundResource",
+                    R.drawable.task_background_high
+                )
+                //rv.setImageViewResource(R.id.widget_priority_indicator, R.drawable.ic_priority_high)
             }
+
             Priority.MEDIUM -> {
-                rv.setInt(R.id.task_background, "setBackgroundResource", R.drawable.task_background_medium)
-                rv.setImageViewResource(R.id.widget_priority_indicator, R.drawable.ic_priority_medium)
+                rv.setInt(
+                    R.id.task_background,
+                    "setBackgroundResource",
+                    R.drawable.task_background_medium
+                )
+                //rv.setImageViewResource(R.id.widget_priority_indicator, R.drawable.ic_priority_medium)
             }
+
             Priority.LOW -> {
-                rv.setInt(R.id.task_background, "setBackgroundResource", R.drawable.task_background_low)
-                rv.setImageViewResource(R.id.widget_priority_indicator, R.drawable.ic_priority_low)
+                rv.setInt(
+                    R.id.task_background,
+                    "setBackgroundResource",
+                    R.drawable.task_background_low
+                )
+                //rv.setImageViewResource(R.id.widget_priority_indicator, R.drawable.ic_priority_low)
             }
         }
-        
+
         // Set fill-in intent for item clicks
         val fillInIntent = Intent().apply {
             action = TrackConstants.ACTION_WIDGET_TASK_CLICK
             putExtra(TrackConstants.EXTRA_TASK_ID, task.id)
         }
         rv.setOnClickFillInIntent(R.id.task_background, fillInIntent)
-        
+
         // Set checkbox click handler
         val checkIntent = Intent().apply {
             action = TrackConstants.ACTION_WIDGET_TASK_COMPLETE
@@ -110,7 +132,7 @@ class TaskWidgetItemFactory(
             putExtra(TrackConstants.EXTRA_TASK_COMPLETED, !task.isCompleted)
         }
         rv.setOnClickFillInIntent(R.id.widget_task_checkbox, checkIntent)
-        
+
         return rv
     }
 
@@ -121,7 +143,7 @@ class TaskWidgetItemFactory(
     override fun getItemId(position: Int): Long = position.toLong()
 
     override fun hasStableIds(): Boolean = true
-    
+
     // Temporary method to provide sample data
     // In a real implementation, you would fetch data from your repository
     private fun getSampleTasks(): List<Task> {
