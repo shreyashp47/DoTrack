@@ -12,7 +12,7 @@ on:
           - 'PublicTrack'
           - 'beta'
           - 'production'
-        default: 'beta'
+        default: 'PublicTrack'
       branch:
         description: 'Branch to build (e.g., main)'
         required: true
