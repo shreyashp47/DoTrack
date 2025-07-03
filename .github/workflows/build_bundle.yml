@@ -9,8 +9,9 @@ on:
         type: choice
         options:
           - 'internal'
+          - 'closed'
           - 'live'
-        default: 'internal'
+        default: 'closed'
       branch:
         description: 'Branch to build (e.g., main)'
         required: true
@@ -101,7 +102,7 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: com.shreyash.dotrack
           releaseFiles: app/build/outputs/bundle/release/DoTrack-v${{ steps.get_version.outputs.new_version_name }}-release.aab
-          track: ${{ github.event.inputs.deploymentType == 'internal' && 'internal' || 'production' }}
+          track: ${{ github.event.inputs.deploymentType == 'internal' && 'internal' || github.event.inputs.deploymentType == 'closed' && 'closed' || 'production' }}
           status: 'completed' # Changed from conditional to always 'completed' or 'inProgress' if you need it published
           inAppUpdatePriority: 2
           releaseName: DoTrack v${{ steps.get_version.outputs.new_version_name }}
