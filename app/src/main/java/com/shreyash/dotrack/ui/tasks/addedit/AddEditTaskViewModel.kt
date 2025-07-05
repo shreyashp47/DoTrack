@@ -1,5 +1,6 @@
 package com.shreyash.dotrack.ui.tasks.addedit
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -15,7 +16,9 @@ import com.shreyash.dotrack.domain.usecase.task.AddTaskUseCase
 import com.shreyash.dotrack.domain.usecase.task.GetTaskByIdUseCase
 import com.shreyash.dotrack.domain.usecase.task.GetTasksUseCase
 import com.shreyash.dotrack.domain.usecase.task.UpdateTaskUseCase
+import com.shreyash.dotrack.widget.TaskWidgetUpdater
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
@@ -42,6 +45,7 @@ data class AddEditTaskUiState constructor(
 
 @HiltViewModel
 class AddEditTaskViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val getTaskByIdUseCase: GetTaskByIdUseCase,
     private val getTasksUseCase: GetTasksUseCase,
     private val addTaskUseCase: AddTaskUseCase,
@@ -160,6 +164,11 @@ class AddEditTaskViewModel @Inject constructor(
                         title = uiState.title,
                         dueDate = uiState.dueDate!!
                     )
+                }
+                
+                // Update widgets immediately
+                withContext(Dispatchers.Main) {
+                    TaskWidgetUpdater.updateTaskWidgets(context)
                 }
             }
 

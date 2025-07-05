@@ -12,6 +12,7 @@ import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.shreyash.dotrack.domain.repository.TaskRepository
+import com.shreyash.dotrack.widget.TaskWidgetUpdater
 import com.shreyash.dotrack.workmanager.TaskRepositoryEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.Dispatchers
@@ -48,6 +49,11 @@ class ReminderWorker(
                 try {
                     taskRepository.disableReminder(taskId)
                     Log.d(TAG, "Reminder disabled for task: $taskId")
+                    
+                    // Update widgets after disabling reminder
+                    withContext(Dispatchers.Main) {
+                        TaskWidgetUpdater.updateTaskWidgets(applicationContext)
+                    }
                 } catch (e: Exception) {
                     Log.e(TAG, "Error disabling reminder for task: $taskId", e)
                 }
