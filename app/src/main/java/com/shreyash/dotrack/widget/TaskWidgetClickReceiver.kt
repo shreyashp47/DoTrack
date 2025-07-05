@@ -7,7 +7,12 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
+import com.shreyash.dotrack.R
 import com.shreyash.dotrack.TrackConstants
+import com.shreyash.dotrack.data.local.TaskDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * Broadcast receiver to handle widget item clicks
@@ -31,25 +36,55 @@ class TaskWidgetClickReceiver : BroadcastReceiver() {
                 val taskId = intent.getStringExtra(TrackConstants.EXTRA_TASK_ID)
                 val isCompleted = intent.getBooleanExtra(TrackConstants.EXTRA_TASK_COMPLETED, false)
                 
-                // In a real implementation, you would use your repository to update the task
-                // For now, we'll just show a toast
-                var action = if (isCompleted) "completed" else "uncompleted"
-                Toast.makeText(context, "Task $action", Toast.LENGTH_SHORT).show()
-                
-                // Force widget to update
-                val appWidgetManager = AppWidgetManager.getInstance(context)
-                val appWidgetIds = appWidgetManager.getAppWidgetIds(
-                    ComponentName(context, TaskWidgetProvider::class.java)
-                )
-                appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, android.R.id.list)
-                
-                // Update the widget
-                val updateIntent = Intent(context, TaskWidgetProvider::class.java).apply {
-                    action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-                    putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds)
+                if (taskId != null) {
+                    // Update task in database
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            val database = TaskDatabase.getInstance(context.applicationContext)
+                            val taskDao = database.taskDao()
+                            
+                            if (isCompleted) {
+                                taskDao.completeTask(taskId)
+                            } else {
+                                taskDao.uncompleteTask(taskId)
+                            }
+                            
+                            // Show feedback on main thread
+                            CoroutineScope(Dispatchers.Main).launch {
+                                val action = if (isCompleted) "completed" else "uncompleted"
+                                Toast.makeText(context, "Task $action", Toast.LENGTH_SHORT).show()
+                            }
+                            
+                            // Force widget to update on main thread
+                            CoroutineScope(Dispatchers.Main).launch {
+                                updateWidget(context)
+                            }
+                        } catch (e: Exception) {
+                            Log.e("TaskWidgetReceiver", "Error updating task completion", e)
+                            CoroutineScope(Dispatchers.Main).launch {
+                                Toast.makeText(context, "Error updating task", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
                 }
-                context.sendBroadcast(updateIntent)
             }
         }
+    }
+    
+    private fun updateWidget(context: Context) {
+        val appWidgetManager = AppWidgetManager.getInstance(context)
+        val appWidgetIds = appWidgetManager.getAppWidgetIds(
+            ComponentName(context, TaskWidgetProvider::class.java)
+        )
+        
+        // Notify that the data has changed
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list_view)
+        
+        // Trigger widget update
+        val updateIntent = Intent(context, TaskWidgetProvider::class.java).apply {
+            action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+            putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds)
+        }
+        context.sendBroadcast(updateIntent)
     }
 }

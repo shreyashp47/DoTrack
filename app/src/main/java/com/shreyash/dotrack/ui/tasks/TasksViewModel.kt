@@ -1,5 +1,6 @@
 package com.shreyash.dotrack.ui.tasks
 
+import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -17,7 +18,9 @@ import com.shreyash.dotrack.domain.usecase.task.DeleteTaskUseCase
 import com.shreyash.dotrack.domain.usecase.task.DisableReminderUseCase
 import com.shreyash.dotrack.domain.usecase.task.GetTasksUseCase
 import com.shreyash.dotrack.domain.usecase.task.UncompleteTaskUseCase
+import com.shreyash.dotrack.widget.TaskWidgetUpdater
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
@@ -29,6 +32,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TasksViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val getTasksUseCase: GetTasksUseCase,
     private val completeTaskUseCase: CompleteTaskUseCase,
     private val uncompleteTaskUseCase: UncompleteTaskUseCase,
@@ -65,7 +69,11 @@ class TasksViewModel @Inject constructor(
                 }
 
                 reminderScheduler.cancelReminder(id)
-
+                
+                // Update widgets immediately
+                withContext(Dispatchers.Main) {
+                    TaskWidgetUpdater.updateTaskWidgets(context)
+                }
             }
         }
     }
@@ -78,6 +86,11 @@ class TasksViewModel @Inject constructor(
                 val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
                 if (autoWallpaperEnabled) {
                     updateWallpaper()
+                }
+                
+                // Update widgets immediately
+                withContext(Dispatchers.Main) {
+                    TaskWidgetUpdater.updateTaskWidgets(context)
                 }
             }
         }
@@ -108,11 +121,16 @@ class TasksViewModel @Inject constructor(
     fun deleteTask(id: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val result = deleteTaskUseCase(id)
-            if (result.isSuccess() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (result.isSuccess()) {
                 // Check if auto wallpaper is enabled
                 val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
                 if (autoWallpaperEnabled) {
                     updateWallpaper()
+                }
+                
+                // Update widgets immediately
+                withContext(Dispatchers.Main) {
+                    TaskWidgetUpdater.updateTaskWidgets(context)
                 }
             }
         }
@@ -124,11 +142,16 @@ class TasksViewModel @Inject constructor(
     fun deleteAllTask() {
         viewModelScope.launch(Dispatchers.IO) {
             val result = deleteTaskUseCase()
-            if (result.isSuccess() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (result.isSuccess()) {
                 // Check if auto wallpaper is enabled
                 val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
                 if (autoWallpaperEnabled) {
                     updateWallpaper()
+                }
+                
+                // Update widgets immediately
+                withContext(Dispatchers.Main) {
+                    TaskWidgetUpdater.updateTaskWidgets(context)
                 }
             }
         }
