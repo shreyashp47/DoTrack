@@ -1,4 +1,4 @@
-# DoTrack 📱✨
+# DoTrack
 
 <div align="center"> 
 <meta property="twitter:image" content="https://github.com/shreyashp47/DoTrack/blob/main/SS/coverimage.png">
@@ -12,34 +12,34 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Build Status](https://github.com/shreyashp47/DoTrack/workflows/CI/badge.svg)](https://github.com/shreyashp47/DoTrack/actions)
 
-[📱 Download APK](https://github.com/shreyashp47/DoTrack/releases) • [📖 Documentation](docs/) • [🐛 Report Bug](https://github.com/shreyashp47/DoTrack/issues) • [💡 Request Feature](https://github.com/shreyashp47/DoTrack/issues)
+[Download APK](https://github.com/shreyashp47/DoTrack/releases) • [Documentation](docs/) • [Report Bug](https://github.com/shreyashp47/DoTrack/issues) • [Request Feature](https://github.com/shreyashp47/DoTrack/issues)
 
 </div>
 
 ---
 
-## 🌟 Features
+## Features
 
 <table>
 <tr>
 <td width="50%">
 
-### 📋 **Task Management**
-- ✅ Create, edit, complete, and delete tasks
-- 🎯 Priority levels (High, Medium, Low)
-- 📅 Due dates and time tracking
-- 🏷️ Category organization
-- 🔔 Smart reminder notifications
+### **Task Management**
+- Create, edit, complete, and delete tasks
+- Priority levels (High, Medium, Low)
+- Due dates and time tracking
+- Category organization
+- Smart reminder notifications
 
 </td>
 <td width="50%">
 
-### 🎨 **Dynamic Wallpaper**
-- 🖼️ Auto-update device wallpaper with tasks
-- 🌈 Customizable color themes
-- 📱 Adaptive text colors for readability
-- ⚡ Real-time wallpaper sync
-- 🎛️ Manual sync control
+### **Dynamic Wallpaper**
+- Auto-update device wallpaper with tasks
+- Customizable color themes
+- Adaptive text colors for readability
+- Real-time wallpaper sync
+- Manual sync control
 
 </td>
 </tr>
@@ -47,7 +47,7 @@
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
 <div align="center">
 <table>
@@ -74,7 +74,7 @@
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -105,36 +105,36 @@
    # 3. Run on emulator or device
    ```
 
-### 📱 Download APK
+### Download APK
 
 Get the latest release from our [Releases page](https://github.com/shreyashp47/DoTrack/releases)
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 DoTrack follows **Clean Architecture** principles with a multi-module approach:
 
 ```
-📦 DoTrack
-├── 🎨 app/                 # Presentation Layer
+DoTrack
+├── app/                    # Presentation Layer
 │   ├── ui/                 # Compose UI Components
 │   ├── navigation/         # Navigation Logic
 │   └── workmanager/        # Background Tasks
-├── 🧠 domain/              # Business Logic Layer
+├── domain/                 # Business Logic Layer
 │   ├── model/              # Domain Models
 │   ├── repository/         # Repository Interfaces
 │   └── usecase/            # Business Use Cases
-├── 💾 data/                # Data Layer
+├── data/                   # Data Layer
 │   ├── local/              # Room Database
 │   ├── repository/         # Repository Implementations
 │   └── di/                 # Dependency Injection
-└── 🔧 core/                # Shared Components
+└── core/                   # Shared Components
     ├── ui/                 # Common UI Components
     └── util/               # Utilities
 ```
 
-### 🛠️ Tech Stack
+### Tech Stack
 
 <table>
 <tr>
@@ -177,45 +177,45 @@ DoTrack follows **Clean Architecture** principles with a multi-module approach:
 
 ---
 
-## 📖 How to Use
+## How to Use
 
-### 🆕 Creating Your First Task
+### Creating Your First Task
 
-1. **Open DoTrack** and tap the **➕ Add** button
+1. **Open DoTrack** and tap the **Add** button
 2. **Fill in task details**:
-   - 📝 **Title**: What needs to be done?
-   - 📄 **Description**: Additional details (optional)
-   - 🎯 **Priority**: High, Medium, or Low
-   - 📅 **Due Date**: Set a deadline
-   - 🔔 **Reminder**: Get notified before due time
-   - 🏷️ **Category**: Organize your tasks
+   - **Title**: What needs to be done?
+   - **Description**: Additional details (optional)
+   - **Priority**: High, Medium, or Low
+   - **Due Date**: Set a deadline
+   - **Reminder**: Get notified before due time
+   - **Category**: Organize your tasks
 
 3. **Save** and watch it appear on your task list!
 
-### ✅ Managing Tasks
+### Managing Tasks
 
 | Action | How To |
 |--------|--------|
-| **Complete Task** | Tap the checkbox ☑️ |
-| **Edit Task** | Tap on task → Edit icon ✏️ |
-| **Delete Task** | Task details → Delete icon 🗑️ |
+| **Complete Task** | Tap the checkbox |
+| **Edit Task** | Tap on task → Edit icon |
+| **Delete Task** | Task details → Delete icon |
 | **View Details** | Tap on any task |
 
-### 🎨 Customizing Your Experience
+### Customizing Your Experience
 
 #### Dynamic Wallpaper Setup
-1. Go to **Settings** ⚙️
+1. Go to **Settings**
 2. Enable **"Auto Wallpaper Updates"**
 3. Choose your **"Wallpaper Color"**
 4. Grant wallpaper permission when prompted
-5. Your tasks will now appear on your home screen! 🎉
+5. Your tasks will now appear on your home screen!
 
 #### Personalizing Colors
 - **Wallpaper Background**: Settings → Wallpaper Color
 - **Priority Colors**: Settings → Task Priority Colors
 - **Categories**: Categories screen → Create custom categories
 
-### 🔔 Setting Up Reminders
+### Setting Up Reminders
 
 1. **Enable notifications** in Settings
 2. When creating/editing tasks, toggle **"Enable Reminder"**
@@ -224,15 +224,15 @@ DoTrack follows **Clean Architecture** principles with a multi-module approach:
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 <details>
-<summary><b>🔍 Detailed File Structure</b></summary>
+<summary><b>Detailed File Structure</b></summary>
 
 ```
 DoTrack/
-├── 📱 app/src/main/java/com/shreyash/dotrack/
-│   ├── 🎨 ui/
+├── app/src/main/java/com/shreyash/dotrack/
+│   ├── ui/
 │   │   ├── tasks/
 │   │   │   ├── TasksScreen.kt
 │   │   │   ├── TasksViewModel.kt
@@ -246,27 +246,27 @@ DoTrack/
 │   │   └── settings/
 │   │       ├── SettingsScreen.kt
 │   │       └── SettingsViewModel.kt
-│   ├── 🧭 navigation/
+│   ├── navigation/
 │   │   ├── DoTrackNavHost.kt
 │   │   ├── DoTrackDestinations.kt
 │   │   └── DoTrackBottomNavigation.kt
-│   ├── ⚙️ workmanager/
+│   ├── workmanager/
 │   │   ├── ReminderSchedulerImpl.kt
 │   │   └── ReminderModule.kt
-│   ├── 🔧 core/util/
+│   ├── core/util/
 │   │   └── WallpaperGenerator.kt
 │   ├── DoTrackApplication.kt
 │   └── MainActivity.kt
 │
-├── 🧠 domain/src/main/java/com/shreyash/dotrack/domain/
-│   ├── 📋 model/
+├── domain/src/main/java/com/shreyash/dotrack/domain/
+│   ├── model/
 │   │   ├── Task.kt
 │   │   └── Category.kt
-│   ├── 🏪 repository/
+│   ├── repository/
 │   │   ├── TaskRepository.kt
 │   │   ├── CategoryRepository.kt
 │   │   └── UserPreferencesRepository.kt
-│   └── 🎯 usecase/
+│   └── usecase/
 │       ├── task/
 │       │   ├── AddTaskUseCase.kt
 │       │   ├── GetTasksUseCase.kt
@@ -277,8 +277,8 @@ DoTrack/
 │       └── preferences/
 │           └── [Preference Use Cases]
 │
-├── 💾 data/src/main/java/com/shreyash/dotrack/data/
-│   ├── 🗄️ local/
+├── data/src/main/java/com/shreyash/dotrack/data/
+│   ├── local/
 │   │   ├── entity/
 │   │   │   ├── TaskEntity.kt
 │   │   │   └── CategoryEntity.kt
@@ -286,24 +286,24 @@ DoTrack/
 │   │   │   ├── TaskDao.kt
 │   │   │   └── CategoryDao.kt
 │   │   └── TaskDatabase.kt
-│   ├── 🏪 repository/
+│   ├── repository/
 │   │   ├── TaskRepositoryImpl.kt
 │   │   ├── CategoryRepositoryImpl.kt
 │   │   └── UserPreferencesRepositoryImpl.kt
-│   └── 💉 di/
+│   └── di/
 │       ├── DatabaseModule.kt
 │       ├── RepositoryModule.kt
 │       └── DataStoreModule.kt
 │
-└── 🔧 core/src/main/java/com/shreyash/dotrack/core/
-    ├── 🎨 ui/
+└── core/src/main/java/com/shreyash/dotrack/core/
+    ├── ui/
     │   ├── components/
     │   │   └── LoadingIndicator.kt
     │   └── theme/
     │       ├── Color.kt
     │       ├── Theme.kt
     │       └── Type.kt
-    └── 🛠️ util/
+    └── util/
         └── Result.kt
 ```
 
@@ -311,7 +311,7 @@ DoTrack/
 
 ---
 
-## 🔄 CI/CD Pipeline
+## CI/CD Pipeline
 
 DoTrack uses **GitHub Actions** for automated deployment:
 
@@ -325,15 +325,15 @@ graph LR
 ```
 
 ### Pipeline Features
-- ✅ **Automated Builds** on every PR and push
-- 🔢 **Version Management** with auto-increment
-- 📦 **Release Management** with signed APKs
-- 🚀 **Google Play Deployment** (Internal Testing & Production)
-- 🏷️ **GitHub Releases** with changelog
+- **Automated Builds** on every PR and push
+- **Version Management** with auto-increment
+- **Release Management** with signed APKs
+- **Google Play Deployment** (Internal Testing & Production)
+- **GitHub Releases** with changelog
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ### Running Tests
 
@@ -357,7 +357,7 @@ graph LR
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
@@ -378,18 +378,18 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 | Document | Description |
 |----------|-------------|
-| [📖 User Guide](docs/USER_GUIDE.md) | Complete user manual |
-| [🛠️ Developer Guide](docs/DEVELOPER_GUIDE.md) | Development setup and guidelines |
-| [📋 API Documentation](docs/DOCUMENTATION.md) | Code documentation |
-| [🔄 Workflow Guide](docs/WORKFLOW.md) | CI/CD and release process |
+| [User Guide](docs/USER_GUIDE.md) | Complete user manual |
+| [Developer Guide](docs/DEVELOPER_GUIDE.md) | Development setup and guidelines |
+| [API Documentation](docs/DOCUMENTATION.md) | Code documentation |
+| [Workflow Guide](docs/WORKFLOW.md) | CI/CD and release process |
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
