@@ -62,17 +62,18 @@ class TaskWidgetItemFactory(
         }
 
         val task = tasks[position]
-        val rv = RemoteViews(context.packageName, R.layout.task_widget_item)
+        val remoteView = RemoteViews(context.packageName, R.layout.task_widget_item)
 
         // Set the task title and description
-        rv.setTextViewText(R.id.widget_task_title, task.title)
+        remoteView.setTextViewText(R.id.widget_task_title, task.title.trim())
         if (!TextUtils.isEmpty(task.description)) {
-            rv.setTextViewText(R.id.widget_task_description, task.description)
-            rv.setViewVisibility(R.id.widget_task_description, View.VISIBLE)
-        }
+            remoteView.setTextViewText(R.id.widget_task_description, task.description.trim())
+            remoteView.setViewVisibility(R.id.widget_task_description, View.VISIBLE)
+        }else
+            remoteView.setViewVisibility(R.id.widget_task_description, View.GONE)
 
         // Set task checkbox image
-        rv.setImageViewResource(
+        remoteView.setImageViewResource(
             R.id.widget_task_checkbox,
             if (task.isCompleted) R.drawable.checkbox_checked
             else R.drawable.checkbox_unchecked
@@ -81,49 +82,64 @@ class TaskWidgetItemFactory(
         if (task.dueDate != null) {
             val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.getDefault())
 
-            rv.setViewVisibility(R.id.widget_task_due, View.VISIBLE)
-            rv.setTextViewText(R.id.widget_task_due, "Due: ${task.dueDate?.format(dateFormatter)}")
+            remoteView.setViewVisibility(R.id.widget_task_due, View.VISIBLE)
+            remoteView.setTextViewText(R.id.widget_task_due, "Due: ${task.dueDate?.format(dateFormatter)}")
         } else {
-            rv.setViewVisibility(R.id.widget_task_due, View.GONE)
+            remoteView.setViewVisibility(R.id.widget_task_due, View.GONE)
 
         }
 
-        // Set background color based on priority
-        when (task.priority) {
-            Priority.HIGH -> {
-                rv.setInt(
-                    R.id.task_background,
-                    "setBackgroundResource",
-                    R.drawable.task_background_high
-                )
-                //rv.setImageViewResource(R.id.widget_priority_indicator, R.drawable.ic_priority_high)
+        when(task.priority){
+            Priority.HIGH ->{
+                remoteView.setTextViewText(R.id.widget_task_priority,"H")
             }
-
-            Priority.MEDIUM -> {
-                rv.setInt(
-                    R.id.task_background,
-                    "setBackgroundResource",
-                    R.drawable.task_background_medium
-                )
-                //rv.setImageViewResource(R.id.widget_priority_indicator, R.drawable.ic_priority_medium)
+            Priority.MEDIUM ->{
+                remoteView.setTextViewText(R.id.widget_task_priority,"M")
             }
-
-            Priority.LOW -> {
-                rv.setInt(
-                    R.id.task_background,
-                    "setBackgroundResource",
-                    R.drawable.task_background_low
-                )
-                //rv.setImageViewResource(R.id.widget_priority_indicator, R.drawable.ic_priority_low)
+            Priority.LOW ->{
+                remoteView.setTextViewText(R.id.widget_task_priority,"L")
             }
         }
+
+//        remoteView.setInt(R.id.task_background,
+//                    "setBackgroundResource",
+//                    R.drawable.task_background_transparent )
+//        // Set background color based on priority
+//        when (task.priority) {
+//            Priority.HIGH -> {
+//                rv.setInt(
+//                    R.id.task_background,
+//                    "setBackgroundResource",
+//                    R.drawable.task_background_high
+//                )
+//                //rv.setImageViewResource(R.id.widget_priority_indicator, R.drawable.ic_priority_high)
+//            }
+//
+//            Priority.MEDIUM -> {
+//                rv.setInt(
+//                    R.id.task_background,
+//                    "setBackgroundResource",
+//                    R.drawable.task_background_medium
+//                )
+//                //rv.setImageViewResource(R.id.widget_priority_indicator, R.drawable.ic_priority_medium)
+//            }
+//
+//            Priority.LOW -> {
+//                rv.setInt(
+//                    R.id.task_background,
+//                    "setBackgroundResource",
+//                    R.drawable.task_background_low
+//                )
+//                //rv.setImageViewResource(R.id.widget_priority_indicator, R.drawable.ic_priority_low)
+//            }
+//        }
 
         // Set fill-in intent for item clicks
         val fillInIntent = Intent().apply {
             action = TrackConstants.ACTION_WIDGET_TASK_CLICK
             putExtra(TrackConstants.EXTRA_TASK_ID, task.id)
         }
-        rv.setOnClickFillInIntent(R.id.task_background, fillInIntent)
+        remoteView.setOnClickFillInIntent(R.id.task_background, fillInIntent)
 
         // Set checkbox click handler
         val checkIntent = Intent().apply {
@@ -131,9 +147,9 @@ class TaskWidgetItemFactory(
             putExtra(TrackConstants.EXTRA_TASK_ID, task.id)
             putExtra(TrackConstants.EXTRA_TASK_COMPLETED, !task.isCompleted)
         }
-        rv.setOnClickFillInIntent(R.id.widget_task_checkbox, checkIntent)
+        remoteView.setOnClickFillInIntent(R.id.widget_task_checkbox, checkIntent)
 
-        return rv
+        return remoteView
     }
 
     override fun getLoadingView(): RemoteViews? = null
