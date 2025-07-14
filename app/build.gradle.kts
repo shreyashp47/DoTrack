@@ -33,7 +33,7 @@ android {
         versionCode = 18
         versionName = "1.18"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.shreyash.dotrack.HiltTestRunner"
     }
 
     signingConfigs {
@@ -148,6 +148,13 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
+    
+    // Hilt testing
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.48")
+    kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.48")
+    
+    // Coroutines testing
+    androidTestImplementation(libs.coroutines.test)
 
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)
