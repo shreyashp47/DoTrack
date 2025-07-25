@@ -78,6 +78,7 @@ fun TasksScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
+    var showSetWallpaperDialog by remember { mutableStateOf(false) }
 
     // Monitor wallpaper updates
     LaunchedEffect(viewModel.wallpaperUpdated) {
@@ -116,6 +117,34 @@ fun TasksScreen(
             }
         )
     }
+    // Delete confirmation dialog
+    if (showSetWallpaperDialog) {
+        AlertDialog(
+            onDismissRequest = { showSetWallpaperDialog = false },
+            title = { Text("Set Wallpaper") },
+            text = { Text("Are you sure you want set wallpaper? This action cannot be undone.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.updateWallpaper()
+                        showSetWallpaperDialog = false
+                        scope.launch {
+                            snackbarHostState.showSnackbar("New wallpaper is progress... . ")
+                        }
+                    }
+                ) {
+                    Text("Apply")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showSetWallpaperDialog = false }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -128,7 +157,7 @@ fun TasksScreen(
                 },
                 actions = {
                     IconButton(
-                        onClick = { viewModel.updateWallpaper() }
+                        onClick = { showSetWallpaperDialog = true }
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_wallpaper),
