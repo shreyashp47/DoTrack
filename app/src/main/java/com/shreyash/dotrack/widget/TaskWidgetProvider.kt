@@ -84,7 +84,7 @@ class TaskWidgetProvider : AppWidgetProvider() {
             }
             
             // Set the RemoteAdapter for the ListView
-            views.setRemoteAdapter(R.id.widget_list_view, serviceIntent)
+            views.setRemoteAdapter(appWidgetId, R.id.widget_list_view, serviceIntent)
             views.setEmptyView(R.id.widget_list_view, R.id.widget_empty_view)
             
             // Set up PendingIntent template for task item clicks
