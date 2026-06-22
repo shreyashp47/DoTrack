@@ -83,9 +83,7 @@ fun TasksScreen(
     // Monitor wallpaper updates
     LaunchedEffect(viewModel.wallpaperUpdated) {
         if (viewModel.wallpaperUpdated) {
-            scope.launch {
-                //snackbarHostState.showSnackbar("Wallpaper updated with your tasks")
-            }
+            // Wallpaper was updated
         }
     }
 
@@ -173,11 +171,7 @@ fun TasksScreen(
                         )
                     }
                 },
-                modifier = Modifier.statusBarsPadding(),
-//                colors = TopAppBarDefaults.topAppBarColors(
-//                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-//                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-//                )
+                modifier = Modifier.statusBarsPadding()
             )
         },
         floatingActionButton = {
@@ -227,6 +221,7 @@ fun TasksScreen(
                                 viewModel.uncompleteTask(task.id)
                             }
                         },
+                        onDeleteTask = { taskId -> viewModel.deleteTask(taskId) },
                         modifier = Modifier.padding(padding)
                     )
                 }
@@ -254,16 +249,18 @@ fun TaskList(
     tasks: List<Task>,
     onTaskClick: (String) -> Unit,
     onTaskCheckChange: (Task, Boolean) -> Unit,
+    onDeleteTask: (String) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
         modifier = modifier
     ) {
-        items(tasks) { task ->
+        items(tasks, key = { it.id }) { task ->
             TaskItem(
                 task = task,
                 onClick = { onTaskClick(task.id) },
-                onCheckChange = { isCompleted -> onTaskCheckChange(task, isCompleted) }
+                onCheckChange = { isCompleted -> onTaskCheckChange(task, isCompleted) },
+                onDeleteTask = onDeleteTask
             )
         }
     }
@@ -274,6 +271,7 @@ fun TaskItem(
     task: Task,
     onClick: () -> Unit,
     onCheckChange: (Boolean) -> Unit,
+    onDeleteTask: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm")
@@ -342,7 +340,8 @@ fun TaskItem(
 
             PriorityIndicator(
                 priority = task.priority,
-                taskId = task.id
+                taskId = task.id,
+                onDeleteTask = onDeleteTask
             )
         }
     }
@@ -352,7 +351,7 @@ fun TaskItem(
 fun PriorityIndicator(
     priority: Priority,
     taskId: String,
-    viewModel: TasksViewModel = hiltViewModel()
+    onDeleteTask: (String) -> Unit = {}
 ) {
     val color = when (priority) {
         Priority.HIGH -> MaterialTheme.colorScheme.error
@@ -360,12 +359,8 @@ fun PriorityIndicator(
         Priority.LOW -> MaterialTheme.colorScheme.primary
     }
 
-    // State for delete confirmation dialog
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
 
-    // Delete confirmation dialog
     if (showDeleteConfirmDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirmDialog = false },
@@ -374,11 +369,8 @@ fun PriorityIndicator(
             confirmButton = {
                 Button(
                     onClick = {
-                        viewModel.deleteTask(taskId)
+                        onDeleteTask(taskId)
                         showDeleteConfirmDialog = false
-                        scope.launch {
-                            snackbarHostState.showSnackbar("Task deleted")
-                        }
                     }
                 ) {
                     Text("Delete")

@@ -70,8 +70,8 @@ class TasksScreenUITest {
             composeTestRule.onNodeWithText(testTask.title)
                 .assertExists()
                 
-            // Small delay between tasks to avoid overwhelming the UI
-            Thread.sleep(100)
+            // Wait for UI to settle between tasks
+            composeTestRule.waitForIdle()
         }
         
         // Verify all tasks are displayed

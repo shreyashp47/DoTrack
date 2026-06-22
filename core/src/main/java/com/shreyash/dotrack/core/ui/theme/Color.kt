@@ -30,10 +30,10 @@ val WallpapersColorHighPriority = Color(0xFFFFE7EA) // Light red background
 val WallpapersColorMediumPriority = Color(0xFFFFF5D6) // Light orange background
 val WallpapersColorLowPriority = Color(0xFFDFF5E0) // Light green background
 
-const val DEFAULT_TOP_COLOR = "#1A2980"
-const val DEFAULT_BOTTOM_COLOR = "#26D0CE"
+const val DEFAULT_TOP_COLOR = "#0A0E27"
+const val DEFAULT_BOTTOM_COLOR = "#7C3AED"
 
 
-const val DEFAULT_HIGH_PRIORITY_COLOR = "#FF9A8B"     // Light coral (attention but friendly)
-const val DEFAULT_MEDIUM_PRIORITY_COLOR = "#FFD580"  // Warm pastel yellow (subtle alert)
-const val DEFAULT_LOW_PRIORITY_COLOR = "#CFFFB0"     // Pale mint green (soft, low urgency)
+const val DEFAULT_HIGH_PRIORITY_COLOR = "#FF3B5C"
+const val DEFAULT_MEDIUM_PRIORITY_COLOR = "#FF9800"
+const val DEFAULT_LOW_PRIORITY_COLOR = "#00BFA5"

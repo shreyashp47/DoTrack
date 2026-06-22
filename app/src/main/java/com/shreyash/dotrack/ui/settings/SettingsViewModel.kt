@@ -300,13 +300,14 @@ class SettingsViewModel @Inject constructor(
         notificationPermissionState = checkNotificationPermission()
     }
 
-    private suspend fun updateWallpaper() {
-        val tasksResult = getTasksUseCase().first()
-        val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
-        if (tasksResult.isSuccess() && autoWallpaperEnabled) {
-            val tasks = tasksResult.getOrNull() ?: emptyList()
-            val wallpaperResult = wallpaperGenerator.generateAndSetWallpaper(tasks)
-
+    fun updateWallpaper() {
+        viewModelScope.launch {
+            val tasksResult = getTasksUseCase().first()
+            val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
+            if (tasksResult.isSuccess() && autoWallpaperEnabled) {
+                val tasks = tasksResult.getOrNull() ?: emptyList()
+                wallpaperGenerator.generateAndSetWallpaper(tasks)
+            }
         }
     }
 }

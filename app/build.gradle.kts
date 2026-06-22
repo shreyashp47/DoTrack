@@ -126,10 +126,9 @@ dependencies {
     kapt(libs.hilt.compiler)
 
     // WorkManager
-    implementation("androidx.work:work-runtime-ktx:2.10.1")
-    implementation("androidx.hilt:hilt-work:1.1.0")
-    kapt("androidx.hilt:hilt-compiler:1.1.0")
-
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.hilt.work)
+    kapt(libs.androidx.hilt.compiler)
 
     // Room
     implementation(libs.room.runtime)
@@ -148,11 +147,11 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
-    
+
     // Hilt testing
-    androidTestImplementation("com.google.dagger:hilt-android-testing:2.48")
-    kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.48")
-    
+    androidTestImplementation(libs.hilt.android.testing)
+    kaptAndroidTest(libs.hilt.compiler)
+
     // Coroutines testing
     androidTestImplementation(libs.coroutines.test)
 

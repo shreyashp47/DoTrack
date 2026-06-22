@@ -59,7 +59,6 @@ import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import com.shreyash.dotrack.R
 import com.shreyash.dotrack.domain.model.Priority
-import com.shreyash.dotrack.ui.tasks.TasksViewModel
 
 @Preview(showBackground = true)
 @Composable
@@ -73,7 +72,7 @@ fun SettingsScreenPreview() {
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
-    tasksViewModel: TasksViewModel = hiltViewModel()
+
 ) {
     // Collect states from ViewModel
     val isAutoWallpaperEnabled by viewModel.autoWallpaperEnabled.collectAsState()
@@ -279,7 +278,7 @@ fun SettingsScreen(
             TextButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    tasksViewModel.updateWallpaper()
+                    viewModel.updateWallpaper()
                 }) {
                 Text(
                     text = "Sync-up",

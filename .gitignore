@@ -14,6 +14,9 @@
 .cxx
 local.properties
 
+# Agent instructions (local only)
+AGENTS.md
+
 # Project exclude paths
 /.idea/
 /.zencoder

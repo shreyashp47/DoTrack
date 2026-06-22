@@ -40,13 +40,12 @@ fun DoTrackBottomNavigation(
                         }
                     }
                 },
-                icon = {
-                    Icon(
-                        imageVector = if (selected) destination.selectedIcon else destination.unselectedIcon,
-                        contentDescription = destination.title
-                    )
-                },
-                //label = { Text(destination.title) }
+                    icon = {
+                        Icon(
+                            imageVector = if (selected) destination.selectedIcon else destination.unselectedIcon,
+                            contentDescription = destination.title
+                        )
+                    }
             )
         }
     }

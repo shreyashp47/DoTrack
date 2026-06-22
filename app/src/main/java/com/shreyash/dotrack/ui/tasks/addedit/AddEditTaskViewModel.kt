@@ -38,8 +38,8 @@ data class AddEditTaskUiState constructor(
     val isLoading: Boolean = false,
     val isSaving: Boolean = false,
     val saveResult: Result<Unit>? = null,
-    val createdAt: LocalDateTime = LocalDateTime.now(),
-    val updatedAt: LocalDateTime = LocalDateTime.now(),
+    val createdAt: LocalDateTime? = null,
+    val updatedAt: LocalDateTime? = null,
     val wallpaperUpdated: Boolean = false
 )
 
@@ -141,13 +141,13 @@ class AddEditTaskViewModel @Inject constructor(
                 // Update existing task
                 val now = LocalDateTime.now()
                 val task = Task(
-                    id = uiState.id!!,
+                    id = requireNotNull(uiState.id) { "Task ID must not be null when updating" },
                     title = uiState.title,
                     description = uiState.description,
                     isCompleted = uiState.isCompleted,
                     dueDate = uiState.dueDate,
                     priority = uiState.priority,
-                    createdAt = uiState.createdAt,
+                    createdAt = uiState.createdAt ?: now,
                     reminderEnabled = uiState.reminderEnabled,
                     updatedAt = now
                 )
@@ -155,14 +155,16 @@ class AddEditTaskViewModel @Inject constructor(
             }
 
             if (result.isSuccess()) {
+                val savedTaskId = uiState.id
+                val savedDueDate = uiState.dueDate
                 // Update wallpaper with the latest task list
                 updateWallpaper()
-                if (uiState.reminderEnabled && uiState.dueDate != null) {
-                    reminderScheduler.cancelReminder(uiState.id.toString())
+                if (uiState.reminderEnabled && savedDueDate != null && savedTaskId != null) {
+                    reminderScheduler.cancelReminder(savedTaskId)
                     reminderScheduler.scheduleReminder(
-                        taskId = uiState.id.toString(), // get the ID from result or generated in use case
+                        taskId = savedTaskId,
                         title = uiState.title,
-                        dueDate = uiState.dueDate!!
+                        dueDate = savedDueDate
                     )
                 }
                 

@@ -110,7 +110,7 @@ fun TaskDetailScreen(
             }
 
             taskState.isSuccess() -> {
-                val task = taskState.getOrNull()!!
+                val task = taskState.getOrNull() ?: return@Scaffold
                 Column(
                     modifier = Modifier
                         .fillMaxSize()

@@ -14,6 +14,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,40 +32,36 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    // Store the intent to handle it after the UI is ready
-    private var pendingIntent: Intent? = null
+    private var deepLinkCounter by mutableIntStateOf(0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
-        // Store the initial intent if it exists
-        if (intent?.action == DeepLinkHandler.ACTION_OPEN_TASK) {
-            pendingIntent = intent
-        }
-
         setContent {
-            DoTrackApp(pendingIntent)
+            DoTrackApp(
+                deepLinkTrigger = deepLinkCounter,
+                getDeepLinkIntent = {
+                    if (intent?.action == DeepLinkHandler.ACTION_OPEN_TASK) intent else null
+                }
+            )
         }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-
-        // Update the activity's intent
         setIntent(intent)
-
-        // Handle the new intent in the UI
         if (intent.action == DeepLinkHandler.ACTION_OPEN_TASK) {
-            setContent {
-                DoTrackApp(intent)
-            }
+            deepLinkCounter++
         }
     }
 }
 
 @Composable
-fun DoTrackApp(deepLinkIntent: Intent? = null) {
+fun DoTrackApp(
+    deepLinkTrigger: Int = 0,
+    getDeepLinkIntent: () -> Intent? = { null }
+) {
+    val deepLinkIntent = remember(deepLinkTrigger) { getDeepLinkIntent() }
     DoTrackTheme {
         val navController = rememberNavController()
         val navBackStackEntry by navController.currentBackStackEntryAsState()

@@ -39,7 +39,6 @@ fun DoTrackNavHost(
             )
         }
 
-        // Categories screen
         composable(route = Categories.route) {
             CategoriesScreen(
                 onCategoryClick = { categoryId ->
@@ -50,7 +49,8 @@ fun DoTrackNavHost(
                     navController.navigate(AddEditCategory.route)
                 }
             )
-        }        // Categories screen
+        }
+        // Settings screen
         composable(route = Settings.route) {
             SettingsScreen(
 
@@ -121,9 +121,9 @@ fun DoTrackNavHost(
                 onBackClick = {
                     navController.popBackStack()
                 },
-//                 onCategorySaved = {
-//                     navController.popBackStack()
-//                 }
+                onCategorySaved = {
+                    navController.popBackStack()
+                }
             )
         }
     }

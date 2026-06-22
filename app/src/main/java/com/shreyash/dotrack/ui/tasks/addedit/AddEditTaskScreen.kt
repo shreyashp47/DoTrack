@@ -218,15 +218,14 @@ fun TaskForm(
 
         // Date Picker Dialog
         if (showDatePicker) {
-            val todayInMillis = remember {
+            val todayMillis =
                 LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-            }
 
             val datePickerState = rememberDatePickerState(
-                initialSelectedDateMillis = todayInMillis,
+                initialSelectedDateMillis = todayMillis,
                 selectableDates = object : SelectableDates {
                     override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                        return utcTimeMillis > todayInMillis
+                        return utcTimeMillis > LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
                     }
                 }
             )
