@@ -373,11 +373,19 @@ DoTrack uses WorkManager for scheduling reminders:
 ```kotlin
 @Singleton
 class ReminderSchedulerImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val ioDispatcher: CoroutineDispatcher
+    @ApplicationContext private val context: Context
 ) : ReminderScheduler {
     override fun scheduleReminder(taskId: String, title: String, dueDate: LocalDateTime) {
-        // Implementation using WorkManager
+        val workRequest = OneTimeWorkRequestBuilder<ReminderWorker>()
+            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+            .setInputData(workDataOf(...))
+            .addTag(taskId)
+            .build()
+        WorkManager.getInstance(context).enqueue(workRequest)
+    }
+
+    override fun cancelReminder(taskId: String) {
+        WorkManager.getInstance(context).cancelAllWorkByTag(taskId)
     }
 }
 ```

@@ -10,7 +10,7 @@
 [![API](https://img.shields.io/badge/API-26%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=26)
 [![Kotlin](https://img.shields.io/badge/Kotlin-100%25-blue.svg)](https://kotlinlang.org)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Build Status](https://github.com/shreyashp47/DoTrack/workflows/CI/badge.svg)](https://github.com/shreyashp47/DoTrack/actions)
+[![Build Status](https://github.com/shreyashp47/DoTrack/actions/workflows/build_bundle.yml/badge.svg)](https://github.com/shreyashp47/DoTrack/actions/workflows/build_bundle.yml)
 
 [Download APK](https://github.com/shreyashp47/DoTrack/releases) • [Documentation](docs/) • [Report Bug](https://github.com/shreyashp47/DoTrack/issues) • [Request Feature](https://github.com/shreyashp47/DoTrack/issues)
 
@@ -313,23 +313,12 @@ DoTrack/
 
 ## CI/CD Pipeline
 
-DoTrack uses **GitHub Actions** for automated deployment:
+DoTrack uses **GitHub Actions** for manual deployment (triggered via GitHub UI — no automated PR/push builds):
 
-```mermaid
-graph LR
-    A[Push to main] --> B[Build & Test]
-    B --> C[Generate APK]
-    C --> D[Sign Release]
-    D --> E[Deploy to Play Store]
-    E --> F[Create GitHub Release]
-```
-
-### Pipeline Features
-- **Automated Builds** on every PR and push
-- **Version Management** with auto-increment
-- **Release Management** with signed APKs
-- **Google Play Deployment** (Internal Testing & Production)
-- **GitHub Releases** with changelog
+- **Build APK** — manually triggered signed APK build
+- **Build & Deploy AAB** — build, version-bump, and deploy to Google Play (internal testing, beta, or production)
+- **Version Management** — auto-increment version code and name on each deploy
+- **Release Tags** — automatically created for production deployments
 
 ---
 

@@ -1,97 +1,83 @@
-# Build Bundle Workflow Documentation
+# Build Workflow Documentation
 
-This document explains the GitHub Actions workflow defined in `.github/workflows/build_bundle.yml` that handles building and deploying the DoTrack app to Google Play Store.
+## Build APK Workflow
 
-## Workflow Overview
+Defined in `.github/workflows/build_apk.yml` — manually triggered build of a signed APK.
 
-The `Build and Deploy to Play Store` workflow automates the process of building an Android App Bundle (AAB), versioning, signing, and deploying the app to Google Play Store.
+### Trigger
 
-## Workflow Trigger
+`workflow_dispatch` with three inputs:
+- **versionName** — version label (default `1.20`)
+- **versionCode** — version code (default `20`)
+- **branch** — branch to build (default `main`)
 
-The workflow is triggered manually using the `workflow_dispatch` event with two input parameters:
+### Steps
 
-- **deploymentType**: Specifies the deployment target
-  - Options: `internal` (default) or `live`
-  - Internal deploys to Google Play internal testing track
-  - Live deploys to Google Play production track
+1. **Checkout Code** — fetches the specified branch
+2. **Set up JDK** — Java 17 (Temurin)
+3. **Grant execute permission** — `chmod +x gradlew`
+4. **Cache Gradle dependencies** — caches `~/.gradle/caches` and `~/.gradle/wrapper` for faster subsequent runs
+5. **Inject versionName/versionCode** — `sed` updates values in `app/build.gradle.kts`
+6. **Build APK** — `./gradlew assembleRelease`
+7. **Rename APK file** — renames to `DoTrack-v{versionName}-release.apk`
+8. **Upload APK Artifact** — saves as a workflow artifact
 
-- **branch**: Specifies which branch to build from
-  - Default: `main`
+---
 
-## Workflow Steps
+## Build and Deploy to Play Store Workflow
 
-### 1. Environment Setup
+Defined in `.github/workflows/build_bundle.yml` — manually triggered build, sign, and deploy of an Android App Bundle.
 
-- **Checkout Code**: Fetches the specified branch with complete history
-- **Set up JDK**: Configures Java 17 (Temurin distribution)
-- **Grant execute permission**: Makes gradlew executable
+### Trigger
 
-### 2. Version Management
+`workflow_dispatch` with two inputs:
+- **deploymentType** — one of `internal`, `PublicTrack`, `beta`, `production` (default `PublicTrack`)
+- **branch** — branch to build (default `main`)
 
-- **Get latest version**: 
-  - Extracts current version name and code from build.gradle.kts
-  - Automatically increments the version code
-  - Increments the minor version of the version name (e.g., 1.09 → 1.10)
-  - Outputs both current and new versions
+### Steps
 
-- **Update version in build.gradle.kts**:
-  - Updates the version name and code in the build file
+#### 1. Environment Setup
+- **Checkout Code** — fetches the specified branch
+- **Set up JDK** — Java 17 (Temurin)
+- **Grant execute permission** — `chmod +x gradlew`
+- **Cache Gradle dependencies** — caches `~/.gradle/caches` and `~/.gradle/wrapper`
 
-### 3. Keystore and Signing Setup
+#### 2. Version Management
+- **Read current version from build.gradle.kts** — extracts current version name and code, auto-increments both (version code +1, minor version +1)
+- **Update version in build.gradle.kts** — applies the new version values via `sed`
 
-- **Setup keystore**: Creates necessary directory structure
-- **Decode and setup keystore**: Decodes the Base64 encoded keystore from GitHub Secrets
+#### 3. Keystore Setup
+- **Decode and setup keystore** — decodes `ANDROID_KEYSTORE_BASE64` secret into `keystore_details/release.keystore`
 
-### 4. Build Process
+#### 4. Build Process
+- **Run unit tests** — `./gradlew test` before building release
+- **Build AAB** — `./gradlew bundleRelease` with keystore credentials from environment variables
+- **Rename AAB file** — renames to `DoTrack-v{newVersionName}-release.aab`
 
-- **Build AAB**: 
-  - Runs `./gradlew bundleRelease`
-  - Uses environment variables for keystore credentials
-  
-- **Rename AAB file**: 
-  - Renames the output file to include version information
-  - Format: `DoTrack-v{version}-release.aab`
+#### 5. Deployment
+- **Upload to Google Play Store** — uses `r0adkll/upload-google-play` to the selected track, with release notes from `whatsnew/` directory
+- **Upload AAB Artifact** — saves as a workflow artifact
 
-### 5. Deployment
+#### 6. Release Management
+- **Create Release Tag** — creates and pushes a Git tag `v{newVersionName}` (only for `production` deployments)
+- **Update version in repository** — commits and pushes the updated `app/build.gradle.kts` with bumped version
 
-- **Upload to Google Play Store**:
-  - Uses the r0adkll/upload-google-play action
-  - Deploys to internal or production track based on input parameter
-  - Sets release status to 'completed'
-  - Includes what's new information from the whatsnew/ directory
-  
-- **Upload AAB Artifact**: 
-  - Saves the AAB file as a workflow artifact for reference
+### Required Secrets
 
-### 6. Release Management
+| Secret | Description |
+|--------|-------------|
+| `ANDROID_KEYSTORE_BASE64` | Base64-encoded Android keystore |
+| `ANDROID_KEYSTORE_PASSWORD` | Keystore password |
+| `ANDROID_KEY_ALIAS` | Key alias |
+| `ANDROID_KEY_PASSWORD` | Key password |
+| `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | Google Play service account JSON (plain text) |
 
-- **Create Release Tag**:
-  - Only for 'live' deployments
-  - Creates and pushes a new Git tag for the release version
-  
-- **Update version in repository**:
-  - Commits and pushes the updated build.gradle.kts with new version numbers
-  - Ensures version numbers are always up-to-date in the repository
+### Usage
 
-## Secret Requirements
+1. Go to **Actions** tab in the GitHub repository
+2. Select **"Build and Deploy to Play Store"**
+3. Click **"Run workflow"**
+4. Choose deployment type and branch
+5. Click **"Run workflow"**
 
-The workflow requires these GitHub Secrets:
-
-- `ANDROID_KEYSTORE_BASE64`: Base64-encoded Android keystore file
-- `ANDROID_KEYSTORE_PASSWORD`: Password for the keystore
-- `ANDROID_KEY_ALIAS`: Key alias in the keystore
-- `ANDROID_KEY_PASSWORD`: Password for the key alias
-- `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`: Google Play service account JSON key file (plain text)
-
-## Usage
-
-To trigger the workflow:
-
-1. Go to the Actions tab in the GitHub repository
-2. Select "Build and Deploy to Play Store" workflow
-3. Click "Run workflow"
-4. Select deployment type (internal or live)
-5. Specify the branch (typically main)
-6. Click "Run workflow"
-
-The workflow will build the app, increment the version, and deploy it to the specified Google Play track.
+The workflow will build, version-bump, and deploy to the selected Google Play track.

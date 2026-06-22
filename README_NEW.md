@@ -80,19 +80,21 @@ Users can personalize their experience:
 
 ## CI/CD Pipeline
 
-DoTrack uses GitHub Actions for Continuous Integration and Continuous Deployment:
+DoTrack uses GitHub Actions for manually triggered deployment (no automated PR/push builds):
 
-- **Automated Builds**: Every pull request and push to main branch triggers a build to ensure code quality
+- **Build APK**: Manually triggered signed APK build
+- **Build & Deploy AAB**: Build, sign, version-bump, and deploy to Google Play
 - **Version Management**: Automatic version incrementation for each release
-- **Release Management**: Streamlined process for creating release builds
-- **Google Play Deployment**: Automated deployment to Google Play Store (internal testing and production)
+- **Google Play Deployment**: Deploys to internal testing, beta, or production tracks
+- **Release Tags**: Automatically created for production deployments
 
 The CI/CD pipeline handles:
 1. Building the Android App Bundle (AAB)
 2. Signing the release with proper keystore credentials
-3. Deploying to Google Play Store (internal testing or production)
-4. Creating release tags in GitHub
-5. Updating version numbers in the repository
+3. Running unit tests before building
+4. Deploying to Google Play Store (internal, beta, or production)
+5. Creating release tags in GitHub
+6. Updating version numbers in the repository
 
 ## Usage
 

@@ -142,9 +142,9 @@ The tests use realistic data including:
 ### Debug Tips
 
 1. **Add delays for debugging**
-   ```kotlin
-   Thread.sleep(2000) // Add 2-second delay to observe UI
-   ```
+    ```kotlin
+    composeTestRule.waitForIdle() // Wait for UI to settle
+    ```
 
 2. **Print UI tree**
    ```kotlin

@@ -20,14 +20,13 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.branch }}
-          fetch-depth: 0  # Needed for version calculation
 
       - name: Set up JDK
         uses: actions/setup-java@v4.2.2
@@ -38,7 +37,17 @@ jobs:
       - name: Grant execute permission to gradlew
         run: chmod +x ./gradlew
 
-      - name: Get latest version from Play Store
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', '**/gradle/libs.versions.toml', '**/gradle.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Read current version from build.gradle.kts
         id: get_version
         run: |
           # Get current version from build.gradle.kts
@@ -68,19 +77,13 @@ jobs:
           sed -i "s/versionName = \".*\"/versionName = \"${{ steps.get_version.outputs.new_version_name }}\"/" app/build.gradle.kts
           sed -i "s/versionCode = .*/versionCode = ${{ steps.get_version.outputs.new_version_code }}/" app/build.gradle.kts
 
-      - name: Setup keystore
-        run: |
-          # Create keystore directory if it doesn't exist
-          mkdir -p keystore_details
-          
-          # The build.gradle.kts already handles environment variables as fallback
-          # So we just need to set the environment variables
-          echo "Keystore will be loaded from environment variables"
-
       - name: Decode and setup keystore
         run: |
-          # Decode keystore from base64 secret and save it
+          mkdir -p keystore_details
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > keystore_details/release.keystore
+
+      - name: Run unit tests
+        run: ./gradlew test
 
       - name: Build AAB (bundleRelease)
         env:
@@ -92,10 +95,8 @@ jobs:
 
       - name: Rename AAB file
         run: |
-          BUNDLE_DIR="app/build/outputs/bundle/release"
-          OLD_AAB=$(find $BUNDLE_DIR -name "*.aab" | head -n 1)
-          NEW_AAB="$BUNDLE_DIR/DoTrack-v${{ steps.get_version.outputs.new_version_name }}-release.aab"
-          mv "$OLD_AAB" "$NEW_AAB"
+          mv app/build/outputs/bundle/release/app-release.aab \
+             app/build/outputs/bundle/release/DoTrack-v${{ steps.get_version.outputs.new_version_name }}-release.aab
 
       - name: Upload to Google Play Store
         uses: r0adkll/upload-google-play@v1.1.3
@@ -104,7 +105,7 @@ jobs:
           packageName: com.shreyash.dotrack
           releaseFiles: app/build/outputs/bundle/release/DoTrack-v${{ steps.get_version.outputs.new_version_name }}-release.aab
           track: ${{ github.event.inputs.deploymentType  }}
-          status: 'completed' # Changed from conditional to always 'completed' or 'inProgress' if you need it published
+          status: 'completed'
           inAppUpdatePriority: 2
           releaseName: DoTrack v${{ steps.get_version.outputs.new_version_name }}
           whatsNewDirectory: whatsnew/
@@ -116,7 +117,7 @@ jobs:
           path: app/build/outputs/bundle/release/DoTrack-v${{ steps.get_version.outputs.new_version_name }}-release.aab
 
       - name: Create Release Tag
-        if: github.event.inputs.deploymentType == 'live'
+        if: github.event.inputs.deploymentType == 'production'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"

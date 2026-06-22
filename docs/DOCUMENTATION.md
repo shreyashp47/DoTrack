@@ -218,33 +218,28 @@ DoTrack uses WorkManager for scheduling task reminders:
 ```kotlin
 @Singleton
 class ReminderSchedulerImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val ioDispatcher: CoroutineDispatcher
+    @ApplicationContext private val context: Context
 ) : ReminderScheduler {
 
     override fun scheduleReminder(taskId: String, title: String, dueDate: LocalDateTime) {
-        CoroutineScope(ioDispatcher).launch {
-            val triggerTime = dueDate.minusMinutes(30) // 30 minutes before due time
-            val delay = Duration.between(LocalDateTime.now(), triggerTime).toMillis()
-            if (delay > 0) {
-                val workRequest = OneTimeWorkRequestBuilder<ReminderWorker>()
-                    .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                    .setInputData(workDataOf(
-                        ReminderWorker.KEY_TASK_ID to taskId,
-                        ReminderWorker.KEY_TITLE to title
-                    ))
-                    .addTag(taskId)
-                    .build()
+        val triggerTime = dueDate.minusMinutes(30)
+        val delay = Duration.between(LocalDateTime.now(), triggerTime).toMillis()
+        if (delay > 0) {
+            val workRequest = OneTimeWorkRequestBuilder<ReminderWorker>()
+                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                .setInputData(workDataOf(
+                    ReminderWorker.KEY_TASK_ID to taskId,
+                    ReminderWorker.KEY_TITLE to title
+                ))
+                .addTag(taskId)
+                .build()
 
-                WorkManager.getInstance(context).enqueue(workRequest)
-            }
+            WorkManager.getInstance(context).enqueue(workRequest)
         }
     }
 
     override fun cancelReminder(taskId: String) {
-        CoroutineScope(ioDispatcher).launch {
-            WorkManager.getInstance(context).cancelAllWorkByTag(taskId)
-        }
+        WorkManager.getInstance(context).cancelAllWorkByTag(taskId)
     }
 }
 ```

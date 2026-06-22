@@ -4,13 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       versionName:
-        description: 'Version Name (e.g., 1.09)'
+        description: 'Version Name (e.g., 1.20)'
         required: true
-        default: '1.09'
+        default: '1.20'
       versionCode:
-        description: 'Version Code (e.g., 9)'
+        description: 'Version Code (e.g., 20)'
         required: true
-        default: '9'
+        default: '20'
       branch:
         description: 'Branch to build (e.g., main)'
         required: true
@@ -18,7 +18,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout Code
@@ -35,6 +35,16 @@ jobs:
       - name: Grant execute permission to gradlew
         run: chmod +x ./gradlew
 
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', '**/gradle/libs.versions.toml', '**/gradle.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
       - name: Inject versionName and versionCode
         run: |
           sed -i "s/versionName = \".*\"/versionName = \"${{ github.event.inputs.versionName }}\"/" app/build.gradle.kts
@@ -45,16 +55,8 @@ jobs:
 
       - name: Rename APK file
         run: |
-          APK_DIR="app/build/outputs/apk/release"
-          OLD_APK=$(find $APK_DIR -name "*.apk" | head -n 1)
-          NEW_APK="$APK_DIR/DoTrack-v${{ github.event.inputs.versionName }}-release.apk"
-
-          if [[ "$OLD_APK" != "$NEW_APK" ]]; then
-            mv "$OLD_APK" "$NEW_APK"
-            echo "✅ Renamed APK to: $(basename "$NEW_APK")"
-          else
-            echo "ℹ️ APK already has correct name: $(basename "$OLD_APK")"
-          fi
+          mv app/build/outputs/apk/release/app-release.apk \
+             app/build/outputs/apk/release/DoTrack-v${{ github.event.inputs.versionName }}-release.apk
       
 
       - name: Upload APK Artifact
