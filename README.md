@@ -392,6 +392,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Open Source Community** for the amazing libraries and tools
 
 ---
+## Open Testing
+
+This app is in open testing on Google Play. To help me get it to production:
+
+1. **Join the tester group:** [google groups/testers-community](https://groups.google.com/g/testers-community)
+2. **Install the app:** Once approved, install from the [Play Store listing](https://play.google.com/store/apps/details?id=com.shreyash.dotrack)
+3. **Report issues:** Open a [GitHub issue](https://github.com/shreyashp47/DoTrack/issues)
+
+
+---
 
 ## 📞 Support & Contact
 
