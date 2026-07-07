@@ -8,8 +8,9 @@ import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import com.shreyash.dotrack.R
 import com.shreyash.dotrack.TrackConstants
-import com.shreyash.dotrack.data.local.TaskDatabase
+import com.shreyash.dotrack.data.local.dao.TaskDao
 import com.shreyash.dotrack.domain.model.Task
+import dagger.hilt.android.EntryPointAccessors
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -24,14 +25,18 @@ class TaskWidgetItemFactory(
 ) : RemoteViewsService.RemoteViewsFactory {
 
     private var tasks: List<Task> = emptyList()
+    private val taskDao: TaskDao by lazy {
+        EntryPointAccessors.fromApplication(
+            context.applicationContext,
+            WidgetEntryPoint::class.java
+        ).taskDao()
+    }
 
     override fun onCreate() {
         // No initialization needed
     }
 
     override fun onDataSetChanged() {
-        val db = TaskDatabase.getInstance(context.applicationContext)
-        val taskDao = db.taskDao()
         val taskEntities = taskDao.getPendingTasksSync()
         tasks = taskEntities.map { entity ->
             Task(

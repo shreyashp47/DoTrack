@@ -44,7 +44,8 @@ class TaskRepositoryImpl @Inject constructor(
         description: String,
         dueDate: LocalDateTime?,
         priority: Priority,
-        reminderEnabled: Boolean
+        reminderEnabled: Boolean,
+        categoryId: String?
     ): Result<Unit> = withContext(ioDispatcher) {
         return@withContext try {
             val task = TaskEntity.createNew(
@@ -52,7 +53,8 @@ class TaskRepositoryImpl @Inject constructor(
                 description = description,
                 dueDate = dueDate,
                 priority = priority,
-                reminderEnabled = reminderEnabled
+                reminderEnabled = reminderEnabled,
+                categoryId = categoryId
             )
             taskDao.insertTask(task)
             Result.success(Unit)

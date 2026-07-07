@@ -12,7 +12,7 @@ data class Task(
     val reminderEnabled: Boolean = false,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
-    val categoryId: Int? = null
+    val categoryId: String? = null
 )
 
 enum class Priority(val value: Int) {

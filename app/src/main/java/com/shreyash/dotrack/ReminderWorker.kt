@@ -107,15 +107,7 @@ class ReminderWorker(
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        // Get the app's icon resource ID
-        val iconResId = applicationContext.resources.getIdentifier(
-            "ic_notification",
-            "drawable",
-            applicationContext.packageName
-        )
-
-        // Use a fallback icon if the app's icon is not found
-        val icon = if (iconResId != 0) iconResId else android.R.drawable.ic_dialog_info
+        val icon = R.drawable.ic_launcher_foreground
 
         // Build the notification
         val notification = NotificationCompat.Builder(
