@@ -28,8 +28,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.shreyash.dotrack.R
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,6 +45,7 @@ fun AddEditCategoryScreen(
     var name by remember { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val errorSavingCategoryMessage = stringResource(R.string.error_saving_category)
 
     LaunchedEffect(categoryId) {
         if (categoryId != null) {
@@ -55,12 +58,12 @@ fun AddEditCategoryScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (categoryId == null) "Add Category" else "Edit Category") },
+                title = { Text(if (categoryId == null) stringResource(R.string.add_category) else stringResource(R.string.edit_category)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.back)
                         )
                     }
                 }
@@ -79,7 +82,7 @@ fun AddEditCategoryScreen(
                             onCategorySaved()
                         } else {
                             snackbarHostState.showSnackbar(
-                                result.exceptionOrNull()?.message ?: "Error saving category"
+                                result.exceptionOrNull()?.message ?: errorSavingCategoryMessage
                             )
                         }
                     }
@@ -87,7 +90,7 @@ fun AddEditCategoryScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Check,
-                    contentDescription = "Save Category"
+                    contentDescription = stringResource(R.string.save_category)
                 )
             }
         },
@@ -102,7 +105,7 @@ fun AddEditCategoryScreen(
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Category Name") },
+                label = { Text(stringResource(R.string.category_name)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )

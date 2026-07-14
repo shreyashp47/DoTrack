@@ -23,6 +23,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
@@ -52,6 +53,9 @@ class TasksViewModel @Inject constructor(
         )
 
     var wallpaperUpdated by mutableStateOf(false)
+        private set
+
+    var isUpdatingWallpaper by mutableStateOf(false)
         private set
 
     fun completeTask(id: String) {
@@ -101,6 +105,8 @@ class TasksViewModel @Inject constructor(
      */
     fun updateWallpaper() {
         viewModelScope.launch(Dispatchers.IO) {
+            isUpdatingWallpaper = true
+            val wallpaperStartTime = System.currentTimeMillis()
             Log.d(TAG, "Updating wallpaper...")
             val tasksResult = getTasksUseCase().first()
 
@@ -112,6 +118,14 @@ class TasksViewModel @Inject constructor(
                     wallpaperUpdated = wallpaperResult.isSuccess()
                 }
             }
+
+            // Ensure minimum 4-second display of the progress indicator
+            val elapsed = System.currentTimeMillis() - wallpaperStartTime
+            val remaining = 2000L - elapsed
+            if (remaining > 0) {
+                delay(remaining)
+            }
+            isUpdatingWallpaper = false
         }
     }
 

@@ -17,6 +17,7 @@ data class TaskEntity(
     val dueDate: LocalDateTime? = null,
     val priority: Priority,
     val reminderEnabled: Boolean = false,
+    val categoryId: String? = null,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime
 ) {
@@ -30,6 +31,7 @@ data class TaskEntity(
                 dueDate = task.dueDate,
                 priority = task.priority,
                 reminderEnabled = task.reminderEnabled,
+                categoryId = task.categoryId,
                 createdAt = task.createdAt,
                 updatedAt = task.updatedAt
             )
@@ -40,7 +42,8 @@ data class TaskEntity(
             description: String,
             dueDate: LocalDateTime? = null,
             priority: Priority,
-            reminderEnabled: Boolean = false
+            reminderEnabled: Boolean = false,
+            categoryId: String? = null
         ): TaskEntity {
             val now = LocalDateTime.now()
             return TaskEntity(
@@ -50,6 +53,7 @@ data class TaskEntity(
                 isCompleted = false,
                 dueDate = dueDate,
                 priority = priority,
+                categoryId = categoryId,
                 createdAt = now,
                 updatedAt = now,
                 reminderEnabled = reminderEnabled
@@ -65,6 +69,7 @@ data class TaskEntity(
             isCompleted = isCompleted,
             dueDate = dueDate,
             priority = priority,
+            categoryId = categoryId,
             createdAt = createdAt,
             reminderEnabled = reminderEnabled,
             updatedAt = updatedAt

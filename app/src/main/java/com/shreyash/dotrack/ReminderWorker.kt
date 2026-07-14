@@ -11,6 +11,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.shreyash.dotrack.R
 import com.shreyash.dotrack.domain.repository.TaskRepository
 import com.shreyash.dotrack.widget.TaskWidgetUpdater
 import com.shreyash.dotrack.workmanager.TaskRepositoryEntryPoint
@@ -31,19 +32,20 @@ class ReminderWorker(
         ).taskRepository()
     }
 
+    private val CHANNEL_ID = applicationContext.getString(R.string.reminder_channel_id)
+    private val CHANNEL_NAME = applicationContext.getString(R.string.reminder_channel_name)
+    private val CHANNEL_DESCRIPTION = applicationContext.getString(R.string.reminder_channel_desc)
+
     companion object {
         const val KEY_TASK_ID = "taskId"
         const val KEY_TITLE = "title"
-        private const val CHANNEL_ID = "reminder_channel"
-        private const val CHANNEL_NAME = "Task Reminders"
-        private const val CHANNEL_DESCRIPTION = "Notifications for task reminders"
         private const val TAG = "ReminderWorker"
     }
 
     override suspend fun doWork(): Result {
         try {
             val taskId = inputData.getString(KEY_TASK_ID) ?: return Result.failure()
-            val title = inputData.getString(KEY_TITLE) ?: "Task Reminder"
+            val title = inputData.getString(KEY_TITLE) ?: applicationContext.getString(R.string.task_reminder)
 
             withContext(Dispatchers.IO) {
                 try {
@@ -107,22 +109,14 @@ class ReminderWorker(
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        // Get the app's icon resource ID
-        val iconResId = applicationContext.resources.getIdentifier(
-            "ic_notification",
-            "drawable",
-            applicationContext.packageName
-        )
-
-        // Use a fallback icon if the app's icon is not found
-        val icon = if (iconResId != 0) iconResId else android.R.drawable.ic_dialog_info
+        val icon = R.drawable.ic_launcher_foreground
 
         // Build the notification
         val notification = NotificationCompat.Builder(
             applicationContext, CHANNEL_ID
         )
             .setSmallIcon(icon)
-            .setContentTitle("Task Reminder")
+            .setContentTitle(applicationContext.getString(R.string.task_reminder))
             .setContentText(title)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_REMINDER)

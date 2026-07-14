@@ -30,6 +30,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -87,64 +88,69 @@ fun TasksScreen(
         }
     }
 
+    val allTasksDeleted = stringResource(R.string.all_tasks_deleted)
+
     // Delete confirmation dialog
     if (showDeleteConfirmDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirmDialog = false },
-            title = { Text("Delete All Tasks") },
-            text = { Text("Are you sure you want to delete all tasks? This action cannot be undone.") },
+            title = { Text(stringResource(R.string.delete_all_tasks)) },
+            text = { Text(stringResource(R.string.delete_all_confirm)) },
             confirmButton = {
                 Button(
                     onClick = {
                         viewModel.deleteAllTask()
                         showDeleteConfirmDialog = false
                         scope.launch {
-                            snackbarHostState.showSnackbar("All tasks deleted")
+                            snackbarHostState.showSnackbar(allTasksDeleted)
                         }
                     }
                 ) {
-                    Text("Delete All")
+                    Text(stringResource(R.string.delete_all_tasks))
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showDeleteConfirmDialog = false }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
     }
+    val wallpaperInProgress = stringResource(R.string.wallpaper_in_progress)
+
     // Delete confirmation dialog
     if (showSetWallpaperDialog) {
         AlertDialog(
             onDismissRequest = { showSetWallpaperDialog = false },
-            title = { Text("Set Wallpaper") },
-            text = { Text("Are you sure you want set wallpaper? This action cannot be undone.") },
+            title = { Text(stringResource(R.string.set_wallpaper)) },
+            text = { Text(stringResource(R.string.set_wallpaper_confirm)) },
             confirmButton = {
                 Button(
                     onClick = {
                         viewModel.updateWallpaper()
                         showSetWallpaperDialog = false
                         scope.launch {
-                            snackbarHostState.showSnackbar("New wallpaper is progress... . ")
+                            snackbarHostState.showSnackbar(wallpaperInProgress)
                         }
                     }
                 ) {
-                    Text("Apply")
+                    Text(stringResource(R.string.apply))
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showSetWallpaperDialog = false }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
     }
 
-    Scaffold(
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -159,7 +165,7 @@ fun TasksScreen(
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_wallpaper),
-                            contentDescription = "Set as Wallpaper"
+                            contentDescription = stringResource(R.string.set_as_wallpaper)
                         )
                     }
                     IconButton(
@@ -167,7 +173,7 @@ fun TasksScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete all tasks"
+                            contentDescription = stringResource(R.string.delete_all_tasks_content_desc)
                         )
                     }
                 },
@@ -178,7 +184,7 @@ fun TasksScreen(
             FloatingActionButton(onClick = onAddTaskClick) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Add Task"
+                    contentDescription = stringResource(R.string.add_task)
                 )
             }
         },
@@ -206,7 +212,7 @@ fun TasksScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "No tasks yet. Add one!",
+                            text = stringResource(R.string.no_tasks_yet),
                             color = MaterialTheme.colorScheme.onBackground
                         )
                     }
@@ -235,10 +241,31 @@ fun TasksScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Error: ${tasksState.exceptionOrNull()?.message}",
+                        text = stringResource(R.string.error_format, tasksState.exceptionOrNull()?.message ?: ""),
                         color = MaterialTheme.colorScheme.onBackground
                     )
                 }
+            }
+        }
+    }
+    }
+
+    if (viewModel.isUpdatingWallpaper) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.5f))
+                .clickable(enabled = true, onClick = {}),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                CircularProgressIndicator(color = Color.White)
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = stringResource(R.string.applying_wallpaper),
+                    color = Color.White,
+                    style = MaterialTheme.typography.titleMedium
+                )
             }
         }
     }
@@ -331,7 +358,7 @@ fun TaskItem(
                 task.dueDate?.let {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Due: ${it.format(dateFormatter)}",
+                        text = stringResource(R.string.due_label, it.format(dateFormatter)),
                         style = MaterialTheme.typography.bodySmall,
                         color = textColor
                     )
@@ -364,8 +391,8 @@ fun PriorityIndicator(
     if (showDeleteConfirmDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirmDialog = false },
-            title = { Text("Delete Task") },
-            text = { Text("Are you sure you want to delete this task?") },
+            title = { Text(stringResource(R.string.delete_task)) },
+            text = { Text(stringResource(R.string.delete_task_confirm)) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -373,14 +400,14 @@ fun PriorityIndicator(
                         showDeleteConfirmDialog = false
                     }
                 ) {
-                    Text("Delete")
+                    Text(stringResource(R.string.delete))
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showDeleteConfirmDialog = false }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -393,7 +420,7 @@ fun PriorityIndicator(
     ) {
         Icon(
             imageVector = Icons.Default.Delete,
-            contentDescription = "Delete task",
+            contentDescription = stringResource(R.string.delete_task_content_desc),
             tint = color
         )
     }

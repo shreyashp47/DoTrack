@@ -8,8 +8,9 @@ import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import com.shreyash.dotrack.R
 import com.shreyash.dotrack.TrackConstants
-import com.shreyash.dotrack.data.local.TaskDatabase
+import com.shreyash.dotrack.data.local.dao.TaskDao
 import com.shreyash.dotrack.domain.model.Task
+import dagger.hilt.android.EntryPointAccessors
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -24,14 +25,18 @@ class TaskWidgetItemFactory(
 ) : RemoteViewsService.RemoteViewsFactory {
 
     private var tasks: List<Task> = emptyList()
+    private val taskDao: TaskDao by lazy {
+        EntryPointAccessors.fromApplication(
+            context.applicationContext,
+            WidgetEntryPoint::class.java
+        ).taskDao()
+    }
 
     override fun onCreate() {
         // No initialization needed
     }
 
     override fun onDataSetChanged() {
-        val db = TaskDatabase.getInstance(context.applicationContext)
-        val taskDao = db.taskDao()
         val taskEntities = taskDao.getPendingTasksSync()
         tasks = taskEntities.map { entity ->
             Task(
@@ -81,7 +86,7 @@ class TaskWidgetItemFactory(
             val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.getDefault())
 
             remoteView.setViewVisibility(R.id.widget_task_due, View.VISIBLE)
-            remoteView.setTextViewText(R.id.widget_task_due, "Due: ${task.dueDate?.format(dateFormatter)}")
+            remoteView.setTextViewText(R.id.widget_task_due, context.getString(R.string.due_label, task.dueDate?.format(dateFormatter)))
         } else {
             remoteView.setViewVisibility(R.id.widget_task_due, View.GONE)
 
@@ -89,11 +94,11 @@ class TaskWidgetItemFactory(
 
         when (task.priority) {
             com.shreyash.dotrack.domain.model.Priority.HIGH ->
-                remoteView.setTextViewText(R.id.widget_task_priority, "H")
+                remoteView.setTextViewText(R.id.widget_task_priority, context.getString(R.string.priority_high))
             com.shreyash.dotrack.domain.model.Priority.MEDIUM ->
-                remoteView.setTextViewText(R.id.widget_task_priority, "M")
+                remoteView.setTextViewText(R.id.widget_task_priority, context.getString(R.string.priority_medium))
             com.shreyash.dotrack.domain.model.Priority.LOW ->
-                remoteView.setTextViewText(R.id.widget_task_priority, "L")
+                remoteView.setTextViewText(R.id.widget_task_priority, context.getString(R.string.priority_low))
         }
 
         // Set fill-in intent for item clicks

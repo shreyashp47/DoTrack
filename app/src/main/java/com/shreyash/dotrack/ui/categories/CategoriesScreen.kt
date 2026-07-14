@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +38,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.shreyash.dotrack.R
 import com.shreyash.dotrack.domain.model.Category
 
 @Preview(showBackground = true)
@@ -62,14 +64,14 @@ fun CategoriesScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Categories") }
+                title = { Text(stringResource(R.string.categories)) }
             )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddCategoryClick) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Add Category"
+                    contentDescription = stringResource(R.string.add_category)
                 )
             }
         }
@@ -95,7 +97,7 @@ fun CategoriesScreen(
                             .padding(padding),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("No categories yet. Add one!")
+                        Text(stringResource(R.string.no_categories_yet))
                     }
                 } else {
                     CategoryList(
@@ -113,7 +115,7 @@ fun CategoriesScreen(
                         .padding(padding),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("Error: ${categoriesState.exceptionOrNull()?.message}")
+                    Text(stringResource(R.string.error_format, categoriesState.exceptionOrNull()?.message ?: ""))
                 }
             }
         }
