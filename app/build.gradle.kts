@@ -30,8 +30,8 @@ android {
         applicationId = "com.shreyash.dotrack"
         minSdk = 26
         targetSdk = 35
-        versionCode = 24
-        versionName = "1.24"
+        versionCode = 25
+        versionName = "1.25"
 
         testInstrumentationRunner = "com.shreyash.dotrack.HiltTestRunner"
     }
