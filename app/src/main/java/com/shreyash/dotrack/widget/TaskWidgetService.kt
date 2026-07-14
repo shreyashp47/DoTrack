@@ -86,7 +86,7 @@ class TaskWidgetItemFactory(
             val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.getDefault())
 
             remoteView.setViewVisibility(R.id.widget_task_due, View.VISIBLE)
-            remoteView.setTextViewText(R.id.widget_task_due, "Due: ${task.dueDate?.format(dateFormatter)}")
+            remoteView.setTextViewText(R.id.widget_task_due, context.getString(R.string.due_label, task.dueDate?.format(dateFormatter)))
         } else {
             remoteView.setViewVisibility(R.id.widget_task_due, View.GONE)
 
@@ -94,11 +94,11 @@ class TaskWidgetItemFactory(
 
         when (task.priority) {
             com.shreyash.dotrack.domain.model.Priority.HIGH ->
-                remoteView.setTextViewText(R.id.widget_task_priority, "H")
+                remoteView.setTextViewText(R.id.widget_task_priority, context.getString(R.string.priority_high))
             com.shreyash.dotrack.domain.model.Priority.MEDIUM ->
-                remoteView.setTextViewText(R.id.widget_task_priority, "M")
+                remoteView.setTextViewText(R.id.widget_task_priority, context.getString(R.string.priority_medium))
             com.shreyash.dotrack.domain.model.Priority.LOW ->
-                remoteView.setTextViewText(R.id.widget_task_priority, "L")
+                remoteView.setTextViewText(R.id.widget_task_priority, context.getString(R.string.priority_low))
         }
 
         // Set fill-in intent for item clicks

@@ -19,17 +19,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -42,11 +46,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -70,10 +76,81 @@ fun SettingsScreenPreview() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+private fun SettingsPreviewContent() {
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text(stringResource(R.string.settings)) })
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                )
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    SettingSwitchItem(
+                        title = stringResource(R.string.auto_wallpaper_updates),
+                        subtitle = stringResource(R.string.auto_wallpaper_subtitle),
+                        checked = false,
+                        onCheckedChange = {}
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                    Text(stringResource(R.string.wallpaper_color), style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.wallpaper_color_subtitle), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        WallpaperColorCircle(colorHex = "#1A2980", label = "Primary", onClick = {})
+                        WallpaperColorCircle(colorHex = "#26D0CE", label = "Secondary", onClick = {})
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(stringResource(R.string.task_priority_colors), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 8.dp))
+            Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    ColorSettingItem(title = stringResource(R.string.high_priority), subtitle = stringResource(R.string.high_priority_subtitle), colorHex = "#FF4444", onClick = {})
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                    ColorSettingItem(title = stringResource(R.string.medium_priority), subtitle = stringResource(R.string.medium_priority_subtitle), colorHex = "#FFBB33", onClick = {})
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                    ColorSettingItem(title = stringResource(R.string.low_priority), subtitle = stringResource(R.string.low_priority_subtitle), colorHex = "#00C851", onClick = {})
+                }
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(stringResource(R.string.notifications), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 8.dp))
+            Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    SettingSwitchItem(title = stringResource(R.string.permission), subtitle = stringResource(R.string.enable_notification_permission), checked = false, onCheckedChange = {})
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            OutlinedButton(modifier = Modifier.fillMaxWidth(), onClick = {}, shape = RoundedCornerShape(12.dp)) {
+                Icon(painterResource(id = R.drawable.ic_sync), contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(stringResource(R.string.sync_up))
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
-
 ) {
+    if (LocalInspectionMode.current) {
+        SettingsPreviewContent()
+        return
+    }
+
     // Collect states from ViewModel
     val isAutoWallpaperEnabled by viewModel.autoWallpaperEnabled.collectAsState()
     val currentWallpaperColor by viewModel.wallpaperColor.collectAsState()
@@ -97,11 +174,11 @@ fun SettingsScreen(
         ColorPickerDialog(
             initialColor = viewModel.selectedColor,
             title = when (viewModel.currentColorPickerMode) {
-                ColorPickerMode.WALLPAPER -> "Choose Wallpaper Color"
-                ColorPickerMode.SECONDARY_WALLPAPER -> "Choose Secondary Wallpaper Color"
-                ColorPickerMode.HIGH_PRIORITY -> "Choose High Priority Color"
-                ColorPickerMode.MEDIUM_PRIORITY -> "Choose Medium Priority Color"
-                ColorPickerMode.LOW_PRIORITY -> "Choose Low Priority Color"
+                ColorPickerMode.WALLPAPER -> stringResource(R.string.choose_wallpaper_color)
+                ColorPickerMode.SECONDARY_WALLPAPER -> stringResource(R.string.choose_secondary_wallpaper_color)
+                ColorPickerMode.HIGH_PRIORITY -> stringResource(R.string.choose_high_priority_color)
+                ColorPickerMode.MEDIUM_PRIORITY -> stringResource(R.string.choose_medium_priority_color)
+                ColorPickerMode.LOW_PRIORITY -> stringResource(R.string.choose_low_priority_color)
             },
             onColorSelected = { color ->
                 viewModel.updateSelectedColor(color)
@@ -125,134 +202,155 @@ fun SettingsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Settings") })
+            TopAppBar(title = { Text(stringResource(R.string.settings)) })
         }
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            SettingSwitchItem(
-                title = "Auto Wallpaper Updates",
-                subtitle = "Automatically update wallpaper when tasks change",
-                checked = isAutoWallpaperEnabled,
-                onCheckedChange = { viewModel.setAutoWallpaperEnabled(it) }
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Current wallpaper color preview
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp)
+            // Wallpaper Section
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                )
             ) {
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    SettingSwitchItem(
+                        title = stringResource(R.string.auto_wallpaper_updates),
+                        subtitle = stringResource(R.string.auto_wallpaper_subtitle),
+                        checked = isAutoWallpaperEnabled,
+                        onCheckedChange = { viewModel.setAutoWallpaperEnabled(it) }
+                    )
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                    )
+
                     Text(
-                        text = "Wallpaper Color",
+                        text = stringResource(R.string.wallpaper_color),
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Text(
-                        text = "Choose background color for wallpaper",
+                        text = stringResource(R.string.wallpaper_color_subtitle),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        WallpaperColorCircle(
+                            colorHex = currentWallpaperColor,
+                            label = "Primary",
+                            onClick = { viewModel.showWallpaperColorPicker() }
+                        )
+                        WallpaperColorCircle(
+                            colorHex = secondaryWallpaperColor,
+                            label = "Secondary",
+                            onClick = { viewModel.showSecondaryWallpaperColorPicker() }
+                        )
+                    }
                 }
-
-                // Color preview
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(CircleShape)
-                        .clickable { viewModel.showWallpaperColorPicker() }
-                        .background(Color(android.graphics.Color.parseColor(currentWallpaperColor)))
-                        .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(CircleShape)
-                        .clickable { viewModel.showSecondaryWallpaperColorPicker() }
-                        .background(Color(android.graphics.Color.parseColor(secondaryWallpaperColor)))
-                        .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
-                )
-
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Priority Colors Section
             Text(
-                text = "Task Priority Colors",
+                text = stringResource(R.string.task_priority_colors),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            // High Priority Color
-            val currentHighPriorityColor by viewModel.highPriorityColor.collectAsState()
-            ColorSettingItem(
-                title = "High Priority",
-                subtitle = "Color for high priority tasks",
-                colorHex = currentHighPriorityColor,
-                onClick = { viewModel.showPriorityColorPicker(Priority.HIGH) }
-            )
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                )
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    val currentHighPriorityColor by viewModel.highPriorityColor.collectAsState()
+                    ColorSettingItem(
+                        title = stringResource(R.string.high_priority),
+                        subtitle = stringResource(R.string.high_priority_subtitle),
+                        colorHex = currentHighPriorityColor,
+                        onClick = { viewModel.showPriorityColorPicker(Priority.HIGH) }
+                    )
 
-            // Medium Priority Color
-            val currentMediumPriorityColor by viewModel.mediumPriorityColor.collectAsState()
-            ColorSettingItem(
-                title = "Medium Priority",
-                subtitle = "Color for medium priority tasks",
-                colorHex = currentMediumPriorityColor,
-                onClick = { viewModel.showPriorityColorPicker(Priority.MEDIUM) }
-            )
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                    )
 
-            // Low Priority Color
-            val currentLowPriorityColor by viewModel.lowPriorityColor.collectAsState()
-            ColorSettingItem(
-                title = "Low Priority",
-                subtitle = "Color for low priority tasks",
-                colorHex = currentLowPriorityColor,
-                onClick = { viewModel.showPriorityColorPicker(Priority.LOW) }
-            )
+                    val currentMediumPriorityColor by viewModel.mediumPriorityColor.collectAsState()
+                    ColorSettingItem(
+                        title = stringResource(R.string.medium_priority),
+                        subtitle = stringResource(R.string.medium_priority_subtitle),
+                        colorHex = currentMediumPriorityColor,
+                        onClick = { viewModel.showPriorityColorPicker(Priority.MEDIUM) }
+                    )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                    )
+
+                    val currentLowPriorityColor by viewModel.lowPriorityColor.collectAsState()
+                    ColorSettingItem(
+                        title = stringResource(R.string.low_priority),
+                        subtitle = stringResource(R.string.low_priority_subtitle),
+                        colorHex = currentLowPriorityColor,
+                        onClick = { viewModel.showPriorityColorPicker(Priority.LOW) }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Notifications Section
             Text(
-                text = "Notifications",
+                text = stringResource(R.string.notifications),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            SettingSwitchItem(
-                title = "Permission",
-                subtitle = "Enable notifications permissions",
-                checked = isNotificationEnabled,
-                onCheckedChange = {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        if (!isNotificationEnabled) {
-                            // Show permission dialog
-                            showPermissionDialog = true
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                )
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    SettingSwitchItem(
+                        title = stringResource(R.string.permission),
+                        subtitle = stringResource(R.string.enable_notification_permission),
+                        checked = isNotificationEnabled,
+                        onCheckedChange = {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                if (!isNotificationEnabled) {
+                                    showPermissionDialog = true
+                                }
+                            }
                         }
-                    }
+                    )
                 }
-            )
+            }
 
             // Permission request dialog
             if (showPermissionDialog) {
                 AlertDialog(
                     onDismissRequest = { showPermissionDialog = false },
-                    title = { Text("Notification Permission") },
-                    text = { Text("DoTrack needs notification permission to send you reminders for your tasks. Would you like to grant this permission?") },
+                    title = { Text(stringResource(R.string.notification_permission_title)) },
+                    text = { Text(stringResource(R.string.notification_permission_message)) },
                     confirmButton = {
                         Button(
                             onClick = {
@@ -262,36 +360,36 @@ fun SettingsScreen(
                                 }
                             }
                         ) {
-                            Text("Grant Permission")
+                            Text(stringResource(R.string.grant_permission))
                         }
                     },
                     dismissButton = {
                         TextButton(
                             onClick = { showPermissionDialog = false }
                         ) {
-                            Text("Not Now")
+                            Text(stringResource(R.string.not_now))
                         }
                     }
                 )
             }
 
-            TextButton(
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    viewModel.updateWallpaper()
-                }) {
-                Text(
-                    text = "Sync-up",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Spacer(
-                    modifier = Modifier.width(8.dp)
-                )
+                onClick = { viewModel.updateWallpaper() },
+                shape = RoundedCornerShape(12.dp)
+            ) {
                 Icon(
                     painterResource(id = R.drawable.ic_sync),
-                    contentDescription = "Sync up"
+                    contentDescription = stringResource(R.string.sync_up_content_desc),
+                    modifier = Modifier.size(18.dp)
                 )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(stringResource(R.string.sync_up))
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
@@ -365,7 +463,7 @@ fun ColorPickerDialog(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.cancel))
                     }
 
                     Button(
@@ -374,7 +472,7 @@ fun ColorPickerDialog(
 
                         }
                     ) {
-                        Text("Apply")
+                        Text(stringResource(R.string.apply))
                     }
                 }
             }
@@ -419,6 +517,32 @@ fun SettingSwitchItem(
 }
 
 @Composable
+fun WallpaperColorCircle(
+    colorHex: String,
+    label: String,
+    onClick: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable(onClick = onClick)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .background(Color(android.graphics.Color.parseColor(colorHex)))
+                .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
 fun ColorSettingItem(
     title: String,
     subtitle: String? = null,
@@ -448,7 +572,6 @@ fun ColorSettingItem(
             }
         }
 
-        // Color preview
         Box(
             modifier = Modifier
                 .size(32.dp)
@@ -460,9 +583,9 @@ fun ColorSettingItem(
         Spacer(modifier = Modifier.width(8.dp))
 
         Icon(
-            imageVector = Icons.Default.Add,
-            contentDescription = "Choose color",
-            tint = MaterialTheme.colorScheme.primary
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = stringResource(R.string.choose_color),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }

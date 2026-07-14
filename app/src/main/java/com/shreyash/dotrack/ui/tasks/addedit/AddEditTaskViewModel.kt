@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.shreyash.dotrack.R
 import com.shreyash.dotrack.core.util.Result
 import com.shreyash.dotrack.core.util.WallpaperGenerator
 import com.shreyash.dotrack.domain.ReminderScheduler
@@ -20,6 +21,7 @@ import com.shreyash.dotrack.widget.TaskWidgetUpdater
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -120,12 +122,13 @@ class AddEditTaskViewModel @Inject constructor(
     fun saveTask() {
         if (uiState.title.isBlank()) {
             uiState = uiState.copy(
-                saveResult = Result.Error(Exception("Title cannot be empty"))
+                saveResult = Result.Error(Exception(context.getString(R.string.title_cannot_be_empty)))
             )
             return
         }
 
         uiState = uiState.copy(isSaving = true)
+        val saveStartTime = System.currentTimeMillis()
 
         viewModelScope.launch(Dispatchers.IO) {
             val result = if (uiState.id == null) {
@@ -172,6 +175,13 @@ class AddEditTaskViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     TaskWidgetUpdater.updateTaskWidgets(context)
                 }
+            }
+
+            // Ensure minimum 4-second display of the progress indicator
+            val elapsed = System.currentTimeMillis() - saveStartTime
+            val remaining = 2000L - elapsed
+            if (remaining > 0) {
+                delay(remaining)
             }
 
             // Update UI state on the main thread

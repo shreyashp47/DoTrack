@@ -2,6 +2,8 @@ package com.shreyash.dotrack.ui.tasks.addedit
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -24,6 +27,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,7 +50,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.shreyash.dotrack.R
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.shreyash.dotrack.domain.model.Priority
@@ -69,6 +76,7 @@ fun AddEditTaskScreen(
     val uiState = viewModel.uiState
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val errorSavingTaskMessage = stringResource(R.string.error_saving_task)
 
     // Load task if editing
     LaunchedEffect(taskId) {
@@ -83,24 +91,26 @@ fun AddEditTaskScreen(
             if (result.isSuccess()) {
                 onTaskSaved()
             } else if (result.isError()) {
+                val errorMessage = result.exceptionOrNull()?.message ?: errorSavingTaskMessage
                 scope.launch {
                     snackbarHostState.showSnackbar(
-                        message = result.exceptionOrNull()?.message ?: "Error saving task"
+                        message = errorMessage
                     )
                 }
             }
         }
     }
 
-    Scaffold(
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (taskId == null) "Add Task" else "Edit Task") },
+                title = { Text(if (taskId == null) stringResource(R.string.add_task) else stringResource(R.string.edit_task)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.back)
                         )
                     }
                 }
@@ -112,7 +122,7 @@ fun AddEditTaskScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Check,
-                    contentDescription = "Save Task"
+                    contentDescription = stringResource(R.string.save_task)
                 )
             }
         },
@@ -141,6 +151,27 @@ fun AddEditTaskScreen(
                 onReminderEnabledChange = viewModel::updateReminderEnabled,
                 modifier = Modifier.padding(padding)
             )
+        }
+    }
+    }
+
+    if (uiState.isSaving) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.5f))
+                .clickable(enabled = true, onClick = {}),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                CircularProgressIndicator(color = Color.White)
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = stringResource(R.string.saving_task),
+                    color = Color.White,
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
         }
     }
 }
@@ -180,7 +211,7 @@ fun TaskForm(
         OutlinedTextField(
             value = title,
             onValueChange = onTitleChange,
-            label = { Text("Title") },
+            label = { Text(stringResource(R.string.title_label)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
@@ -190,7 +221,7 @@ fun TaskForm(
         OutlinedTextField(
             value = description,
             onValueChange = onDescriptionChange,
-            label = { Text("Description") },
+            label = { Text(stringResource(R.string.description_label)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(120.dp),
@@ -201,16 +232,16 @@ fun TaskForm(
 
         // Due Date Picker
         OutlinedTextField(
-            value = dueDate?.format(dateFormatter) ?: "No due date",
+            value = dueDate?.format(dateFormatter) ?: stringResource(R.string.no_due_date),
             onValueChange = {},
-            label = { Text("Due Date (Optional)") },
+            label = { Text(stringResource(R.string.due_date_optional)) },
             modifier = Modifier.fillMaxWidth(),
             readOnly = true,
             trailingIcon = {
                 IconButton(onClick = { showDatePicker = true }) {
                     Icon(
                         imageVector = Icons.Default.DateRange,
-                        contentDescription = "Select Date"
+                        contentDescription = stringResource(R.string.select_date)
                     )
                 }
             }
@@ -245,14 +276,14 @@ fun TaskForm(
                             }
                         }
                     ) {
-                        Text("Next")
+                        Text(stringResource(R.string.next))
                     }
                 },
                 dismissButton = {
                     TextButton(
                         onClick = { showDatePicker = false }
                     ) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.cancel))
                     }
                 }
             ) {
@@ -290,7 +321,7 @@ fun TaskForm(
                 value = priority.name,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Priority") },
+                label = { Text(stringResource(R.string.priority)) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isDropdownExpanded) },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -330,10 +361,10 @@ fun TaskForm(
                             onCheckedChange = onReminderEnabledChange
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Enable reminder (30 min before)")
+                        Text(stringResource(R.string.enable_reminder))
                     }
                     Text(
-                        text = "You'll receive a notification 30 minutes before the due time",
+                        text = stringResource(R.string.reminder_helper),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -346,7 +377,7 @@ fun TaskForm(
                 enabled = dueDate != null,
                 modifier = Modifier.padding(start = 8.dp)
             ) {
-                Text("Clear Due Date")
+                Text(stringResource(R.string.clear_due_date))
             }
         }
     }
@@ -362,12 +393,12 @@ fun AddEditTaskScreenPreview() {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Add Task") },
+                    title = { Text(stringResource(R.string.add_task)) },
                     navigationIcon = {
                         IconButton(onClick = {}) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back"
+                                contentDescription = stringResource(R.string.back)
                             )
                         }
                     }
@@ -377,15 +408,15 @@ fun AddEditTaskScreenPreview() {
                 FloatingActionButton(onClick = {}) {
                     Icon(
                         imageVector = Icons.Default.Check,
-                        contentDescription = "Save Task"
+                        contentDescription = stringResource(R.string.save_task)
                     )
                 }
             }
         ) { padding ->
             TaskForm(
-                title = "Sample Task",
+                title = stringResource(R.string.sample_task),
                 onTitleChange = {},
-                description = "This is a sample task description for preview",
+                description = stringResource(R.string.sample_task_description),
                 onDescriptionChange = {},
                 priority = Priority.MEDIUM,
                 onPriorityChange = {},
