@@ -17,14 +17,17 @@ import com.shreyash.dotrack.core.ui.theme.DEFAULT_LOW_PRIORITY_COLOR
 import com.shreyash.dotrack.core.ui.theme.DEFAULT_MEDIUM_PRIORITY_COLOR
 import com.shreyash.dotrack.core.ui.theme.DEFAULT_TOP_COLOR
 import com.shreyash.dotrack.core.util.WallpaperGenerator
+import com.shreyash.dotrack.domain.model.DarkMode
 import com.shreyash.dotrack.domain.model.Priority
 import com.shreyash.dotrack.domain.usecase.preferences.GetAutoWallpaperEnabledUseCase
+import com.shreyash.dotrack.domain.usecase.preferences.GetDarkModeUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetHighPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetLowPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetMediumPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetSecondaryWallpaperColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetWallpaperColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetAutoWallpaperEnabledUseCase
+import com.shreyash.dotrack.domain.usecase.preferences.SetDarkModeUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetHighPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetLowPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetMediumPriorityColorUseCase
@@ -58,6 +61,8 @@ class SettingsViewModel @Inject constructor(
     private val setLowPriorityColorUseCase: SetLowPriorityColorUseCase,
     private val wallpaperGenerator: WallpaperGenerator,
     private val getTasksUseCase: GetTasksUseCase,
+    private val getDarkModeUseCase: GetDarkModeUseCase,
+    private val setDarkModeUseCase: SetDarkModeUseCase,
 ) : ViewModel() {
 
 
@@ -125,6 +130,25 @@ class SettingsViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = DEFAULT_LOW_PRIORITY_COLOR // Default low priority color
         )
+
+    /**
+     * Dark mode state
+     */
+    val darkMode: StateFlow<String> = getDarkModeUseCase()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = DarkMode.SYSTEM.value
+        )
+
+    /**
+     * Set dark mode
+     */
+    fun setDarkMode(mode: String) {
+        viewModelScope.launch {
+            setDarkModeUseCase(mode)
+        }
+    }
 
     /**
      * Show color picker dialog state

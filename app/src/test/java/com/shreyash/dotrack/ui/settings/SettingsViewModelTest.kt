@@ -11,13 +11,16 @@ import com.shreyash.dotrack.core.util.Result
 import com.shreyash.dotrack.core.util.WallpaperGenerator
 import com.shreyash.dotrack.domain.model.Priority
 import com.shreyash.dotrack.domain.model.Task
+import com.shreyash.dotrack.domain.model.DarkMode
 import com.shreyash.dotrack.domain.usecase.preferences.GetAutoWallpaperEnabledUseCase
+import com.shreyash.dotrack.domain.usecase.preferences.GetDarkModeUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetHighPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetLowPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetMediumPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetSecondaryWallpaperColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetWallpaperColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetAutoWallpaperEnabledUseCase
+import com.shreyash.dotrack.domain.usecase.preferences.SetDarkModeUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetHighPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetLowPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetMediumPriorityColorUseCase
@@ -65,6 +68,8 @@ class SettingsViewModelTest {
     private lateinit var setLowPriorityColorUseCase: SetLowPriorityColorUseCase
     private lateinit var wallpaperGenerator: WallpaperGenerator
     private lateinit var getTasksUseCase: GetTasksUseCase
+    private lateinit var getDarkModeUseCase: GetDarkModeUseCase
+    private lateinit var setDarkModeUseCase: SetDarkModeUseCase
 
     // Class under test
     private lateinit var viewModel: SettingsViewModel
@@ -89,9 +94,12 @@ class SettingsViewModelTest {
         setLowPriorityColorUseCase = mockk()
         wallpaperGenerator = mockk(relaxed = true)
         getTasksUseCase = mockk()
+        getDarkModeUseCase = mockk()
+        setDarkModeUseCase = mockk(relaxed = true)
 
         // Default mock behavior
         every { getAutoWallpaperEnabledUseCase() } returns flowOf(false)
+        every { getDarkModeUseCase() } returns flowOf(DarkMode.SYSTEM.value)
         every { getWallpaperColorUseCase() } returns flowOf(DEFAULT_TOP_COLOR)
         every { getSecondaryWallpaperColorUseCase() } returns flowOf(DEFAULT_TOP_COLOR)
         every { getHighPriorityColorUseCase() } returns flowOf(DEFAULT_HIGH_PRIORITY_COLOR)
@@ -114,7 +122,9 @@ class SettingsViewModelTest {
             getLowPriorityColorUseCase = getLowPriorityColorUseCase,
             setLowPriorityColorUseCase = setLowPriorityColorUseCase,
             wallpaperGenerator = wallpaperGenerator,
-            getTasksUseCase = getTasksUseCase
+            getTasksUseCase = getTasksUseCase,
+            getDarkModeUseCase = getDarkModeUseCase,
+            setDarkModeUseCase = setDarkModeUseCase
         )
     }
 
@@ -272,7 +282,9 @@ class SettingsViewModelTest {
             getLowPriorityColorUseCase = getLowPriorityColorUseCase,
             setLowPriorityColorUseCase = setLowPriorityColorUseCase,
             wallpaperGenerator = wallpaperGenerator,
-            getTasksUseCase = getTasksUseCase
+            getTasksUseCase = getTasksUseCase,
+            getDarkModeUseCase = getDarkModeUseCase,
+            setDarkModeUseCase = setDarkModeUseCase
         )
 
         // Then - show color picker should not crash

@@ -34,6 +34,7 @@ class UserPreferencesRepositoryImpl @Inject constructor(
         val HIGH_PRIORITY_COLOR = stringPreferencesKey("high_priority_color")
         val MEDIUM_PRIORITY_COLOR = stringPreferencesKey("medium_priority_color")
         val LOW_PRIORITY_COLOR = stringPreferencesKey("low_priority_color")
+        val DARK_MODE = stringPreferencesKey("dark_mode")
     }
 
     private val TAG = "UserPreferencesRepositoryImpl"
@@ -181,6 +182,31 @@ class UserPreferencesRepositoryImpl @Inject constructor(
         return try {
             dataStore.edit { preferences ->
                 preferences[PreferencesKeys.LOW_PRIORITY_COLOR] = colorHex
+            }
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
+    }
+
+    override fun getDarkMode(): Flow<String> {
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                preferences[PreferencesKeys.DARK_MODE] ?: "system"
+            }
+    }
+
+    override suspend fun setDarkMode(mode: String): Result<Unit> {
+        return try {
+            dataStore.edit { preferences ->
+                preferences[PreferencesKeys.DARK_MODE] = mode
             }
             Result.Success(Unit)
         } catch (e: Exception) {

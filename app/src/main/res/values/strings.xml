@@ -110,6 +110,30 @@
     <string name="date_time_format">MMM dd, yyyy HH:mm</string>
     <string name="date_format_widget">MMM dd, yyyy</string>
 
+    <!-- Appearance -->
+    <string name="appearance">Appearance</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="dark_mode_system">System Default</string>
+    <string name="dark_mode_light">Light</string>
+    <string name="dark_mode_dark">Dark</string>
+
+    <!-- Sort -->
+    <string name="sort_by">Sort By</string>
+    <string name="sort_due_date">Due Date</string>
+    <string name="sort_priority">Priority</string>
+    <string name="sort_created_date">Created Date</string>
+    <string name="sort_title">Title</string>
+    <string name="sort_ascending">Ascending</string>
+    <string name="sort_descending">Descending</string>
+
+    <!-- Filter -->
+    <string name="filter_by">Filter By</string>
+    <string name="filter_all">All</string>
+    <string name="filter_active">Active</string>
+    <string name="filter_completed">Completed</string>
+    <string name="filter_status">Status</string>
+    <string name="reset">Reset</string>
+
     <!-- Widget -->
     <string name="priority_high">H</string>
     <string name="priority_medium">M</string>
