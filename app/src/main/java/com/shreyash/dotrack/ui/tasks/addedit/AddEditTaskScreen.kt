@@ -267,10 +267,9 @@ fun TaskForm(
                     TextButton(
                         onClick = {
                             datePickerState.selectedDateMillis?.let { millis ->
-                                selectedDate = LocalDate.ofInstant(
-                                    Instant.ofEpochMilli(millis),
-                                    ZoneId.systemDefault()
-                                )
+                                selectedDate = Instant.ofEpochMilli(millis)
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
                                 showDatePicker = false
                                 showTimePicker = true
                             }

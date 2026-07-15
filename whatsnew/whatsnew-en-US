@@ -1,2 +1,5 @@
-• Bug fixes 
-• Dialog to set wallpaper 
+• Sort and filter tasks with new bottom sheets
+• Dark mode support (system/light/dark)
+• Redesigned settings screen
+• Improved date picker and time picker UI
+• Bug fixes and performance improvements

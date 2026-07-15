@@ -66,4 +66,16 @@ interface UserPreferencesRepository {
      * @param colorHex A hex color string (e.g., "#DFF5E0")
      */
     suspend fun setLowPriorityColor(colorHex: String): Result<Unit>
+
+    /**
+     * Get the dark mode preference as a Flow
+     * Returns "system", "light", or "dark"
+     */
+    fun getDarkMode(): Flow<String>
+
+    /**
+     * Set the dark mode preference
+     * @param mode "system", "light", or "dark"
+     */
+    suspend fun setDarkMode(mode: String): Result<Unit>
 }

@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -155,6 +156,7 @@ fun SettingsScreen(
     val isAutoWallpaperEnabled by viewModel.autoWallpaperEnabled.collectAsState()
     val currentWallpaperColor by viewModel.wallpaperColor.collectAsState()
     val secondaryWallpaperColor by viewModel.wallpaperSecondaryColor.collectAsState()
+    val currentDarkMode by viewModel.darkMode.collectAsState()
 
     // Notification permission state
     val isNotificationEnabled = viewModel.notificationPermissionState
@@ -308,6 +310,48 @@ fun SettingsScreen(
                         subtitle = stringResource(R.string.low_priority_subtitle),
                         colorHex = currentLowPriorityColor,
                         onClick = { viewModel.showPriorityColorPicker(Priority.LOW) }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Appearance Section
+            Text(
+                text = stringResource(R.string.appearance),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                )
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    DarkModeOption(
+                        label = stringResource(R.string.dark_mode_system),
+                        selected = currentDarkMode == "system",
+                        onClick = { viewModel.setDarkMode("system") }
+                    )
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                    )
+                    DarkModeOption(
+                        label = stringResource(R.string.dark_mode_light),
+                        selected = currentDarkMode == "light",
+                        onClick = { viewModel.setDarkMode("light") }
+                    )
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                    )
+                    DarkModeOption(
+                        label = stringResource(R.string.dark_mode_dark),
+                        selected = currentDarkMode == "dark",
+                        onClick = { viewModel.setDarkMode("dark") }
                     )
                 }
             }
@@ -543,6 +587,34 @@ fun WallpaperColorCircle(
 }
 
 @Composable
+fun DarkModeOption(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 12.dp)
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.weight(1f)
+        )
+        if (selected) {
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
+
+@Composable
 fun ColorSettingItem(
     title: String,
     subtitle: String? = null,
@@ -586,6 +658,69 @@ fun ColorSettingItem(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = stringResource(R.string.choose_color),
             tint = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ColorPickerDialogPreview() {
+    MaterialTheme {
+        ColorPickerDialog(
+            initialColor = Color(0xFF1A2980),
+            title = "Choose Color",
+            onColorSelected = {},
+            onDismiss = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SettingSwitchItemPreview() {
+    MaterialTheme {
+        SettingSwitchItem(
+            title = "Auto Wallpaper Updates",
+            subtitle = "Automatically update wallpaper when tasks change",
+            checked = true,
+            onCheckedChange = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun WallpaperColorCirclePreview() {
+    MaterialTheme {
+        WallpaperColorCircle(
+            colorHex = "#1A2980",
+            label = "Primary",
+            onClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun DarkModeOptionPreview() {
+    MaterialTheme {
+        DarkModeOption(
+            label = "System Default",
+            selected = true,
+            onClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ColorSettingItemPreview() {
+    MaterialTheme {
+        ColorSettingItem(
+            title = "High Priority",
+            subtitle = "Color for high priority tasks",
+            colorHex = "#FF4444",
+            onClick = {}
         )
     }
 }
