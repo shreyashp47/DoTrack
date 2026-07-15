@@ -1,6 +1,7 @@
 package com.shreyash.dotrack.ui.tasks
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -145,113 +146,137 @@ fun TaskDetailScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.task_details)) },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.back)
-                        )
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.task_details)) },
+                    navigationIcon = {
+                        IconButton(onClick = onBackClick) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.back)
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { showDeleteConfirmation = true }) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = stringResource(R.string.delete_task)
+                            )
+                        }
                     }
-                },
-                actions = {
-                    IconButton(onClick = { showDeleteConfirmation = true }) {
+                )
+            },
+            floatingActionButton = {
+                if (!viewModel.isDeleting) {
+                    FloatingActionButton(onClick = onEditClick) {
                         Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = stringResource(R.string.delete_task)
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = stringResource(R.string.edit_task)
                         )
                     }
                 }
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = onEditClick) {
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = stringResource(R.string.edit_task)
-                )
+            }
+        ) { padding ->
+            when {
+                taskState.isLoading() -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+
+                taskState.isSuccess() -> {
+                    val task = taskState.getOrNull() ?: return@Scaffold
+                    val dateFormatter = remember { DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm") }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                            .padding(16.dp)
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        TaskContentCard(
+                            title = task.title,
+                            isCompleted = task.isCompleted,
+                            description = task.description,
+                            priority = task.priority,
+                            dueDate = task.dueDate,
+                            createdAt = task.createdAt,
+                            updatedAt = task.updatedAt,
+                            reminderEnabled = task.reminderEnabled,
+                            dateFormatter = dateFormatter,
+                            onCheckChange = { isCompleted ->
+                                if (isCompleted) viewModel.completeTask()
+                                else viewModel.uncompleteTask()
+                            }
+                        )
+                    }
+                }
+
+                taskState.isError() -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(stringResource(R.string.error_format, taskState.exceptionOrNull()?.message ?: ""))
+                    }
+                }
             }
         }
-    ) { padding ->
-        when {
-            taskState.isLoading() -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
 
-            taskState.isSuccess() -> {
-                val task = taskState.getOrNull() ?: return@Scaffold
-                val dateFormatter = remember { DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm") }
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                        .padding(16.dp)
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    TaskContentCard(
-                        title = task.title,
-                        isCompleted = task.isCompleted,
-                        description = task.description,
-                        priority = task.priority,
-                        dueDate = task.dueDate,
-                        createdAt = task.createdAt,
-                        updatedAt = task.updatedAt,
-                        reminderEnabled = task.reminderEnabled,
-                        dateFormatter = dateFormatter,
-                        onCheckChange = { isCompleted ->
-                            if (isCompleted) viewModel.completeTask()
-                            else viewModel.uncompleteTask()
-                        }
+        if (viewModel.isDeleting) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.5f))
+                    .clickable(enabled = true, onClick = {}),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    CircularProgressIndicator(color = Color.White)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = stringResource(R.string.deleting_task),
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleMedium
                     )
                 }
             }
-
-            taskState.isError() -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(stringResource(R.string.error_format, taskState.exceptionOrNull()?.message ?: ""))
-                }
-            }
         }
-    }
 
-    if (showDeleteConfirmation) {
-        AlertDialog(
-            onDismissRequest = { showDeleteConfirmation = false },
-            title = { Text(stringResource(R.string.delete_task)) },
-            text = { Text(stringResource(R.string.delete_task_confirm)) },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        viewModel.deleteTask()
-                        showDeleteConfirmation = false
+        if (showDeleteConfirmation) {
+            AlertDialog(
+                onDismissRequest = { showDeleteConfirmation = false },
+                title = { Text(stringResource(R.string.delete_task)) },
+                text = { Text(stringResource(R.string.delete_task_confirm)) },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            viewModel.deleteTask()
+                            showDeleteConfirmation = false
+                        }
+                    ) {
+                        Text(stringResource(R.string.delete))
                     }
-                ) {
-                    Text(stringResource(R.string.delete))
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = { showDeleteConfirmation = false }
+                    ) {
+                        Text(stringResource(R.string.cancel))
+                    }
                 }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showDeleteConfirmation = false }
-                ) {
-                    Text(stringResource(R.string.cancel))
-                }
-            }
-        )
+            )
+        }
     }
 }
 

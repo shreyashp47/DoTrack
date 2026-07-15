@@ -155,6 +155,9 @@ class TasksViewModel @Inject constructor(
     var isUpdatingWallpaper by mutableStateOf(false)
         private set
 
+    var isDeleting by mutableStateOf(false)
+        private set
+
     fun completeTask(id: String) {
         viewModelScope.launch(Dispatchers.IO) {
             // Complete the task
@@ -230,19 +233,26 @@ class TasksViewModel @Inject constructor(
      * Delete a specific task by ID
      */
     fun deleteTask(id: String) {
+        isDeleting = true
+        val deleteStartTime = System.currentTimeMillis()
         viewModelScope.launch(Dispatchers.IO) {
             val result = deleteTaskUseCase(id)
             if (result.isSuccess()) {
-                // Check if auto wallpaper is enabled
                 val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
                 if (autoWallpaperEnabled) {
                     updateWallpaper()
                 }
-                
-                // Update widgets immediately
                 withContext(Dispatchers.Main) {
                     TaskWidgetUpdater.updateTaskWidgets(context)
                 }
+            }
+            val elapsed = System.currentTimeMillis() - deleteStartTime
+            val remaining = 2000L - elapsed
+            if (remaining > 0) {
+                delay(remaining)
+            }
+            withContext(Dispatchers.Main) {
+                isDeleting = false
             }
         }
     }
@@ -250,20 +260,27 @@ class TasksViewModel @Inject constructor(
     /**
      * Delete all tasks
      */
-    fun deleteAllTask() {
+    fun deleteCompletedTasks() {
+        isDeleting = true
+        val deleteStartTime = System.currentTimeMillis()
         viewModelScope.launch(Dispatchers.IO) {
             val result = deleteTaskUseCase()
             if (result.isSuccess()) {
-                // Check if auto wallpaper is enabled
                 val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
                 if (autoWallpaperEnabled) {
                     updateWallpaper()
                 }
-                
-                // Update widgets immediately
                 withContext(Dispatchers.Main) {
                     TaskWidgetUpdater.updateTaskWidgets(context)
                 }
+            }
+            val elapsed = System.currentTimeMillis() - deleteStartTime
+            val remaining = 2000L - elapsed
+            if (remaining > 0) {
+                delay(remaining)
+            }
+            withContext(Dispatchers.Main) {
+                isDeleting = false
             }
         }
     }

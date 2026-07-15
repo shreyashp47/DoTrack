@@ -17,12 +17,15 @@ import com.shreyash.dotrack.domain.usecase.task.GetTaskByIdUseCase
 import com.shreyash.dotrack.domain.usecase.task.GetTasksUseCase
 import com.shreyash.dotrack.domain.usecase.task.UncompleteTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -42,6 +45,9 @@ class TaskDetailViewModel @Inject constructor(
     val task: StateFlow<Result<Task>> = _task.asStateFlow()
 
     private var taskId: String? = null
+
+    var isDeleting by mutableStateOf(false)
+        private set
 
     var deleteResult by mutableStateOf<Result<Unit>?>(null)
         private set
@@ -98,9 +104,19 @@ class TaskDetailViewModel @Inject constructor(
 
     fun deleteTask() {
         taskId?.let { id ->
+            isDeleting = true
+            val deleteStartTime = System.currentTimeMillis()
             viewModelScope.launch {
                 val result = deleteTaskUseCase(id)
-                deleteResult = result
+                val elapsed = System.currentTimeMillis() - deleteStartTime
+                val remaining = 2000L - elapsed
+                if (remaining > 0) {
+                    delay(remaining)
+                }
+                withContext(Dispatchers.Main) {
+                    isDeleting = false
+                    deleteResult = result
+                }
             }
         }
     }
