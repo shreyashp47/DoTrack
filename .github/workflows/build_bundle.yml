@@ -85,6 +85,9 @@ jobs:
       - name: Run unit tests
         run: ./gradlew test
 
+      - name: Run lint checks (production readiness)
+        run: ./gradlew lint
+
       - name: Build AAB (bundleRelease)
         env:
           ANDROID_KEYSTORE_PATH: ${{ github.workspace }}/keystore_details/release.keystore
