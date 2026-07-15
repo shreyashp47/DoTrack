@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,22 +48,22 @@ fun SortDropdownMenu(
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)
             )
 
-            SortOptionItem(
+            SelectableOptionItem(
                 label = stringResource(R.string.sort_due_date),
                 isSelected = currentSort == SortOption.DUE_DATE,
                 onClick = { onSortOptionSelected(SortOption.DUE_DATE); onDismiss() }
             )
-            SortOptionItem(
+            SelectableOptionItem(
                 label = stringResource(R.string.sort_priority),
                 isSelected = currentSort == SortOption.PRIORITY,
                 onClick = { onSortOptionSelected(SortOption.PRIORITY); onDismiss() }
             )
-            SortOptionItem(
+            SelectableOptionItem(
                 label = stringResource(R.string.sort_created_date),
                 isSelected = currentSort == SortOption.CREATED_DATE,
                 onClick = { onSortOptionSelected(SortOption.CREATED_DATE); onDismiss() }
             )
-            SortOptionItem(
+            SelectableOptionItem(
                 label = stringResource(R.string.sort_title),
                 isSelected = currentSort == SortOption.TITLE,
                 onClick = { onSortOptionSelected(SortOption.TITLE); onDismiss() }
@@ -89,37 +88,6 @@ fun SortDropdownMenu(
                     fontWeight = FontWeight.Medium
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun SortOptionItem(
-    label: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    TextButton(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (isSelected) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-            Spacer(modifier = Modifier.padding(start = if (isSelected) 16.dp else 48.dp))
-            Text(
-                text = label,
-                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                style = MaterialTheme.typography.bodyLarge
-            )
         }
     }
 }

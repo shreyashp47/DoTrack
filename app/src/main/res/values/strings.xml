@@ -110,6 +110,9 @@
     <string name="date_time_format">MMM dd, yyyy HH:mm</string>
     <string name="date_format_widget">MMM dd, yyyy</string>
 
+    <!-- Time validation -->
+    <string name="time_cannot_be_in_past">Selected time has already passed. Please choose a future time.</string>
+
     <!-- Appearance -->
     <string name="appearance">Appearance</string>
     <string name="dark_mode">Dark Mode</string>
