@@ -95,9 +95,7 @@ fun DoTrackApp(
         }
 
         Scaffold(
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding(),
+            modifier = Modifier.fillMaxSize(),
             bottomBar = {
                 if (showBottomBar) {
                     DoTrackBottomNavigation(
