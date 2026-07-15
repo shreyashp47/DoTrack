@@ -2,7 +2,6 @@ package com.shreyash.dotrack.ui.settings
 
 import android.Manifest
 import android.os.Build
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -47,17 +46,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.github.skydoves.colorpicker.compose.AlphaTile
 import com.github.skydoves.colorpicker.compose.BrightnessSlider
@@ -83,99 +82,57 @@ private fun SettingsPreviewContent() {
             TopAppBar(title = { Text(stringResource(R.string.settings)) })
         }
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState())
-        ) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-                )
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    SettingSwitchItem(
-                        title = stringResource(R.string.auto_wallpaper_updates),
-                        subtitle = stringResource(R.string.auto_wallpaper_subtitle),
-                        checked = false,
-                        onCheckedChange = {}
-                    )
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                    Text(stringResource(R.string.wallpaper_color), style = MaterialTheme.typography.bodyLarge)
-                    Text(stringResource(R.string.wallpaper_color_subtitle), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        WallpaperColorCircle(colorHex = "#1A2980", label = "Primary", onClick = {})
-                        WallpaperColorCircle(colorHex = "#26D0CE", label = "Secondary", onClick = {})
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.height(24.dp))
-            Text(stringResource(R.string.task_priority_colors), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 8.dp))
-            Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    ColorSettingItem(title = stringResource(R.string.high_priority), subtitle = stringResource(R.string.high_priority_subtitle), colorHex = "#FF4444", onClick = {})
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-                    ColorSettingItem(title = stringResource(R.string.medium_priority), subtitle = stringResource(R.string.medium_priority_subtitle), colorHex = "#FFBB33", onClick = {})
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-                    ColorSettingItem(title = stringResource(R.string.low_priority), subtitle = stringResource(R.string.low_priority_subtitle), colorHex = "#00C851", onClick = {})
-                }
-            }
-            Spacer(modifier = Modifier.height(24.dp))
-            Text(stringResource(R.string.notifications), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 8.dp))
-            Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    SettingSwitchItem(title = stringResource(R.string.permission), subtitle = stringResource(R.string.enable_notification_permission), checked = false, onCheckedChange = {})
-                }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            OutlinedButton(modifier = Modifier.fillMaxWidth(), onClick = {}, shape = RoundedCornerShape(12.dp)) {
-                Icon(painterResource(id = R.drawable.ic_sync), contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.sync_up))
-            }
-        }
+        SettingsContent(
+            modifier = Modifier.padding(padding),
+            isAutoWallpaperEnabled = false,
+            currentWallpaperColor = "#1A2980",
+            secondaryWallpaperColor = "#26D0CE",
+            currentDarkMode = "system",
+            isNotificationEnabled = false,
+            highPriorityColor = "#FF4444",
+            mediumPriorityColor = "#FFBB33",
+            lowPriorityColor = "#00C851",
+            onAutoWallpaperToggle = {},
+            onWallpaperColorClick = {},
+            onSecondaryWallpaperColorClick = {},
+            onPriorityColorClick = {},
+            onDarkModeChange = {},
+            onSyncWallpaper = {},
+            onNotificationPermissionClick = {}
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    viewModel: SettingsViewModel = hiltViewModel(),
+    viewModel: SettingsViewModel? = null,
 ) {
     if (LocalInspectionMode.current) {
         SettingsPreviewContent()
         return
     }
+    val vm = viewModel ?: hiltViewModel()
 
-    // Collect states from ViewModel
-    val isAutoWallpaperEnabled by viewModel.autoWallpaperEnabled.collectAsState()
-    val currentWallpaperColor by viewModel.wallpaperColor.collectAsState()
-    val secondaryWallpaperColor by viewModel.wallpaperSecondaryColor.collectAsState()
-    val currentDarkMode by viewModel.darkMode.collectAsState()
+    val isAutoWallpaperEnabled by vm.autoWallpaperEnabled.collectAsState()
+    val currentWallpaperColor by vm.wallpaperColor.collectAsState()
+    val secondaryWallpaperColor by vm.wallpaperSecondaryColor.collectAsState()
+    val currentDarkMode by vm.darkMode.collectAsState()
+    val highPriorityColor by vm.highPriorityColor.collectAsState()
+    val mediumPriorityColor by vm.mediumPriorityColor.collectAsState()
+    val lowPriorityColor by vm.lowPriorityColor.collectAsState()
+    val isNotificationEnabled = vm.notificationPermissionState
 
-    // Notification permission state
-    val isNotificationEnabled = viewModel.notificationPermissionState
-
-    // Permission request dialog state
     var showPermissionDialog by rememberSaveable { mutableStateOf(false) }
 
-    // Permission launcher
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        viewModel.updateNotificationPermissionState()
-    }
+    ) { vm.updateNotificationPermissionState() }
 
-    // Show color picker dialog if needed
-    if (viewModel.showColorPickerDialog) {
+    if (vm.showColorPickerDialog) {
         ColorPickerDialog(
-            initialColor = viewModel.selectedColor,
-            title = when (viewModel.currentColorPickerMode) {
+            initialColor = vm.selectedColor,
+            title = when (vm.currentColorPickerMode) {
                 ColorPickerMode.WALLPAPER -> stringResource(R.string.choose_wallpaper_color)
                 ColorPickerMode.SECONDARY_WALLPAPER -> stringResource(R.string.choose_secondary_wallpaper_color)
                 ColorPickerMode.HIGH_PRIORITY -> stringResource(R.string.choose_high_priority_color)
@@ -183,259 +140,239 @@ fun SettingsScreen(
                 ColorPickerMode.LOW_PRIORITY -> stringResource(R.string.choose_low_priority_color)
             },
             onColorSelected = { color ->
-                viewModel.updateSelectedColor(color)
-                viewModel.applySelectedColor()
+                vm.updateSelectedColor(color)
+                vm.applySelectedColor()
             },
-            onDismiss = { viewModel.hideColorPicker() }
+            onDismiss = { vm.hideColorPicker() }
         )
     }
-    LaunchedEffect(currentWallpaperColor) {
-        Log.d("WallpaperColor", "Updated color: $currentWallpaperColor")
-    }
-    LaunchedEffect(secondaryWallpaperColor) {
-        Log.d("WallpaperColor", "Updated color: $secondaryWallpaperColor")
-    }
 
-    // Update notification permission state when the screen is displayed
     LaunchedEffect(Unit) {
-        viewModel.updateNotificationPermissionState()
+        vm.updateNotificationPermissionState()
     }
 
+    if (showPermissionDialog) {
+        AlertDialog(
+            onDismissRequest = { showPermissionDialog = false },
+            title = { Text(stringResource(R.string.notification_permission_title)) },
+            text = { Text(stringResource(R.string.notification_permission_message)) },
+            confirmButton = {
+                Button(onClick = {
+                    showPermissionDialog = false
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    }
+                }) {
+                    Text(stringResource(R.string.grant_permission))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showPermissionDialog = false }) {
+                    Text(stringResource(R.string.not_now))
+                }
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(title = { Text(stringResource(R.string.settings)) })
         }
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp)
+        SettingsContent(
+            modifier = Modifier.padding(padding),
+            isAutoWallpaperEnabled = isAutoWallpaperEnabled,
+            currentWallpaperColor = currentWallpaperColor,
+            secondaryWallpaperColor = secondaryWallpaperColor,
+            currentDarkMode = currentDarkMode,
+            isNotificationEnabled = isNotificationEnabled,
+            highPriorityColor = highPriorityColor,
+            mediumPriorityColor = mediumPriorityColor,
+            lowPriorityColor = lowPriorityColor,
+            onAutoWallpaperToggle = { vm.setAutoWallpaperEnabled(it) },
+            onWallpaperColorClick = { vm.showWallpaperColorPicker() },
+            onSecondaryWallpaperColorClick = { vm.showSecondaryWallpaperColorPicker() },
+            onPriorityColorClick = { priority -> vm.showPriorityColorPicker(priority) },
+            onDarkModeChange = { vm.setDarkMode(it) },
+            onSyncWallpaper = { vm.updateWallpaper() },
+            onNotificationPermissionClick = {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !isNotificationEnabled) {
+                    showPermissionDialog = true
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun SettingsContent(
+    modifier: Modifier = Modifier,
+    isAutoWallpaperEnabled: Boolean,
+    currentWallpaperColor: String,
+    secondaryWallpaperColor: String,
+    currentDarkMode: String,
+    isNotificationEnabled: Boolean,
+    highPriorityColor: String,
+    mediumPriorityColor: String,
+    lowPriorityColor: String,
+    onAutoWallpaperToggle: (Boolean) -> Unit,
+    onWallpaperColorClick: () -> Unit,
+    onSecondaryWallpaperColorClick: () -> Unit,
+    onPriorityColorClick: (Priority) -> Unit,
+    onDarkModeChange: (String) -> Unit,
+    onSyncWallpaper: () -> Unit,
+    onNotificationPermissionClick: () -> Unit,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Spacer(modifier = Modifier.height(4.dp))
+
+        SectionCard {
+            SettingSwitchItem(
+                title = stringResource(R.string.auto_wallpaper_updates),
+                subtitle = stringResource(R.string.auto_wallpaper_subtitle),
+                checked = isAutoWallpaperEnabled,
+                onCheckedChange = onAutoWallpaperToggle
+            )
+
+            SectionDivider()
+
+            Text(
+                text = stringResource(R.string.wallpaper_color),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                text = stringResource(R.string.wallpaper_color_subtitle),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                WallpaperColorCircle(
+                    colorHex = currentWallpaperColor,
+                    label = stringResource(R.string.primary),
+                    onClick = onWallpaperColorClick
+                )
+                WallpaperColorCircle(
+                    colorHex = secondaryWallpaperColor,
+                    label = stringResource(R.string.secondary),
+                    onClick = onSecondaryWallpaperColorClick
+                )
+            }
+        }
+
+        SectionHeader(title = stringResource(R.string.task_priority_colors))
+
+        SectionCard {
+            ColorSettingItem(
+                title = stringResource(R.string.high_priority),
+                subtitle = stringResource(R.string.high_priority_subtitle),
+                colorHex = highPriorityColor,
+                onClick = { onPriorityColorClick(Priority.HIGH) }
+            )
+            SectionDivider()
+            ColorSettingItem(
+                title = stringResource(R.string.medium_priority),
+                subtitle = stringResource(R.string.medium_priority_subtitle),
+                colorHex = mediumPriorityColor,
+                onClick = { onPriorityColorClick(Priority.MEDIUM) }
+            )
+            SectionDivider()
+            ColorSettingItem(
+                title = stringResource(R.string.low_priority),
+                subtitle = stringResource(R.string.low_priority_subtitle),
+                colorHex = lowPriorityColor,
+                onClick = { onPriorityColorClick(Priority.LOW) }
+            )
+        }
+
+        SectionHeader(title = stringResource(R.string.appearance))
+
+        SectionCard {
+            DarkModeOption(
+                label = stringResource(R.string.dark_mode_system),
+                selected = currentDarkMode == "system",
+                onClick = { onDarkModeChange("system") }
+            )
+            SectionDivider()
+            DarkModeOption(
+                label = stringResource(R.string.dark_mode_light),
+                selected = currentDarkMode == "light",
+                onClick = { onDarkModeChange("light") }
+            )
+            SectionDivider()
+            DarkModeOption(
+                label = stringResource(R.string.dark_mode_dark),
+                selected = currentDarkMode == "dark",
+                onClick = { onDarkModeChange("dark") }
+            )
+        }
+
+        SectionHeader(title = stringResource(R.string.notifications))
+
+        SectionCard {
+            SettingSwitchItem(
+                title = stringResource(R.string.permission),
+                subtitle = stringResource(R.string.enable_notification_permission),
+                checked = isNotificationEnabled,
+                onCheckedChange = { onNotificationPermissionClick() }
+            )
+        }
+
+        OutlinedButton(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = onSyncWallpaper,
+            shape = RoundedCornerShape(12.dp)
         ) {
-            // Wallpaper Section
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-                )
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    SettingSwitchItem(
-                        title = stringResource(R.string.auto_wallpaper_updates),
-                        subtitle = stringResource(R.string.auto_wallpaper_subtitle),
-                        checked = isAutoWallpaperEnabled,
-                        onCheckedChange = { viewModel.setAutoWallpaperEnabled(it) }
-                    )
-
-                    HorizontalDivider(
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-                    )
-
-                    Text(
-                        text = stringResource(R.string.wallpaper_color),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                    Text(
-                        text = stringResource(R.string.wallpaper_color_subtitle),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        WallpaperColorCircle(
-                            colorHex = currentWallpaperColor,
-                            label = "Primary",
-                            onClick = { viewModel.showWallpaperColorPicker() }
-                        )
-                        WallpaperColorCircle(
-                            colorHex = secondaryWallpaperColor,
-                            label = "Secondary",
-                            onClick = { viewModel.showSecondaryWallpaperColorPicker() }
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Priority Colors Section
-            Text(
-                text = stringResource(R.string.task_priority_colors),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 8.dp)
+            Icon(
+                painter = painterResource(id = R.drawable.ic_sync),
+                contentDescription = stringResource(R.string.sync_up_content_desc),
+                modifier = Modifier.size(18.dp)
             )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(stringResource(R.string.sync_up))
+        }
 
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-                )
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    val currentHighPriorityColor by viewModel.highPriorityColor.collectAsState()
-                    ColorSettingItem(
-                        title = stringResource(R.string.high_priority),
-                        subtitle = stringResource(R.string.high_priority_subtitle),
-                        colorHex = currentHighPriorityColor,
-                        onClick = { viewModel.showPriorityColorPicker(Priority.HIGH) }
-                    )
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
 
-                    HorizontalDivider(
-                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-                    )
-
-                    val currentMediumPriorityColor by viewModel.mediumPriorityColor.collectAsState()
-                    ColorSettingItem(
-                        title = stringResource(R.string.medium_priority),
-                        subtitle = stringResource(R.string.medium_priority_subtitle),
-                        colorHex = currentMediumPriorityColor,
-                        onClick = { viewModel.showPriorityColorPicker(Priority.MEDIUM) }
-                    )
-
-                    HorizontalDivider(
-                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-                    )
-
-                    val currentLowPriorityColor by viewModel.lowPriorityColor.collectAsState()
-                    ColorSettingItem(
-                        title = stringResource(R.string.low_priority),
-                        subtitle = stringResource(R.string.low_priority_subtitle),
-                        colorHex = currentLowPriorityColor,
-                        onClick = { viewModel.showPriorityColorPicker(Priority.LOW) }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Appearance Section
-            Text(
-                text = stringResource(R.string.appearance),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-                )
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    DarkModeOption(
-                        label = stringResource(R.string.dark_mode_system),
-                        selected = currentDarkMode == "system",
-                        onClick = { viewModel.setDarkMode("system") }
-                    )
-                    HorizontalDivider(
-                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-                    )
-                    DarkModeOption(
-                        label = stringResource(R.string.dark_mode_light),
-                        selected = currentDarkMode == "light",
-                        onClick = { viewModel.setDarkMode("light") }
-                    )
-                    HorizontalDivider(
-                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-                    )
-                    DarkModeOption(
-                        label = stringResource(R.string.dark_mode_dark),
-                        selected = currentDarkMode == "dark",
-                        onClick = { viewModel.setDarkMode("dark") }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Notifications Section
-            Text(
-                text = stringResource(R.string.notifications),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-                )
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    SettingSwitchItem(
-                        title = stringResource(R.string.permission),
-                        subtitle = stringResource(R.string.enable_notification_permission),
-                        checked = isNotificationEnabled,
-                        onCheckedChange = {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                if (!isNotificationEnabled) {
-                                    showPermissionDialog = true
-                                }
-                            }
-                        }
-                    )
-                }
-            }
-
-            // Permission request dialog
-            if (showPermissionDialog) {
-                AlertDialog(
-                    onDismissRequest = { showPermissionDialog = false },
-                    title = { Text(stringResource(R.string.notification_permission_title)) },
-                    text = { Text(stringResource(R.string.notification_permission_message)) },
-                    confirmButton = {
-                        Button(
-                            onClick = {
-                                showPermissionDialog = false
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                    permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                                }
-                            }
-                        ) {
-                            Text(stringResource(R.string.grant_permission))
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(
-                            onClick = { showPermissionDialog = false }
-                        ) {
-                            Text(stringResource(R.string.not_now))
-                        }
-                    }
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            OutlinedButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = { viewModel.updateWallpaper() },
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Icon(
-                    painterResource(id = R.drawable.ic_sync),
-                    contentDescription = stringResource(R.string.sync_up_content_desc),
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.sync_up))
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
+@Composable
+private fun SectionCard(content: @Composable () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+        )
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            content()
         }
     }
+}
+
+@Composable
+private fun SectionHeader(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold
+    )
+}
+
+@Composable
+private fun SectionDivider() {
+    HorizontalDivider(
+        modifier = Modifier.padding(vertical = 8.dp),
+        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+    )
 }
 
 @Composable
@@ -449,9 +386,7 @@ fun ColorPickerDialog(
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
@@ -464,44 +399,30 @@ fun ColorPickerDialog(
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
-
                 Spacer(modifier = Modifier.height(16.dp))
-
-                // Color picker
                 HsvColorPicker(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(300.dp),
                     controller = controller,
                     initialColor = initialColor,
-                    onColorChanged = { colorEnvelope: ColorEnvelope ->
-                        // Update the selected color in real-time if needed
-                    }
+                    onColorChanged = {}
                 )
-
                 Spacer(modifier = Modifier.height(16.dp))
-
-                // Brightness slider
                 BrightnessSlider(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(30.dp),
                     controller = controller
                 )
-
                 Spacer(modifier = Modifier.height(16.dp))
-
-                // Color preview
                 AlphaTile(
                     modifier = Modifier
                         .size(60.dp)
                         .clip(RoundedCornerShape(6.dp)),
                     controller = controller
                 )
-
                 Spacer(modifier = Modifier.height(24.dp))
-
-                // Action buttons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -509,13 +430,7 @@ fun ColorPickerDialog(
                     TextButton(onClick = onDismiss) {
                         Text(stringResource(R.string.cancel))
                     }
-
-                    Button(
-                        onClick = {
-                            onColorSelected(controller.selectedColor.value)
-
-                        }
-                    ) {
+                    Button(onClick = { onColorSelected(controller.selectedColor.value) }) {
                         Text(stringResource(R.string.apply))
                     }
                 }
@@ -536,19 +451,17 @@ fun SettingSwitchItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onCheckedChange(!checked) }
-            .padding(vertical = 12.dp)
     ) {
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyLarge
             )
             if (subtitle != null) {
+                Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = subtitle,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -572,7 +485,7 @@ fun WallpaperColorCircle(
     ) {
         Box(
             modifier = Modifier
-                .size(48.dp)
+                .size(44.dp)
                 .clip(CircleShape)
                 .background(Color(android.graphics.Color.parseColor(colorHex)))
                 .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)
@@ -597,7 +510,6 @@ fun DarkModeOption(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = 12.dp)
     ) {
         Text(
             text = label,
@@ -626,34 +538,30 @@ fun ColorSettingItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = 12.dp)
     ) {
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyLarge
             )
             if (subtitle != null) {
+                Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = subtitle,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
-
+        Spacer(modifier = Modifier.width(8.dp))
         Box(
             modifier = Modifier
-                .size(32.dp)
+                .size(28.dp)
                 .clip(CircleShape)
                 .background(Color(android.graphics.Color.parseColor(colorHex)))
                 .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
         )
-
         Spacer(modifier = Modifier.width(8.dp))
-
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = stringResource(R.string.choose_color),
@@ -674,54 +582,3 @@ private fun ColorPickerDialogPreview() {
         )
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-private fun SettingSwitchItemPreview() {
-    MaterialTheme {
-        SettingSwitchItem(
-            title = "Auto Wallpaper Updates",
-            subtitle = "Automatically update wallpaper when tasks change",
-            checked = true,
-            onCheckedChange = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun WallpaperColorCirclePreview() {
-    MaterialTheme {
-        WallpaperColorCircle(
-            colorHex = "#1A2980",
-            label = "Primary",
-            onClick = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun DarkModeOptionPreview() {
-    MaterialTheme {
-        DarkModeOption(
-            label = "System Default",
-            selected = true,
-            onClick = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ColorSettingItemPreview() {
-    MaterialTheme {
-        ColorSettingItem(
-            title = "High Priority",
-            subtitle = "Color for high priority tasks",
-            colorHex = "#FF4444",
-            onClick = {}
-        )
-    }
-}
-

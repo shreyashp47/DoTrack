@@ -8,9 +8,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -95,9 +98,7 @@ fun DoTrackApp(
         }
 
         Scaffold(
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding(),
+            modifier = Modifier.fillMaxSize(),
             bottomBar = {
                 if (showBottomBar) {
                     DoTrackBottomNavigation(
@@ -105,7 +106,8 @@ fun DoTrackApp(
                         currentDestination = currentDestination
                     )
                 }
-            }
+            },
+            contentWindowInsets = WindowInsets.systemBars.only(WindowInsetsSides.Bottom)
         ) { innerPadding ->
             DoTrackNavHost(
                 navController = navController,

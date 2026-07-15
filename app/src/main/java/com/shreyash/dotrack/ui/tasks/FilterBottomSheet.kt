@@ -1,22 +1,16 @@
 package com.shreyash.dotrack.ui.tasks
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -54,17 +48,17 @@ fun FilterBottomSheet(
                 modifier = Modifier.padding(start = 24.dp, top = 8.dp, bottom = 4.dp)
             )
 
-            FilterOptionItem(
+            SelectableOptionItem(
                 label = stringResource(R.string.filter_all),
                 isSelected = currentStatusFilter == null,
                 onClick = { onStatusFilterSelected(null); onDismiss() }
             )
-            FilterOptionItem(
+            SelectableOptionItem(
                 label = stringResource(R.string.filter_active),
                 isSelected = currentStatusFilter == false,
                 onClick = { onStatusFilterSelected(false); onDismiss() }
             )
-            FilterOptionItem(
+            SelectableOptionItem(
                 label = stringResource(R.string.filter_completed),
                 isSelected = currentStatusFilter == true,
                 onClick = { onStatusFilterSelected(true); onDismiss() }
@@ -80,22 +74,22 @@ fun FilterBottomSheet(
                 modifier = Modifier.padding(start = 24.dp, top = 8.dp, bottom = 4.dp)
             )
 
-            FilterOptionItem(
+            SelectableOptionItem(
                 label = stringResource(R.string.filter_all),
                 isSelected = currentPriorityFilter == null,
                 onClick = { onPriorityFilterSelected(null); onDismiss() }
             )
-            FilterOptionItem(
+            SelectableOptionItem(
                 label = stringResource(R.string.high_priority),
                 isSelected = currentPriorityFilter == Priority.HIGH,
                 onClick = { onPriorityFilterSelected(Priority.HIGH); onDismiss() }
             )
-            FilterOptionItem(
+            SelectableOptionItem(
                 label = stringResource(R.string.medium_priority),
                 isSelected = currentPriorityFilter == Priority.MEDIUM,
                 onClick = { onPriorityFilterSelected(Priority.MEDIUM); onDismiss() }
             )
-            FilterOptionItem(
+            SelectableOptionItem(
                 label = stringResource(R.string.low_priority),
                 isSelected = currentPriorityFilter == Priority.LOW,
                 onClick = { onPriorityFilterSelected(Priority.LOW); onDismiss() }
@@ -113,37 +107,6 @@ fun FilterBottomSheet(
                     fontWeight = FontWeight.Medium
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun FilterOptionItem(
-    label: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    TextButton(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (isSelected) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-            Spacer(modifier = Modifier.padding(start = if (isSelected) 16.dp else 48.dp))
-            Text(
-                text = label,
-                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                style = MaterialTheme.typography.bodyLarge
-            )
         }
     }
 }

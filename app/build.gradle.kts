@@ -24,12 +24,12 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.shreyash.dotrack"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.shreyash.dotrack"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 26
         versionName = "1.26"
 

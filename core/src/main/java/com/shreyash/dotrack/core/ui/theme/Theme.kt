@@ -1,6 +1,5 @@
 package com.shreyash.dotrack.core.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -19,12 +18,9 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.view.WindowCompat
 
 // CompositionLocal for priority card colors
 data class PriorityCardColors(
@@ -104,18 +100,6 @@ fun DoTrackTheme(
         CardColorLowPriority = priorityCardColors.low
     }
     
-    val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            val context = view.context
-            if (context is Activity) {
-                val window = context.window
-                window.statusBarColor = colorScheme.background.toArgb()
-                WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
-            }
-        }
-    }
-
     CompositionLocalProvider(LocalPriorityCardColors provides priorityCardColors) {
         MaterialTheme(
             colorScheme = colorScheme,

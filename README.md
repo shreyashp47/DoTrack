@@ -29,6 +29,8 @@
 - Priority levels (High, Medium, Low)
 - Due dates and time tracking
 - Category organization
+- Sort and filter tasks (by date, priority, title, status)
+- Clear completed tasks in bulk
 - Smart reminder notifications
 
 </td>
@@ -198,7 +200,10 @@ DoTrack
 |--------|--------|
 | **Complete Task** | Tap the checkbox |
 | **Edit Task** | Tap on task → Edit icon |
-| **Delete Task** | Task details → Delete icon |
+| **Delete Task** | Task details → Delete icon (or swipe on list) |
+| **Clear Completed** | Toolbar delete icon → confirm |
+| **Sort Tasks** | Tap sort icon in filter bar → choose field/direction |
+| **Filter Tasks** | Tap filter icon → filter by status and/or priority |
 | **View Details** | Tap on any task |
 
 ### Customizing Your Experience
@@ -237,6 +242,11 @@ DoTrack/
 │   │   │   ├── TasksScreen.kt
 │   │   │   ├── TasksViewModel.kt
 │   │   │   ├── TaskDetailScreen.kt
+│   │   │   ├── TaskDetailViewModel.kt
+│   │   │   ├── TaskFilterBar.kt
+│   │   │   ├── SelectableOptionItem.kt
+│   │   │   ├── SortDropdownMenu.kt
+│   │   │   ├── FilterBottomSheet.kt
 │   │   │   └── addedit/
 │   │   │       ├── AddEditTaskScreen.kt
 │   │   │       └── AddEditTaskViewModel.kt

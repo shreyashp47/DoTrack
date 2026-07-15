@@ -63,6 +63,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -249,14 +250,17 @@ fun TaskForm(
 
         // Date Picker Dialog
         if (showDatePicker) {
-            val todayMillis =
-                LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-
             val datePickerState = rememberDatePickerState(
-                initialSelectedDateMillis = todayMillis,
+                initialSelectedDateMillis = (selectedDate ?: LocalDate.now())
+                    .atStartOfDay(ZoneOffset.UTC)
+                    .toInstant()
+                    .toEpochMilli(),
                 selectableDates = object : SelectableDates {
                     override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                        return utcTimeMillis > LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                        return utcTimeMillis >= LocalDate.now()
+                            .atStartOfDay(ZoneOffset.UTC)
+                            .toInstant()
+                            .toEpochMilli()
                     }
                 }
             )

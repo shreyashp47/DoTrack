@@ -20,6 +20,7 @@ import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.shreyash.dotrack.R
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,6 +47,10 @@ fun TimePickerDialog(
         initialMinute = calendar.get(Calendar.MINUTE),
         is24Hour = false,
     )
+
+    val isToday = selectedDate == LocalDate.now()
+    val selectedDateTime = LocalDateTime.of(selectedDate, LocalTime.of(state.hour, state.minute))
+    val isTimeInPast = isToday && selectedDateTime.isBefore(LocalDateTime.now())
 
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
@@ -69,6 +76,15 @@ fun TimePickerDialog(
                     colors = TimePickerDefaults.colors()
                 )
 
+                if (isTimeInPast) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = stringResource(R.string.time_cannot_be_in_past),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Row(
@@ -79,10 +95,13 @@ fun TimePickerDialog(
                         Text(stringResource(R.string.cancel))
                     }
 
-                    Button(onClick = {
-                        onTimeSelected(state.hour, state.minute)
-                        onDismissRequest()
-                    }) {
+                    Button(
+                        onClick = {
+                            onTimeSelected(state.hour, state.minute)
+                            onDismissRequest()
+                        },
+                        enabled = !isTimeInPast
+                    ) {
                         Text(stringResource(R.string.ok))
                     }
                 }

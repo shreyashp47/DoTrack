@@ -171,7 +171,7 @@ The task management feature is implemented with:
       ): Result<Unit>
       suspend fun updateTask(task: Task): Result<Unit>
       suspend fun deleteTask(id: String): Result<Unit>
-      suspend fun deleteAllTask(): Result<Unit>
+       suspend fun deleteAllTask(): Result<Unit>   // deleteAllTask only deletes completed tasks (WHERE isCompleted = 1)
       suspend fun completeTask(id: String): Result<Unit>
       suspend fun uncompleteTask(id: String): Result<Unit>
       suspend fun disableReminder(id: String): Result<Unit>

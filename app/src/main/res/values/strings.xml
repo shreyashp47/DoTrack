@@ -18,17 +18,18 @@
     <string name="edit_task">Edit Task</string>
     <string name="save_task">Save Task</string>
     <string name="delete_task">Delete Task</string>
-    <string name="delete_all_tasks">Delete All Tasks</string>
-    <string name="delete_all_confirm">Are you sure you want to delete all tasks? This action cannot be undone.</string>
+    <string name="delete_all_tasks">Clear Completed</string>
+    <string name="delete_all_confirm">Are you sure you want to clear all completed tasks? This action cannot be undone.</string>
     <string name="delete_task_confirm">Are you sure you want to delete this task?</string>
-    <string name="all_tasks_deleted">All tasks deleted</string>
+    <string name="all_tasks_deleted">Completed tasks cleared</string>
     <string name="no_tasks_yet">No tasks yet. Add one!</string>
     <string name="set_wallpaper">Set Wallpaper</string>
     <string name="set_wallpaper_confirm">Are you sure you want set wallpaper? This action cannot be undone.</string>
     <string name="wallpaper_in_progress">New wallpaper is in progress…</string>
     <string name="applying_wallpaper">Applying wallpaper…</string>
+    <string name="deleting_task">Deleting task…</string>
     <string name="set_as_wallpaper">Set as Wallpaper</string>
-    <string name="delete_all_tasks_content_desc">Delete all tasks</string>
+    <string name="delete_all_tasks_content_desc">Clear completed tasks</string>
     <string name="error_format">Error: %s</string>
     <string name="due_label">Due: %s</string>
     <string name="delete_task_content_desc">Delete task</string>
@@ -110,6 +111,9 @@
     <string name="date_time_format">MMM dd, yyyy HH:mm</string>
     <string name="date_format_widget">MMM dd, yyyy</string>
 
+    <!-- Time validation -->
+    <string name="time_cannot_be_in_past">Selected time has already passed. Please choose a future time.</string>
+
     <!-- Appearance -->
     <string name="appearance">Appearance</string>
     <string name="dark_mode">Dark Mode</string>
@@ -125,6 +129,10 @@
     <string name="sort_title">Title</string>
     <string name="sort_ascending">Ascending</string>
     <string name="sort_descending">Descending</string>
+
+    <!-- Settings -->
+    <string name="primary">Primary</string>
+    <string name="secondary">Secondary</string>
 
     <!-- Filter -->
     <string name="filter_by">Filter By</string>
