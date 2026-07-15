@@ -7,10 +7,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -336,18 +336,18 @@ internal fun TasksScreenPreviewContent() {
                         )
                     }
                 },
-                modifier = Modifier.statusBarsPadding()
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = {}) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(R.string.add_task)
+                    modifier = Modifier.statusBarsPadding()
                 )
+            },
+            floatingActionButton = {
+                FloatingActionButton(onClick = {}) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(R.string.add_task)
+                    )
+                }
             }
-        }
-    ) { padding ->
+        ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             TaskFilterBar(
                 sortOption = SortOption.DUE_DATE,

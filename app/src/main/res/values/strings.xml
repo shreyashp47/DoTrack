@@ -126,6 +126,10 @@
     <string name="sort_ascending">Ascending</string>
     <string name="sort_descending">Descending</string>
 
+    <!-- Settings -->
+    <string name="primary">Primary</string>
+    <string name="secondary">Secondary</string>
+
     <!-- Filter -->
     <string name="filter_by">Filter By</string>
     <string name="filter_all">All</string>
