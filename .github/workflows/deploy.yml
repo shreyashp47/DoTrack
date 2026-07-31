@@ -116,18 +116,22 @@ jobs:
       - name: Generate release notes
         id: notes
         run: |
-          prev_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          if [ -n "$prev_tag" ]; then
-            notes=$(git log "$prev_tag"..HEAD --oneline --no-merges --format="- %s" 2>/dev/null || true)
-          else
-            notes=$(git log --oneline --no-merges --format="- %s" -20 2>/dev/null || true)
-          fi
-          if [ -z "$notes" ]; then
-            notes="- Bug fixes and improvements"
-          fi
           mkdir -p /tmp/whatsnew
-          echo "$notes" > /tmp/whatsnew/default
-          echo "notes_file=/tmp/whatsnew/default" >> "$GITHUB_OUTPUT"
+          if [ -f whatsnew/whatsnew-en-US ]; then
+            cp whatsnew/whatsnew-en-US /tmp/whatsnew/whatsnew-en-US
+          else
+            prev_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+            if [ -n "$prev_tag" ]; then
+              notes=$(git log "$prev_tag"..HEAD --oneline --no-merges --format="- %s" 2>/dev/null || true)
+            else
+              notes=$(git log --oneline --no-merges --format="- %s" -20 2>/dev/null || true)
+            fi
+            if [ -z "$notes" ]; then
+              notes="- Bug fixes and improvements"
+            fi
+            echo "$notes" > /tmp/whatsnew/whatsnew-en-US
+          fi
+          echo "notes_file=/tmp/whatsnew/whatsnew-en-US" >> "$GITHUB_OUTPUT"
 
       - name: Upload to Google Play
         uses: r0adkll/upload-google-play@v1.1.3
@@ -146,7 +150,7 @@ jobs:
         run: |
           gh release create "v${{ steps.bump.outputs.new_version_name }}" \
             --title "v${{ steps.bump.outputs.new_version_name }}" \
-            --notes-file /tmp/whatsnew/default \
+            --notes-file ${{ steps.notes.outputs.notes_file }} \
             app/build/outputs/bundle/release/DoTrack-v${{ steps.bump.outputs.new_version_name }}-release.aab
 
       - name: Commit version bump
