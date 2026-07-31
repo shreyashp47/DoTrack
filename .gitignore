@@ -1,29 +1,31 @@
-*.iml
-.gradle
+# Gradle
+.gradle/
+build/
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
+
+# Android
 /captures
 .externalNativeBuild
 .cxx
-local.properties
+*.apk
+*.aab
+*.keystore
+*.jks
+
+# IntelliJ / Android Studio
+*.iml
+.idea/
+.kotlin/
+
+# OS
+.DS_Store
 
 # Agent instructions (local only)
 AGENTS.md
 
-# Project exclude paths
-/.idea/
-/.zencoder
-/.kotlin/
-/app/release
-/data/build
-/domain/build
-/core/build
 # JVM crash logs
 hs_err_pid*.log
+
+# Project exclude paths
+/app/release
+/zencoder/

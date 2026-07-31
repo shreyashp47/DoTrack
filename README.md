@@ -10,9 +10,12 @@
 [![API](https://img.shields.io/badge/API-26%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=26)
 [![Kotlin](https://img.shields.io/badge/Kotlin-100%25-blue.svg)](https://kotlinlang.org)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Build Status](https://github.com/shreyashp47/DoTrack/actions/workflows/build_bundle.yml/badge.svg)](https://github.com/shreyashp47/DoTrack/actions/workflows/build_bundle.yml)
+[![Build](https://github.com/shreyashp47/DoTrack/actions/workflows/build_bundle.yml/badge.svg)](https://github.com/shreyashp47/DoTrack/actions/workflows/build_bundle.yml)
+[![APK](https://github.com/shreyashp47/DoTrack/actions/workflows/build_apk.yml/badge.svg)](https://github.com/shreyashp47/DoTrack/actions/workflows/build_apk.yml)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Release](https://img.shields.io/github/v/release/shreyashp47/DoTrack?sort=semver)](https://github.com/shreyashp47/DoTrack/releases)
 
-[Download APK](https://github.com/shreyashp47/DoTrack/releases) • [Documentation](docs/) • [Report Bug](https://github.com/shreyashp47/DoTrack/issues) • [Request Feature](https://github.com/shreyashp47/DoTrack/issues)
+[Download APK](https://github.com/shreyashp47/DoTrack/releases) • [Documentation](docs/) • [Changelog](CHANGELOG.md) • [Report Bug](https://github.com/shreyashp47/DoTrack/issues) • [Request Feature](https://github.com/shreyashp47/DoTrack/issues)
 
 </div>
 
@@ -385,6 +388,9 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 | [Developer Guide](docs/DEVELOPER_GUIDE.md) | Development setup and guidelines |
 | [API Documentation](docs/DOCUMENTATION.md) | Code documentation |
 | [Workflow Guide](docs/WORKFLOW.md) | CI/CD and release process |
+| [Contributing](CONTRIBUTING.md) | Contribution guidelines |
+| [Changelog](CHANGELOG.md) | Release history |
+| [Security](SECURITY.md) | Security policy and vulnerability reporting |
 
 ---
 
