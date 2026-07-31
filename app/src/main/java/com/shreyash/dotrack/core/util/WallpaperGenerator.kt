@@ -12,7 +12,6 @@ import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
 import androidx.core.graphics.ColorUtils
-import com.shreyash.dotrack.core.ui.theme.DEFAULT_BOTTOM_COLOR
 import com.shreyash.dotrack.domain.model.Priority
 import com.shreyash.dotrack.domain.model.Task
 import com.shreyash.dotrack.domain.usecase.preferences.GetHighPriorityColorUseCase
@@ -42,6 +41,10 @@ class WallpaperGenerator @Inject constructor(
     private val wallpaperManager = WallpaperManager.getInstance(context)
     private val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy  HH:mm")
 
+    companion object {
+        private val footerFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm")
+    }
+
 
     /**
      * Generate a bitmap from the task list and set it as the wallpaper
@@ -57,16 +60,20 @@ class WallpaperGenerator @Inject constructor(
                 val lowPriorityColorHex = getLowPriorityColorUseCase().first()
 
                 val bitmap = generateTaskListBitmap(
-                    tasks, 
+                    tasks,
                     startColorHex,
                     secondaryStartColorHex,
                     highPriorityColorHex,
                     mediumPriorityColorHex,
                     lowPriorityColorHex
                 )
-                //only for system screen
-                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
-                Result.Success(Unit)
+                try {
+                    //only for system screen
+                    wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
+                    Result.Success(Unit)
+                } finally {
+                    bitmap.recycle()
+                }
             } catch (e: Exception) {
                 Result.Error(e)
             }
@@ -155,16 +162,21 @@ class WallpaperGenerator @Inject constructor(
                 titlePaint
             )
         } else {
+            val highColor = Color.parseColor(highPriorityColorHex)
+            val mediumColor = Color.parseColor(mediumPriorityColorHex)
+            val lowColor = Color.parseColor(lowPriorityColorHex)
+            val rect = RectF()
+
             for (task in pendingTasks) {
                 if (y > height - 200) break
 
                 val baseColor = when (task.priority) {
-                    Priority.HIGH -> Color.parseColor(highPriorityColorHex)
-                    Priority.MEDIUM -> Color.parseColor(mediumPriorityColorHex)
-                    Priority.LOW -> Color.parseColor(lowPriorityColorHex)
+                    Priority.HIGH -> highColor
+                    Priority.MEDIUM -> mediumColor
+                    Priority.LOW -> lowColor
                 }
 
-                val rect = RectF(
+                rect.set(
                     leftPadding,
                     y,
                     width - leftPadding,
@@ -209,7 +221,7 @@ class WallpaperGenerator @Inject constructor(
         // Footer
         val footerText =
             "${pendingTasks.size} pending task${if (pendingTasks.size != 1) "s" else ""} • Updated on ${
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm"))
+                LocalDateTime.now().format(footerFormatter)
             }"
         canvas.drawText(footerText, leftPadding, y + 40f, footerPaint)
 

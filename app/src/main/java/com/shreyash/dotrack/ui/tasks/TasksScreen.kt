@@ -1,7 +1,5 @@
 package com.shreyash.dotrack.ui.tasks
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -29,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -68,10 +65,6 @@ fun TasksScreen(
     var showSetWallpaperDialog by remember { mutableStateOf(false) }
     var showSortMenu by remember { mutableStateOf(false) }
     var showFilterSheet by remember { mutableStateOf(false) }
-
-    LaunchedEffect(viewModel.wallpaperUpdated) {
-        if (viewModel.wallpaperUpdated) { }
-    }
 
     val allTasksDeleted = stringResource(R.string.all_tasks_deleted)
 
@@ -272,7 +265,7 @@ fun TasksScreen(
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 CircularProgressIndicator(color = Color.White)
-                androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = stringResource(R.string.applying_wallpaper),
                     color = Color.White,
@@ -283,7 +276,6 @@ fun TasksScreen(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun TasksScreenPreview() {

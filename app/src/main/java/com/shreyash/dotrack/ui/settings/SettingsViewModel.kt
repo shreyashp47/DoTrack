@@ -326,11 +326,13 @@ class SettingsViewModel @Inject constructor(
 
     fun updateWallpaper() {
         viewModelScope.launch {
-            val tasksResult = getTasksUseCase().first()
             val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
-            if (tasksResult.isSuccess() && autoWallpaperEnabled) {
-                val tasks = tasksResult.getOrNull() ?: emptyList()
-                wallpaperGenerator.generateAndSetWallpaper(tasks)
+            if (autoWallpaperEnabled) {
+                val tasksResult = getTasksUseCase().first()
+                if (tasksResult.isSuccess()) {
+                    val tasks = tasksResult.getOrNull() ?: emptyList()
+                    wallpaperGenerator.generateAndSetWallpaper(tasks)
+                }
             }
         }
     }

@@ -198,17 +198,18 @@ class AddEditTaskViewModel @Inject constructor(
      * Update the wallpaper with the latest task list
      */
     private suspend fun updateWallpaper() {
-        val tasksResult = getTasksUseCase().first()
-
         val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
-        if (tasksResult.isSuccess() && autoWallpaperEnabled) {
-            val tasks = tasksResult.getOrNull() ?: emptyList()
-            val wallpaperResult = wallpaperGenerator.generateAndSetWallpaper(tasks)
+        if (autoWallpaperEnabled) {
+            val tasksResult = getTasksUseCase().first()
+            if (tasksResult.isSuccess()) {
+                val tasks = tasksResult.getOrNull() ?: emptyList()
+                val wallpaperResult = wallpaperGenerator.generateAndSetWallpaper(tasks)
 
-            withContext(Dispatchers.Main) {
-                uiState = uiState.copy(
-                    wallpaperUpdated = wallpaperResult.isSuccess()
-                )
+                withContext(Dispatchers.Main) {
+                    uiState = uiState.copy(
+                        wallpaperUpdated = wallpaperResult.isSuccess()
+                    )
+                }
             }
         }
     }

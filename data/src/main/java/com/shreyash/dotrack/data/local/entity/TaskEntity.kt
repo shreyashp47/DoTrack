@@ -1,13 +1,20 @@
 package com.shreyash.dotrack.data.local.entity
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.shreyash.dotrack.domain.model.Priority
 import com.shreyash.dotrack.domain.model.Task
 import java.time.LocalDateTime
 import java.util.UUID
 
-@Entity(tableName = "tasks")
+@Entity(
+    tableName = "tasks",
+    indices = [
+        Index(value = ["isCompleted"]),
+        Index(value = ["dueDate"])
+    ]
+)
 data class TaskEntity(
     @PrimaryKey
     val id: String,
