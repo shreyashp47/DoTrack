@@ -1,7 +1,6 @@
 package com.shreyash.dotrack.ui.tasks
 
 import android.content.Context
-import android.os.Build
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,12 +49,6 @@ class TasksViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val TAG = "TasksViewModel"
-    val tasks: StateFlow<Result<List<Task>>> = getTasksUseCase()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = Result.Loading
-        )
 
     private val _sortOption = kotlinx.coroutines.flow.MutableStateFlow(SortOption.DUE_DATE)
     private val _sortDirection = kotlinx.coroutines.flow.MutableStateFlow(SortDirection.ASCENDING)

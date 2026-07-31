@@ -1,7 +1,6 @@
 package com.shreyash.dotrack
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -89,7 +88,8 @@ fun DoTrackApp(
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
 
-        val showBottomBar = currentDestination?.route in bottomNavDestinations.map { it.route }
+        val bottomNavRoutes = remember { bottomNavDestinations.map { it.route } }
+        val showBottomBar = currentDestination?.route in bottomNavRoutes
 
         if (deepLinkIntent != null) {
             LaunchedEffect(deepLinkIntent) {

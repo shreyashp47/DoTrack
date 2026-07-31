@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -27,7 +26,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -53,9 +51,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.shreyash.dotrack.R
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.shreyash.dotrack.R
 import com.shreyash.dotrack.domain.model.Priority
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -65,6 +63,8 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+
+private val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -201,8 +201,6 @@ fun TaskForm(
             dueDate?.toLocalTime() ?: LocalTime.of(12, 0)
         )
     }
-
-    val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm")
 
     Column(
         modifier = modifier

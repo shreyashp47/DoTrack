@@ -25,3 +25,5 @@ AGENTS.md
 /data/build
 /domain/build
 /core/build
+# JVM crash logs
+hs_err_pid*.log

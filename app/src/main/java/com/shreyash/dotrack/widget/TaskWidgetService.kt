@@ -14,6 +14,8 @@ import dagger.hilt.android.EntryPointAccessors
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+private val widgetDateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.getDefault())
+
 class TaskWidgetService : RemoteViewsService() {
     override fun onGetViewFactory(intent: Intent): RemoteViewsFactory {
         return TaskWidgetItemFactory(applicationContext)
@@ -83,10 +85,8 @@ class TaskWidgetItemFactory(
         )
 
         if (task.dueDate != null) {
-            val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.getDefault())
-
             remoteView.setViewVisibility(R.id.widget_task_due, View.VISIBLE)
-            remoteView.setTextViewText(R.id.widget_task_due, context.getString(R.string.due_label, task.dueDate?.format(dateFormatter)))
+            remoteView.setTextViewText(R.id.widget_task_due, context.getString(R.string.due_label, task.dueDate?.format(widgetDateFormatter)))
         } else {
             remoteView.setViewVisibility(R.id.widget_task_due, View.GONE)
 

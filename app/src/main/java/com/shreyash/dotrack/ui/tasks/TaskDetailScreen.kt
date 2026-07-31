@@ -53,13 +53,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.shreyash.dotrack.R
-import com.shreyash.dotrack.domain.model.Priority
-import com.shreyash.dotrack.domain.model.Task
 import com.shreyash.dotrack.core.ui.theme.DEFAULT_HIGH_PRIORITY_COLOR
-import com.shreyash.dotrack.core.ui.theme.DEFAULT_MEDIUM_PRIORITY_COLOR
 import com.shreyash.dotrack.core.ui.theme.DEFAULT_LOW_PRIORITY_COLOR
+import com.shreyash.dotrack.core.ui.theme.DEFAULT_MEDIUM_PRIORITY_COLOR
+import com.shreyash.dotrack.domain.model.Priority
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+
+private val highPriorityColor = Color(android.graphics.Color.parseColor(DEFAULT_HIGH_PRIORITY_COLOR))
+private val mediumPriorityColor = Color(android.graphics.Color.parseColor(DEFAULT_MEDIUM_PRIORITY_COLOR))
+private val lowPriorityColor = Color(android.graphics.Color.parseColor(DEFAULT_LOW_PRIORITY_COLOR))
 
 @Preview(showBackground = true)
 @Composable
@@ -283,9 +286,9 @@ fun TaskDetailScreen(
 @Composable
 private fun PriorityChip(priority: Priority) {
     val chipColor = when (priority) {
-        Priority.HIGH -> Color(android.graphics.Color.parseColor(DEFAULT_HIGH_PRIORITY_COLOR))
-        Priority.MEDIUM -> Color(android.graphics.Color.parseColor(DEFAULT_MEDIUM_PRIORITY_COLOR))
-        Priority.LOW -> Color(android.graphics.Color.parseColor(DEFAULT_LOW_PRIORITY_COLOR))
+        Priority.HIGH -> highPriorityColor
+        Priority.MEDIUM -> mediumPriorityColor
+        Priority.LOW -> lowPriorityColor
     }
     Surface(
         shape = RoundedCornerShape(8.dp),
