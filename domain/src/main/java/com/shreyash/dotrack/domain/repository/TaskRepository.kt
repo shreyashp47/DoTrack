@@ -16,7 +16,7 @@ interface TaskRepository {
         priority: Priority,
         reminderEnabled: Boolean,
         categoryId: String? = null
-    ): Result<Unit>
+    ): Result<String>
 
     suspend fun updateTask(task: Task): Result<Unit>
     suspend fun deleteTask(id: String): Result<Unit>

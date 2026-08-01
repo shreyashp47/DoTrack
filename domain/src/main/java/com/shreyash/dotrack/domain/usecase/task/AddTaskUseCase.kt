@@ -16,7 +16,7 @@ class AddTaskUseCase @Inject constructor(
         priority: Priority,
         reminderEnabled: Boolean,
         categoryId: String? = null
-    ): Result<Unit> {
+    ): Result<String> {
         if (title.isBlank()) {
             return Result.Error(Exception("Title cannot be empty"))
         }

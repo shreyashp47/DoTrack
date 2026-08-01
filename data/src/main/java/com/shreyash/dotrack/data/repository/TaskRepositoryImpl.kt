@@ -46,7 +46,7 @@ class TaskRepositoryImpl @Inject constructor(
         priority: Priority,
         reminderEnabled: Boolean,
         categoryId: String?
-    ): Result<Unit> = withContext(ioDispatcher) {
+    ): Result<String> = withContext(ioDispatcher) {
         return@withContext try {
             val task = TaskEntity.createNew(
                 title = title,
@@ -57,7 +57,7 @@ class TaskRepositoryImpl @Inject constructor(
                 categoryId = categoryId
             )
             taskDao.insertTask(task)
-            Result.success(Unit)
+            Result.success(task.id)
         } catch (e: Exception) {
             Result.error(e)
         }
