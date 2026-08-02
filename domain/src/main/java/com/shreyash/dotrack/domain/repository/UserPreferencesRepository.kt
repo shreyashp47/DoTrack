@@ -82,6 +82,18 @@ interface UserPreferencesRepository {
     suspend fun setDarkMode(mode: String): Result<Unit>
 
     /**
+     * Get the app language preference as a Flow
+     * Returns "system" or a BCP 47 language tag (e.g., "en", "hi", "ja", "de")
+     */
+    fun getLanguage(): Flow<String>
+
+    /**
+     * Set the app language preference
+     * @param language "system" or a BCP 47 language tag (e.g., "en", "hi", "ja", "de")
+     */
+    suspend fun setLanguage(language: String): Result<Unit>
+
+    /**
      * Get the task list sort option as a Flow
      */
     fun getSortOption(): Flow<SortOption>

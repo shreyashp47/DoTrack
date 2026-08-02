@@ -9,12 +9,14 @@ import com.shreyash.dotrack.core.ui.theme.DEFAULT_MEDIUM_PRIORITY_COLOR
 import com.shreyash.dotrack.core.ui.theme.DEFAULT_TOP_COLOR
 import com.shreyash.dotrack.core.util.Result
 import com.shreyash.dotrack.core.util.WallpaperGenerator
+import com.shreyash.dotrack.domain.model.AppLanguage
+import com.shreyash.dotrack.domain.model.DarkMode
 import com.shreyash.dotrack.domain.model.Priority
 import com.shreyash.dotrack.domain.model.Task
-import com.shreyash.dotrack.domain.model.DarkMode
 import com.shreyash.dotrack.domain.usecase.preferences.GetAutoWallpaperEnabledUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetDarkModeUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetHighPriorityColorUseCase
+import com.shreyash.dotrack.domain.usecase.preferences.GetLanguageUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetLowPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetMediumPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetSecondaryWallpaperColorUseCase
@@ -22,6 +24,7 @@ import com.shreyash.dotrack.domain.usecase.preferences.GetWallpaperColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetAutoWallpaperEnabledUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetDarkModeUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetHighPriorityColorUseCase
+import com.shreyash.dotrack.domain.usecase.preferences.SetLanguageUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetLowPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetMediumPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetSecondaryWallpaperColorUseCase
@@ -70,6 +73,8 @@ class SettingsViewModelTest {
     private lateinit var getTasksUseCase: GetTasksUseCase
     private lateinit var getDarkModeUseCase: GetDarkModeUseCase
     private lateinit var setDarkModeUseCase: SetDarkModeUseCase
+    private lateinit var getLanguageUseCase: GetLanguageUseCase
+    private lateinit var setLanguageUseCase: SetLanguageUseCase
 
     // Class under test
     private lateinit var viewModel: SettingsViewModel
@@ -96,10 +101,13 @@ class SettingsViewModelTest {
         getTasksUseCase = mockk()
         getDarkModeUseCase = mockk()
         setDarkModeUseCase = mockk(relaxed = true)
+        getLanguageUseCase = mockk()
+        setLanguageUseCase = mockk(relaxed = true)
 
         // Default mock behavior
         every { getAutoWallpaperEnabledUseCase() } returns flowOf(false)
         every { getDarkModeUseCase() } returns flowOf(DarkMode.SYSTEM.value)
+        every { getLanguageUseCase() } returns flowOf(AppLanguage.SYSTEM.value)
         every { getWallpaperColorUseCase() } returns flowOf(DEFAULT_TOP_COLOR)
         every { getSecondaryWallpaperColorUseCase() } returns flowOf(DEFAULT_TOP_COLOR)
         every { getHighPriorityColorUseCase() } returns flowOf(DEFAULT_HIGH_PRIORITY_COLOR)
@@ -124,7 +132,9 @@ class SettingsViewModelTest {
             wallpaperGenerator = wallpaperGenerator,
             getTasksUseCase = getTasksUseCase,
             getDarkModeUseCase = getDarkModeUseCase,
-            setDarkModeUseCase = setDarkModeUseCase
+            setDarkModeUseCase = setDarkModeUseCase,
+            getLanguageUseCase = getLanguageUseCase,
+            setLanguageUseCase = setLanguageUseCase
         )
     }
 
@@ -284,7 +294,9 @@ class SettingsViewModelTest {
             wallpaperGenerator = wallpaperGenerator,
             getTasksUseCase = getTasksUseCase,
             getDarkModeUseCase = getDarkModeUseCase,
-            setDarkModeUseCase = setDarkModeUseCase
+            setDarkModeUseCase = setDarkModeUseCase,
+            getLanguageUseCase = getLanguageUseCase,
+            setLanguageUseCase = setLanguageUseCase
         )
 
         // Then - show color picker should not crash
@@ -333,5 +345,26 @@ class SettingsViewModelTest {
         // Test for secondary wallpaper
         viewModel.showSecondaryWallpaperColorPicker()
         assertEquals(ColorPickerMode.SECONDARY_WALLPAPER, viewModel.currentColorPickerMode)
+    }
+
+    @Test
+    fun `test set app language`() = runTest {
+        // Given
+        coEvery { setLanguageUseCase(AppLanguage.HINDI.value) } returns Result.Success(Unit)
+
+        // When
+        viewModel.setLanguage(AppLanguage.HINDI.value)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        coVerify { setLanguageUseCase(AppLanguage.HINDI.value) }
+    }
+
+    @Test
+    fun `test app language defaults to system`() {
+        // Given - default mock returns system language
+
+        // Then
+        assertEquals(AppLanguage.SYSTEM.value, viewModel.language.value)
     }
 }

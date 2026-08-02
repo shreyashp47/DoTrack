@@ -127,6 +127,14 @@
     <string name="dark_mode_light">लाइट</string>
     <string name="dark_mode_dark">डार्क</string>
 
+    <!-- Language -->
+    <string name="language">भाषा</string>
+    <string name="language_system">सिस्टम डिफ़ॉल्ट</string>
+    <string name="language_english">English</string>
+    <string name="language_hindi">हिन्दी</string>
+    <string name="language_japanese">日本語</string>
+    <string name="language_german">Deutsch</string>
+
     <!-- Sort -->
     <string name="sort_by">क्रमबद्ध करें</string>
     <string name="sort_due_date">नियत तिथि</string>

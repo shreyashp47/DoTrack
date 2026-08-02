@@ -127,6 +127,14 @@
     <string name="dark_mode_light">ライト</string>
     <string name="dark_mode_dark">ダーク</string>
 
+    <!-- Language -->
+    <string name="language">言語</string>
+    <string name="language_system">システムデフォルト</string>
+    <string name="language_english">English</string>
+    <string name="language_hindi">हिन्दी</string>
+    <string name="language_japanese">日本語</string>
+    <string name="language_german">Deutsch</string>
+
     <!-- Sort -->
     <string name="sort_by">並び替え</string>
     <string name="sort_due_date">期限</string>
