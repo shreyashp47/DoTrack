@@ -81,9 +81,27 @@ class TaskRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteAllTask(): Result<Unit> = withContext(ioDispatcher) {
+    override suspend fun deleteAllTasks(): Result<Unit> = withContext(ioDispatcher) {
         return@withContext try {
-            taskDao.deleteAllTask()
+            taskDao.deleteAllTasks()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.error(e)
+        }
+    }
+
+    override suspend fun deleteCompletedTasks(): Result<Unit> = withContext(ioDispatcher) {
+        return@withContext try {
+            taskDao.deleteCompletedTasks()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.error(e)
+        }
+    }
+
+    override suspend fun deleteIncompleteTasks(): Result<Unit> = withContext(ioDispatcher) {
+        return@withContext try {
+            taskDao.deleteIncompleteTasks()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.error(e)

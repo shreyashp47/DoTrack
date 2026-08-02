@@ -8,6 +8,7 @@
     <string name="apply">Apply</string>
     <string name="delete">Delete</string>
     <string name="back">Back</string>
+    <string name="close">Close</string>
     <string name="save">Save</string>
 
     <!-- Time Picker -->
@@ -18,10 +19,15 @@
     <string name="edit_task">Edit Task</string>
     <string name="save_task">Save Task</string>
     <string name="delete_task">Delete Task</string>
-    <string name="delete_all_tasks">Clear Completed</string>
-    <string name="delete_all_confirm">Are you sure you want to clear all completed tasks? This action cannot be undone.</string>
+    <string name="delete_tasks_title">Delete Tasks</string>
+    <string name="delete_tasks_summary">%1$d tasks · This action cannot be undone.</string>
+    <string name="delete_all_tasks">Delete All Tasks</string>
+    <string name="delete_completed_tasks">Completed</string>
+    <string name="delete_incomplete_tasks">Incomplete</string>
+    <string name="delete_completed_action">Delete Completed</string>
+    <string name="delete_incomplete_action">Delete Incomplete</string>
     <string name="delete_task_confirm">Are you sure you want to delete this task?</string>
-    <string name="all_tasks_deleted">Completed tasks cleared</string>
+    <string name="tasks_deleted">Tasks deleted</string>
     <string name="no_tasks_yet">No tasks yet. Add one!</string>
     <string name="set_wallpaper">Set Wallpaper</string>
     <string name="set_wallpaper_confirm">Are you sure you want set wallpaper? This action cannot be undone.</string>
@@ -29,7 +35,7 @@
     <string name="applying_wallpaper">Applying wallpaper…</string>
     <string name="deleting_task">Deleting task…</string>
     <string name="set_as_wallpaper">Set as Wallpaper</string>
-    <string name="delete_all_tasks_content_desc">Clear completed tasks</string>
+    <string name="delete_all_tasks_content_desc">Delete tasks</string>
     <string name="error_format">Error: %s</string>
     <string name="due_label">Due: %s</string>
     <string name="delete_task_content_desc">Delete task</string>
