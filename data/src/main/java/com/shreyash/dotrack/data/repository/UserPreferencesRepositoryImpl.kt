@@ -13,6 +13,8 @@ import com.shreyash.dotrack.core.ui.theme.DEFAULT_LOW_PRIORITY_COLOR
 import com.shreyash.dotrack.core.ui.theme.DEFAULT_MEDIUM_PRIORITY_COLOR
 import com.shreyash.dotrack.core.ui.theme.DEFAULT_TOP_COLOR
 import com.shreyash.dotrack.core.util.Result
+import com.shreyash.dotrack.domain.model.SortDirection
+import com.shreyash.dotrack.domain.model.SortOption
 import com.shreyash.dotrack.domain.repository.UserPreferencesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -35,6 +37,8 @@ class UserPreferencesRepositoryImpl @Inject constructor(
         val MEDIUM_PRIORITY_COLOR = stringPreferencesKey("medium_priority_color")
         val LOW_PRIORITY_COLOR = stringPreferencesKey("low_priority_color")
         val DARK_MODE = stringPreferencesKey("dark_mode")
+        val SORT_OPTION = stringPreferencesKey("sort_option")
+        val SORT_DIRECTION = stringPreferencesKey("sort_direction")
     }
 
     private val TAG = "UserPreferencesRepositoryImpl"
@@ -207,6 +211,60 @@ class UserPreferencesRepositoryImpl @Inject constructor(
         return try {
             dataStore.edit { preferences ->
                 preferences[PreferencesKeys.DARK_MODE] = mode
+            }
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
+    }
+
+    override fun getSortOption(): Flow<SortOption> {
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                preferences[PreferencesKeys.SORT_OPTION]?.let { stored ->
+                    SortOption.entries.firstOrNull { it.name == stored }
+                } ?: SortOption.DUE_DATE
+            }
+    }
+
+    override suspend fun setSortOption(option: SortOption): Result<Unit> {
+        return try {
+            dataStore.edit { preferences ->
+                preferences[PreferencesKeys.SORT_OPTION] = option.name
+            }
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
+    }
+
+    override fun getSortDirection(): Flow<SortDirection> {
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                preferences[PreferencesKeys.SORT_DIRECTION]?.let { stored ->
+                    SortDirection.entries.firstOrNull { it.name == stored }
+                } ?: SortDirection.ASCENDING
+            }
+    }
+
+    override suspend fun setSortDirection(direction: SortDirection): Result<Unit> {
+        return try {
+            dataStore.edit { preferences ->
+                preferences[PreferencesKeys.SORT_DIRECTION] = direction.name
             }
             Result.Success(Unit)
         } catch (e: Exception) {

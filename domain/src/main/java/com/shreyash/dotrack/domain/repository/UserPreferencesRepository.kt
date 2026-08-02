@@ -1,6 +1,8 @@
 package com.shreyash.dotrack.domain.repository
 
 import com.shreyash.dotrack.core.util.Result
+import com.shreyash.dotrack.domain.model.SortDirection
+import com.shreyash.dotrack.domain.model.SortOption
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -78,4 +80,24 @@ interface UserPreferencesRepository {
      * @param mode "system", "light", or "dark"
      */
     suspend fun setDarkMode(mode: String): Result<Unit>
+
+    /**
+     * Get the task list sort option as a Flow
+     */
+    fun getSortOption(): Flow<SortOption>
+
+    /**
+     * Set the task list sort option
+     */
+    suspend fun setSortOption(option: SortOption): Result<Unit>
+
+    /**
+     * Get the task list sort direction as a Flow
+     */
+    fun getSortDirection(): Flow<SortDirection>
+
+    /**
+     * Set the task list sort direction
+     */
+    suspend fun setSortDirection(direction: SortDirection): Result<Unit>
 }
