@@ -14,8 +14,9 @@
 [![APK](https://github.com/shreyashp47/DoTrack/actions/workflows/build_apk.yml/badge.svg)](https://github.com/shreyashp47/DoTrack/actions/workflows/build_apk.yml)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Release](https://img.shields.io/github/v/release/shreyashp47/DoTrack?sort=semver)](https://github.com/shreyashp47/DoTrack/releases)
+[![Play Store](https://img.shields.io/badge/Live%20on-Google%20Play-00D184.svg)](https://play.google.com/store/apps/details?id=com.shreyash.dotrack)
 
-[Download APK](https://github.com/shreyashp47/DoTrack/releases) • [Documentation](docs/) • [Changelog](CHANGELOG.md) • [Report Bug](https://github.com/shreyashp47/DoTrack/issues) • [Request Feature](https://github.com/shreyashp47/DoTrack/issues)
+[Download APK](https://github.com/shreyashp47/DoTrack/releases) • [Get it on Google Play](https://play.google.com/store/apps/details?id=com.shreyash.dotrack) • [Documentation](docs/) • [Changelog](CHANGELOG.md) • [Report Bug](https://github.com/shreyashp47/DoTrack/issues) • [Request Feature](https://github.com/shreyashp47/DoTrack/issues)
 
 </div>
 
@@ -112,7 +113,7 @@
 
 ### Download APK
 
-Get the latest release from our [Releases page](https://github.com/shreyashp47/DoTrack/releases)
+Get the latest release from our [Releases page](https://github.com/shreyashp47/DoTrack/releases), or install the stable version directly from [Google Play](https://play.google.com/store/apps/details?id=com.shreyash.dotrack).
 
 ---
 
@@ -408,14 +409,25 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Open Source Community** for the amazing libraries and tools
 
 ---
-## Open Testing
+## 🚀 Live on Google Play
 
-This app is in open testing on Google Play. To help me get it to production:
+DoTrack is **now live on Google Play**! 🎉
+
+<div align="center">
+
+[![Get it on Google Play](https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png)](https://play.google.com/store/apps/details?id=com.shreyash.dotrack)
+
+</div>
+
+### 🌟 Join the Open Testing Program
+
+Want to try the **latest features before everyone else**? You can also join the open testing program:
 
 1. **Join the tester group:** [google groups/testers-community](https://groups.google.com/g/testers-community)
-2. **Install the app:** Once approved, install from the [Play Store listing](https://play.google.com/store/apps/details?id=com.shreyash.dotrack)
+2. **Become a tester:** Open the [Play Store listing](https://play.google.com/store/apps/details?id=com.shreyash.dotrack) and tap **"Join the beta"** — no code, no sideloading!
 3. **Report issues:** Open a [GitHub issue](https://github.com/shreyashp47/DoTrack/issues)
 
+Your feedback helps make DoTrack better — thank you for testing! 💚
 
 ---
 
