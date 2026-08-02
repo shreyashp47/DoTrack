@@ -14,9 +14,15 @@ import com.shreyash.dotrack.domain.model.Priority
 import com.shreyash.dotrack.domain.model.SortDirection
 import com.shreyash.dotrack.domain.model.SortOption
 import com.shreyash.dotrack.domain.model.Task
+import com.shreyash.dotrack.domain.model.TaskDeleteScope
 import com.shreyash.dotrack.domain.usecase.preferences.GetAutoWallpaperEnabledUseCase
+import com.shreyash.dotrack.domain.usecase.preferences.GetSortDirectionUseCase
+import com.shreyash.dotrack.domain.usecase.preferences.GetSortOptionUseCase
+import com.shreyash.dotrack.domain.usecase.preferences.SetSortDirectionUseCase
+import com.shreyash.dotrack.domain.usecase.preferences.SetSortOptionUseCase
 import com.shreyash.dotrack.domain.usecase.task.CompleteTaskUseCase
 import com.shreyash.dotrack.domain.usecase.task.DeleteTaskUseCase
+import com.shreyash.dotrack.domain.usecase.task.DeleteTasksUseCase
 import com.shreyash.dotrack.domain.usecase.task.DisableReminderUseCase
 import com.shreyash.dotrack.domain.usecase.task.GetTasksUseCase
 import com.shreyash.dotrack.domain.usecase.task.UncompleteTaskUseCase
@@ -28,7 +34,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -43,9 +51,14 @@ class TasksViewModel @Inject constructor(
     private val uncompleteTaskUseCase: UncompleteTaskUseCase,
     private val wallpaperGenerator: WallpaperGenerator,
     private val deleteTaskUseCase: DeleteTaskUseCase,
+    private val deleteTasksUseCase: DeleteTasksUseCase,
     private val getAutoWallpaperEnabledUseCase: GetAutoWallpaperEnabledUseCase,
     private val disableReminderUseCase: DisableReminderUseCase,
-    private val reminderScheduler: ReminderScheduler
+    private val reminderScheduler: ReminderScheduler,
+    private val getSortOptionUseCase: GetSortOptionUseCase,
+    private val setSortOptionUseCase: SetSortOptionUseCase,
+    private val getSortDirectionUseCase: GetSortDirectionUseCase,
+    private val setSortDirectionUseCase: SetSortDirectionUseCase
 ) : ViewModel() {
 
     private val TAG = "TasksViewModel"
@@ -55,6 +68,26 @@ class TasksViewModel @Inject constructor(
 
     val sortOption: SortOption get() = _sortOption.value
     val sortDirection: SortDirection get() = _sortDirection.value
+
+    private var sortOptionSelectedByUser = false
+    private var sortDirectionSelectedByUser = false
+
+    init {
+        viewModelScope.launch {
+            getSortOptionUseCase()
+                .distinctUntilChanged()
+                .collect { saved ->
+                    if (!sortOptionSelectedByUser) _sortOption.value = saved
+                }
+        }
+        viewModelScope.launch {
+            getSortDirectionUseCase()
+                .distinctUntilChanged()
+                .collect { saved ->
+                    if (!sortDirectionSelectedByUser) _sortDirection.value = saved
+                }
+        }
+    }
 
     private val _filterPriority = kotlinx.coroutines.flow.MutableStateFlow<Priority?>(null)
     private val _filterCompleted = kotlinx.coroutines.flow.MutableStateFlow<Boolean?>(null)
@@ -86,19 +119,46 @@ class TasksViewModel @Inject constructor(
         initialValue = Result.Loading
     )
 
+    val taskCounts: StateFlow<TaskCounts> = getTasksUseCase()
+        .map { result ->
+            val tasks = result.getOrNull().orEmpty()
+            TaskCounts(
+                completed = tasks.count { it.isCompleted },
+                incomplete = tasks.count { !it.isCompleted }
+            )
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = TaskCounts()
+        )
+
     fun setSortOption(option: SortOption) {
+        sortOptionSelectedByUser = true
         _sortOption.value = option
+        viewModelScope.launch {
+            setSortOptionUseCase(option)
+        }
     }
 
     fun setSortDirection(direction: SortDirection) {
+        sortDirectionSelectedByUser = true
         _sortDirection.value = direction
+        viewModelScope.launch {
+            setSortDirectionUseCase(direction)
+        }
     }
 
     fun toggleSortDirection() {
-        _sortDirection.value = if (_sortDirection.value == SortDirection.ASCENDING) {
+        sortDirectionSelectedByUser = true
+        val newDirection = if (_sortDirection.value == SortDirection.ASCENDING) {
             SortDirection.DESCENDING
         } else {
             SortDirection.ASCENDING
+        }
+        _sortDirection.value = newDirection
+        viewModelScope.launch {
+            setSortDirectionUseCase(newDirection)
         }
     }
 
@@ -111,8 +171,14 @@ class TasksViewModel @Inject constructor(
     }
 
     fun resetSort() {
+        sortOptionSelectedByUser = true
+        sortDirectionSelectedByUser = true
         _sortOption.value = SortOption.DUE_DATE
         _sortDirection.value = SortDirection.ASCENDING
+        viewModelScope.launch {
+            setSortOptionUseCase(SortOption.DUE_DATE)
+            setSortDirectionUseCase(SortDirection.ASCENDING)
+        }
     }
 
     fun resetFilter() {
@@ -251,13 +317,27 @@ class TasksViewModel @Inject constructor(
     }
 
     /**
-     * Delete all tasks
+     * Delete tasks by scope (all, completed, or incomplete)
+     * Cancels pending reminders for the affected tasks
      */
-    fun deleteCompletedTasks() {
+    fun deleteTasks(scope: TaskDeleteScope) {
         isDeleting = true
         val deleteStartTime = System.currentTimeMillis()
         viewModelScope.launch(Dispatchers.IO) {
-            val result = deleteTaskUseCase()
+            val tasksResult = getTasksUseCase().first()
+            if (tasksResult.isSuccess()) {
+                val affectedTasks = tasksResult.getOrNull()?.filter { task ->
+                    when (scope) {
+                        TaskDeleteScope.ALL -> true
+                        TaskDeleteScope.COMPLETED -> task.isCompleted
+                        TaskDeleteScope.INCOMPLETE -> !task.isCompleted
+                    }
+                }.orEmpty()
+                affectedTasks.forEach { task ->
+                    reminderScheduler.cancelReminder(task.id)
+                }
+            }
+            val result = deleteTasksUseCase(scope)
             if (result.isSuccess()) {
                 val autoWallpaperEnabled = getAutoWallpaperEnabledUseCase().first()
                 if (autoWallpaperEnabled) {
@@ -277,4 +357,11 @@ class TasksViewModel @Inject constructor(
             }
         }
     }
+}
+
+data class TaskCounts(
+    val completed: Int = 0,
+    val incomplete: Int = 0
+) {
+    val total: Int get() = completed + incomplete
 }

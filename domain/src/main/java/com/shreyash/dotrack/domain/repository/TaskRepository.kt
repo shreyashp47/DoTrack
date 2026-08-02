@@ -16,11 +16,13 @@ interface TaskRepository {
         priority: Priority,
         reminderEnabled: Boolean,
         categoryId: String? = null
-    ): Result<Unit>
+    ): Result<String>
 
     suspend fun updateTask(task: Task): Result<Unit>
     suspend fun deleteTask(id: String): Result<Unit>
-    suspend fun deleteAllTask(): Result<Unit>
+    suspend fun deleteAllTasks(): Result<Unit>
+    suspend fun deleteCompletedTasks(): Result<Unit>
+    suspend fun deleteIncompleteTasks(): Result<Unit>
     suspend fun completeTask(id: String): Result<Unit>
     suspend fun uncompleteTask(id: String): Result<Unit>
     suspend fun disableReminder(id: String): Result<Unit>

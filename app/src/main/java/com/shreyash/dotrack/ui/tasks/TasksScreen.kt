@@ -1,19 +1,29 @@
 package com.shreyash.dotrack.ui.tasks
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -23,6 +33,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -39,6 +50,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -48,6 +60,7 @@ import com.shreyash.dotrack.domain.model.Priority
 import com.shreyash.dotrack.domain.model.SortDirection
 import com.shreyash.dotrack.domain.model.SortOption
 import com.shreyash.dotrack.domain.model.Task
+import com.shreyash.dotrack.domain.model.TaskDeleteScope
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
@@ -59,6 +72,7 @@ fun TasksScreen(
     viewModel: TasksViewModel = hiltViewModel()
 ) {
     val tasksState by viewModel.sortedTasks.collectAsState()
+    val taskCounts by viewModel.taskCounts.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
@@ -66,27 +80,110 @@ fun TasksScreen(
     var showSortMenu by remember { mutableStateOf(false) }
     var showFilterSheet by remember { mutableStateOf(false) }
 
-    val allTasksDeleted = stringResource(R.string.all_tasks_deleted)
+    val allTasksDeleted = stringResource(R.string.tasks_deleted)
 
     if (showDeleteConfirmDialog) {
+        var selectedDeleteScopes by remember { mutableStateOf(setOf<TaskDeleteScope>()) }
+
         AlertDialog(
             onDismissRequest = { showDeleteConfirmDialog = false },
-            title = { Text(stringResource(R.string.delete_all_tasks)) },
-            text = { Text(stringResource(R.string.delete_all_confirm)) },
+            title = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.delete_tasks_title),
+                        fontWeight = FontWeight.Bold
+                    )
+                    IconButton(onClick = { showDeleteConfirmDialog = false }) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = stringResource(R.string.close)
+                        )
+                    }
+                }
+            },
+            text = {
+                Column {
+                    Text(
+                        text = stringResource(R.string.delete_tasks_summary, taskCounts.total),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        DeleteScopeOption(
+                            label = stringResource(R.string.delete_completed_tasks),
+                            count = taskCounts.completed,
+                            checked = TaskDeleteScope.COMPLETED in selectedDeleteScopes,
+                            enabled = taskCounts.completed > 0,
+                            onClick = {
+                                selectedDeleteScopes = toggleDeleteScope(
+                                    selectedDeleteScopes,
+                                    TaskDeleteScope.COMPLETED
+                                )
+                            },
+                            modifier = Modifier.weight(1f)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        DeleteScopeOption(
+                            label = stringResource(R.string.delete_incomplete_tasks),
+                            count = taskCounts.incomplete,
+                            checked = TaskDeleteScope.INCOMPLETE in selectedDeleteScopes,
+                            enabled = taskCounts.incomplete > 0,
+                            onClick = {
+                                selectedDeleteScopes = toggleDeleteScope(
+                                    selectedDeleteScopes,
+                                    TaskDeleteScope.INCOMPLETE
+                                )
+                            },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+            },
             confirmButton = {
                 Button(
                     onClick = {
-                        viewModel.deleteCompletedTasks()
+                        if (TaskDeleteScope.COMPLETED in selectedDeleteScopes &&
+                            TaskDeleteScope.INCOMPLETE in selectedDeleteScopes
+                        ) {
+                            viewModel.deleteTasks(TaskDeleteScope.ALL)
+                        } else {
+                            selectedDeleteScopes.forEach { scope ->
+                                viewModel.deleteTasks(scope)
+                            }
+                        }
                         showDeleteConfirmDialog = false
                         scope.launch { snackbarHostState.showSnackbar(allTasksDeleted) }
-                    }
-                ) { Text(stringResource(R.string.delete_all_tasks)) }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeleteConfirmDialog = false }) {
-                    Text(stringResource(R.string.cancel))
+                    },
+                    enabled = selectedDeleteScopes.isNotEmpty(),
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        disabledContainerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.38f)
+                    )
+                ) {
+                    Text(
+                        text = when {
+                            TaskDeleteScope.COMPLETED in selectedDeleteScopes &&
+                                TaskDeleteScope.INCOMPLETE in selectedDeleteScopes -> {
+                                stringResource(R.string.delete_all_tasks)
+                            }
+                            TaskDeleteScope.COMPLETED in selectedDeleteScopes -> {
+                                stringResource(R.string.delete_completed_action)
+                            }
+                            TaskDeleteScope.INCOMPLETE in selectedDeleteScopes -> {
+                                stringResource(R.string.delete_incomplete_action)
+                            }
+                            else -> stringResource(R.string.delete_all_tasks)
+                        }
+                    )
                 }
-            }
+            },
+            dismissButton = {}
         )
     }
 
@@ -372,6 +469,88 @@ internal fun TasksScreenPreviewContent() {
                     onTaskClick = {},
                     onTaskCheckChange = { _, _ -> },
                     onDeleteTask = {}
+                )
+            }
+        }
+    }
+}
+private fun toggleDeleteScope(
+    scopes: Set<TaskDeleteScope>,
+    scope: TaskDeleteScope
+): Set<TaskDeleteScope> {
+    return if (scope in scopes) scopes - scope else scopes + scope
+}
+
+@Composable
+private fun DeleteScopeOption(
+    label: String,
+    count: Int,
+    checked: Boolean,
+    enabled: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val isDimmed = !enabled
+    val borderColor = when {
+        isDimmed -> MaterialTheme.colorScheme.outlineVariant
+        checked -> MaterialTheme.colorScheme.primary
+        else -> MaterialTheme.colorScheme.outlineVariant
+    }
+    Surface(
+        onClick = { if (enabled) onClick() },
+        modifier = modifier,
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(
+            width = if (checked) 2.dp else 1.dp,
+            color = borderColor
+        ),
+        color = when {
+            isDimmed -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+            checked -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+            else -> MaterialTheme.colorScheme.surface
+        }
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 18.dp, horizontal = 10.dp)
+        ) {
+            if (checked) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .size(18.dp)
+                )
+            }
+            Column(
+                modifier = Modifier.align(Alignment.Center),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = if (checked) FontWeight.Bold else FontWeight.Medium,
+                    color = if (isDimmed) {
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f)
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = count.toString(),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = if (isDimmed) {
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f)
+                    } else if (checked) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    }
                 )
             }
         }

@@ -131,16 +131,24 @@ class AddEditTaskViewModel @Inject constructor(
         val saveStartTime = System.currentTimeMillis()
 
         viewModelScope.launch(Dispatchers.IO) {
+            val newTaskId: String?
             val result = if (uiState.id == null) {
                 // Add new task
-                addTaskUseCase(
+                val created = addTaskUseCase(
                     title = uiState.title,
                     description = uiState.description,
                     dueDate = uiState.dueDate,
                     priority = uiState.priority,
                     reminderEnabled = uiState.reminderEnabled
                 )
+                newTaskId = created.getOrNull()
+                when (created) {
+                    is Result.Success -> Result.success(Unit)
+                    is Result.Error -> created
+                    is Result.Loading -> Result.loading()
+                }
             } else {
+                newTaskId = null
                 // Update existing task
                 val now = LocalDateTime.now()
                 val task = Task(
@@ -158,7 +166,7 @@ class AddEditTaskViewModel @Inject constructor(
             }
 
             if (result.isSuccess()) {
-                val savedTaskId = uiState.id
+                val savedTaskId = uiState.id ?: newTaskId
                 val savedDueDate = uiState.dueDate
                 // Update wallpaper with the latest task list
                 updateWallpaper()

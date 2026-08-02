@@ -46,7 +46,7 @@ class TaskRepositoryImpl @Inject constructor(
         priority: Priority,
         reminderEnabled: Boolean,
         categoryId: String?
-    ): Result<Unit> = withContext(ioDispatcher) {
+    ): Result<String> = withContext(ioDispatcher) {
         return@withContext try {
             val task = TaskEntity.createNew(
                 title = title,
@@ -57,7 +57,7 @@ class TaskRepositoryImpl @Inject constructor(
                 categoryId = categoryId
             )
             taskDao.insertTask(task)
-            Result.success(Unit)
+            Result.success(task.id)
         } catch (e: Exception) {
             Result.error(e)
         }
@@ -81,9 +81,27 @@ class TaskRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteAllTask(): Result<Unit> = withContext(ioDispatcher) {
+    override suspend fun deleteAllTasks(): Result<Unit> = withContext(ioDispatcher) {
         return@withContext try {
-            taskDao.deleteAllTask()
+            taskDao.deleteAllTasks()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.error(e)
+        }
+    }
+
+    override suspend fun deleteCompletedTasks(): Result<Unit> = withContext(ioDispatcher) {
+        return@withContext try {
+            taskDao.deleteCompletedTasks()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.error(e)
+        }
+    }
+
+    override suspend fun deleteIncompleteTasks(): Result<Unit> = withContext(ioDispatcher) {
+        return@withContext try {
+            taskDao.deleteIncompleteTasks()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.error(e)
