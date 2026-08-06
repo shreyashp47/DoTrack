@@ -24,11 +24,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -44,12 +49,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -64,6 +71,7 @@ import com.github.skydoves.colorpicker.compose.ColorEnvelope
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import com.shreyash.dotrack.R
+import com.shreyash.dotrack.domain.model.AppLanguage
 import com.shreyash.dotrack.domain.model.Priority
 
 @Preview(showBackground = true)
@@ -88,6 +96,7 @@ private fun SettingsPreviewContent() {
             currentWallpaperColor = "#1A2980",
             secondaryWallpaperColor = "#26D0CE",
             currentDarkMode = "system",
+            currentLanguage = "system",
             isNotificationEnabled = false,
             highPriorityColor = "#FF4444",
             mediumPriorityColor = "#FFBB33",
@@ -97,6 +106,7 @@ private fun SettingsPreviewContent() {
             onSecondaryWallpaperColorClick = {},
             onPriorityColorClick = {},
             onDarkModeChange = {},
+            onLanguageChange = {},
             onSyncWallpaper = {},
             onNotificationPermissionClick = {}
         )
@@ -118,6 +128,7 @@ fun SettingsScreen(
     val currentWallpaperColor by vm.wallpaperColor.collectAsState()
     val secondaryWallpaperColor by vm.wallpaperSecondaryColor.collectAsState()
     val currentDarkMode by vm.darkMode.collectAsState()
+    val currentLanguage by vm.language.collectAsState()
     val highPriorityColor by vm.highPriorityColor.collectAsState()
     val mediumPriorityColor by vm.mediumPriorityColor.collectAsState()
     val lowPriorityColor by vm.lowPriorityColor.collectAsState()
@@ -185,6 +196,7 @@ fun SettingsScreen(
             currentWallpaperColor = currentWallpaperColor,
             secondaryWallpaperColor = secondaryWallpaperColor,
             currentDarkMode = currentDarkMode,
+            currentLanguage = currentLanguage,
             isNotificationEnabled = isNotificationEnabled,
             highPriorityColor = highPriorityColor,
             mediumPriorityColor = mediumPriorityColor,
@@ -194,6 +206,7 @@ fun SettingsScreen(
             onSecondaryWallpaperColorClick = { vm.showSecondaryWallpaperColorPicker() },
             onPriorityColorClick = { priority -> vm.showPriorityColorPicker(priority) },
             onDarkModeChange = { vm.setDarkMode(it) },
+            onLanguageChange = { vm.setLanguage(it) },
             onSyncWallpaper = { vm.updateWallpaper() },
             onNotificationPermissionClick = {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !isNotificationEnabled) {
@@ -211,6 +224,7 @@ private fun SettingsContent(
     currentWallpaperColor: String,
     secondaryWallpaperColor: String,
     currentDarkMode: String,
+    currentLanguage: String,
     isNotificationEnabled: Boolean,
     highPriorityColor: String,
     mediumPriorityColor: String,
@@ -220,6 +234,7 @@ private fun SettingsContent(
     onSecondaryWallpaperColorClick: () -> Unit,
     onPriorityColorClick: (Priority) -> Unit,
     onDarkModeChange: (String) -> Unit,
+    onLanguageChange: (String) -> Unit,
     onSyncWallpaper: () -> Unit,
     onNotificationPermissionClick: () -> Unit,
 ) {
@@ -295,22 +310,42 @@ private fun SettingsContent(
         SectionHeader(title = stringResource(R.string.appearance))
 
         SectionCard {
-            DarkModeOption(
-                label = stringResource(R.string.dark_mode_system),
-                selected = currentDarkMode == "system",
-                onClick = { onDarkModeChange("system") }
+            SettingDropdownItem(
+                label = stringResource(R.string.dark_mode),
+                value = when (currentDarkMode) {
+                    "dark" -> stringResource(R.string.dark_mode_dark)
+                    "light" -> stringResource(R.string.dark_mode_light)
+                    else -> stringResource(R.string.dark_mode_system)
+                },
+                options = listOf(
+                    stringResource(R.string.dark_mode_system) to "system",
+                    stringResource(R.string.dark_mode_light) to "light",
+                    stringResource(R.string.dark_mode_dark) to "dark"
+                ),
+                selectedValue = currentDarkMode,
+                leadingIcon = Icons.Default.DarkMode,
+                onOptionSelected = onDarkModeChange
             )
             SectionDivider()
-            DarkModeOption(
-                label = stringResource(R.string.dark_mode_light),
-                selected = currentDarkMode == "light",
-                onClick = { onDarkModeChange("light") }
-            )
-            SectionDivider()
-            DarkModeOption(
-                label = stringResource(R.string.dark_mode_dark),
-                selected = currentDarkMode == "dark",
-                onClick = { onDarkModeChange("dark") }
+            SettingDropdownItem(
+                label = stringResource(R.string.language),
+                value = when (currentLanguage) {
+                    AppLanguage.ENGLISH.value -> stringResource(R.string.language_english)
+                    AppLanguage.HINDI.value -> stringResource(R.string.language_hindi)
+                    AppLanguage.JAPANESE.value -> stringResource(R.string.language_japanese)
+                    AppLanguage.GERMAN.value -> stringResource(R.string.language_german)
+                    else -> stringResource(R.string.language_system)
+                },
+                options = listOf(
+                    stringResource(R.string.language_system) to AppLanguage.SYSTEM.value,
+                    stringResource(R.string.language_english) to AppLanguage.ENGLISH.value,
+                    stringResource(R.string.language_hindi) to AppLanguage.HINDI.value,
+                    stringResource(R.string.language_japanese) to AppLanguage.JAPANESE.value,
+                    stringResource(R.string.language_german) to AppLanguage.GERMAN.value
+                ),
+                selectedValue = currentLanguage,
+                leadingIcon = Icons.Default.Language,
+                onOptionSelected = onLanguageChange
             )
         }
 
@@ -500,28 +535,85 @@ fun WallpaperColorCircle(
 }
 
 @Composable
-fun DarkModeOption(
+fun SettingDropdownItem(
     label: String,
-    selected: Boolean,
-    onClick: () -> Unit
+    value: String,
+    options: List<Pair<String, String>>,
+    selectedValue: String,
+    leadingIcon: ImageVector? = null,
+    onOptionSelected: (String) -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(1f)
-        )
-        if (selected) {
+    var expanded by remember { mutableStateOf(false) }
+    Box {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
+                .clickable(onClick = { expanded = true })
+                .padding(vertical = 14.dp, horizontal = 8.dp)
+        ) {
+            if (leadingIcon != null) {
+                Icon(
+                    imageVector = leadingIcon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
             Icon(
-                imageVector = Icons.Default.Check,
+                imageVector = Icons.Default.ArrowDropDown,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            options.forEach { (optionLabel, optionValue) ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = optionLabel,
+                            fontWeight = if (optionValue == selectedValue) {
+                                FontWeight.SemiBold
+                            } else {
+                                FontWeight.Normal
+                            }
+                        )
+                    },
+                    leadingIcon = {
+                        if (optionValue == selectedValue) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    },
+                    onClick = {
+                        onOptionSelected(optionValue)
+                        expanded = false
+                    }
+                )
+            }
         }
     }
 }

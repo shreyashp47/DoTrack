@@ -1,0 +1,163 @@
+<resources>
+    <string name="app_name">DoTrack</string>
+
+    <!-- General -->
+    <string name="cancel">キャンセル</string>
+    <string name="ok">OK</string>
+    <string name="next">次へ</string>
+    <string name="apply">適用</string>
+    <string name="delete">削除</string>
+    <string name="back">戻る</string>
+    <string name="close">閉じる</string>
+    <string name="save">保存</string>
+
+    <!-- Time Picker -->
+    <string name="select_time">時刻を選択</string>
+
+    <!-- Tasks Screen -->
+    <string name="add_task">タスクを追加</string>
+    <string name="edit_task">タスクを編集</string>
+    <string name="save_task">タスクを保存</string>
+    <string name="delete_task">タスクを削除</string>
+    <string name="delete_tasks_title">タスクを削除</string>
+    <string name="delete_tasks_summary">%1$d件のタスク · この操作は元に戻せません。</string>
+    <string name="delete_all_tasks">すべてのタスクを削除</string>
+    <string name="delete_completed_tasks">完了</string>
+    <string name="delete_incomplete_tasks">未完了</string>
+    <string name="delete_completed_action">完了タスクを削除</string>
+    <string name="delete_incomplete_action">未完了タスクを削除</string>
+    <string name="delete_task_confirm">このタスクを削除してもよろしいですか？</string>
+    <string name="tasks_deleted">タスクを削除しました</string>
+    <string name="no_tasks_yet">タスクはまだありません。追加してください！</string>
+    <string name="set_wallpaper">壁紙を設定</string>
+    <string name="set_wallpaper_confirm">壁紙を設定してもよろしいですか？この操作は元に戻せません。</string>
+    <string name="wallpaper_in_progress">新しい壁紙を作成中…</string>
+    <string name="applying_wallpaper">壁紙を適用中…</string>
+    <string name="deleting_task">タスクを削除中…</string>
+    <string name="set_as_wallpaper">壁紙として設定</string>
+    <string name="delete_all_tasks_content_desc">タスクを削除</string>
+    <string name="error_format">エラー: %s</string>
+    <string name="due_label">期限: %s</string>
+    <string name="delete_task_content_desc">タスクを削除</string>
+
+    <!-- Task Detail -->
+    <string name="task_details">タスクの詳細</string>
+    <string name="description">説明</string>
+    <string name="no_description">説明なし</string>
+    <string name="priority">優先度</string>
+    <string name="due_date">期限</string>
+    <string name="created">作成日</string>
+    <string name="last_updated">最終更新</string>
+
+    <!-- Add/Edit Task -->
+    <string name="title_label">タイトル</string>
+    <string name="description_label">説明</string>
+    <string name="no_due_date">期限なし</string>
+    <string name="due_date_optional">期限（任意）</string>
+    <string name="select_date">日付を選択</string>
+    <string name="saving_task">タスクを保存中…</string>
+    <string name="error_saving_task">タスクの保存エラー</string>
+    <string name="clear_due_date">期限をクリア</string>
+    <string name="enable_reminder">リマインダーを有効にする（30分前）</string>
+    <string name="reminder_helper">期限の30分前に通知を受け取ります</string>
+    <string name="title_cannot_be_empty">タイトルは空にできません</string>
+    <string name="sample_task">サンプルタスク</string>
+    <string name="sample_task_description">これはプレビュー用のサンプルタスクの説明です</string>
+
+    <!-- Categories -->
+    <string name="categories">カテゴリ</string>
+    <string name="add_category">カテゴリを追加</string>
+    <string name="edit_category">カテゴリを編集</string>
+    <string name="save_category">カテゴリを保存</string>
+    <string name="category_name">カテゴリ名</string>
+    <string name="no_categories_yet">カテゴリはまだありません。追加してください！</string>
+    <string name="error_saving_category">カテゴリの保存エラー</string>
+
+    <!-- Settings -->
+    <string name="settings">設定</string>
+    <string name="auto_wallpaper_updates">壁紙の自動更新</string>
+    <string name="auto_wallpaper_subtitle">タスクが変更されたときに壁紙を自動的に更新</string>
+    <string name="wallpaper_color">壁紙の色</string>
+    <string name="wallpaper_color_subtitle">壁紙の背景色を選択</string>
+    <string name="choose_wallpaper_color">壁紙の色を選択</string>
+    <string name="choose_secondary_wallpaper_color">セカンダリ壁紙の色を選択</string>
+    <string name="choose_high_priority_color">高優先度の色を選択</string>
+    <string name="choose_medium_priority_color">中優先度の色を選択</string>
+    <string name="choose_low_priority_color">低優先度の色を選択</string>
+    <string name="task_priority_colors">タスク優先度の色</string>
+    <string name="high_priority">高優先度</string>
+    <string name="high_priority_subtitle">高優先度タスクの色</string>
+    <string name="medium_priority">中優先度</string>
+    <string name="medium_priority_subtitle">中優先度タスクの色</string>
+    <string name="low_priority">低優先度</string>
+    <string name="low_priority_subtitle">低優先度タスクの色</string>
+    <string name="notifications">通知</string>
+    <string name="permission">権限</string>
+    <string name="enable_notification_permission">通知権限を有効にする</string>
+    <string name="notification_permission_title">通知権限</string>
+    <string name="notification_permission_message">DoTrackはタスクのリマインダーを送信するために通知権限が必要です。この権限を許可しますか？</string>
+    <string name="grant_permission">権限を許可</string>
+    <string name="not_now">後で</string>
+    <string name="sync_up">同期</string>
+    <string name="sync_up_content_desc">同期</string>
+    <string name="choose_color">色を選択</string>
+
+    <!-- Bottom Nav -->
+    <string name="nav_tasks">タスク</string>
+    <string name="nav_categories">カテゴリ</string>
+    <string name="nav_settings">設定</string>
+
+    <!-- Reminder Worker -->
+    <string name="reminder_channel_id">reminder_channel</string>
+    <string name="reminder_channel_name">タスクリマインダー</string>
+    <string name="reminder_channel_desc">タスクリマインダー用の通知</string>
+    <string name="task_reminder">タスクリマインダー</string>
+
+    <!-- Date formats -->
+    <string name="date_time_format">MMM dd, yyyy HH:mm</string>
+    <string name="date_format_widget">MMM dd, yyyy</string>
+
+    <!-- Time validation -->
+    <string name="time_cannot_be_in_past">選択した時刻はすでに過ぎています。将来の時刻を選択してください。</string>
+
+    <!-- Appearance -->
+    <string name="appearance">外観</string>
+    <string name="dark_mode">ダークモード</string>
+    <string name="dark_mode_system">システムデフォルト</string>
+    <string name="dark_mode_light">ライト</string>
+    <string name="dark_mode_dark">ダーク</string>
+
+    <!-- Language -->
+    <string name="language">言語</string>
+    <string name="language_system">システムデフォルト</string>
+    <string name="language_english">English</string>
+    <string name="language_hindi">हिन्दी</string>
+    <string name="language_japanese">日本語</string>
+    <string name="language_german">Deutsch</string>
+
+    <!-- Sort -->
+    <string name="sort_by">並び替え</string>
+    <string name="sort_due_date">期限</string>
+    <string name="sort_priority">優先度</string>
+    <string name="sort_created_date">作成日</string>
+    <string name="sort_title">タイトル</string>
+    <string name="sort_ascending">昇順</string>
+    <string name="sort_descending">降順</string>
+
+    <!-- Settings -->
+    <string name="primary">プライマリ</string>
+    <string name="secondary">セカンダリ</string>
+
+    <!-- Filter -->
+    <string name="filter_by">フィルター</string>
+    <string name="filter_all">すべて</string>
+    <string name="filter_active">未完了</string>
+    <string name="filter_completed">完了</string>
+    <string name="filter_status">ステータス</string>
+    <string name="reset">リセット</string>
+
+    <!-- Widget -->
+    <string name="priority_high">H</string>
+    <string name="priority_medium">M</string>
+    <string name="priority_low">L</string>
+</resources>

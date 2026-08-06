@@ -1,9 +1,11 @@
 package com.shreyash.dotrack.ui.settings
 
 import android.Manifest
+import android.app.LocaleManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.LocaleList
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -17,11 +19,13 @@ import com.shreyash.dotrack.core.ui.theme.DEFAULT_LOW_PRIORITY_COLOR
 import com.shreyash.dotrack.core.ui.theme.DEFAULT_MEDIUM_PRIORITY_COLOR
 import com.shreyash.dotrack.core.ui.theme.DEFAULT_TOP_COLOR
 import com.shreyash.dotrack.core.util.WallpaperGenerator
+import com.shreyash.dotrack.domain.model.AppLanguage
 import com.shreyash.dotrack.domain.model.DarkMode
 import com.shreyash.dotrack.domain.model.Priority
 import com.shreyash.dotrack.domain.usecase.preferences.GetAutoWallpaperEnabledUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetDarkModeUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetHighPriorityColorUseCase
+import com.shreyash.dotrack.domain.usecase.preferences.GetLanguageUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetLowPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetMediumPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetSecondaryWallpaperColorUseCase
@@ -29,6 +33,7 @@ import com.shreyash.dotrack.domain.usecase.preferences.GetWallpaperColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetAutoWallpaperEnabledUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetDarkModeUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetHighPriorityColorUseCase
+import com.shreyash.dotrack.domain.usecase.preferences.SetLanguageUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetLowPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetMediumPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.SetSecondaryWallpaperColorUseCase
@@ -63,6 +68,8 @@ class SettingsViewModel @Inject constructor(
     private val getTasksUseCase: GetTasksUseCase,
     private val getDarkModeUseCase: GetDarkModeUseCase,
     private val setDarkModeUseCase: SetDarkModeUseCase,
+    private val getLanguageUseCase: GetLanguageUseCase,
+    private val setLanguageUseCase: SetLanguageUseCase,
 ) : ViewModel() {
 
 
@@ -147,6 +154,40 @@ class SettingsViewModel @Inject constructor(
     fun setDarkMode(mode: String) {
         viewModelScope.launch {
             setDarkModeUseCase(mode)
+        }
+    }
+
+    /**
+     * App language state
+     */
+    val language: StateFlow<String> = getLanguageUseCase()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = AppLanguage.SYSTEM.value
+        )
+
+    /**
+     * Set app language and apply it app-wide
+     * On Android 13+ the system applies the locale and recreates the activity;
+     * on older versions MainActivity handles recreation via the language flow.
+     */
+    fun setLanguage(language: String) {
+        viewModelScope.launch {
+            setLanguageUseCase(language)
+            applyLanguageToApp(language)
+        }
+    }
+
+    private fun applyLanguageToApp(language: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val localeManager = context.getSystemService(LocaleManager::class.java)
+            val locales = if (language == AppLanguage.SYSTEM.value) {
+                LocaleList.forLanguageTags("")
+            } else {
+                LocaleList.forLanguageTags(language)
+            }
+            localeManager.applicationLocales = locales
         }
     }
 

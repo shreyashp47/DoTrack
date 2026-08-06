@@ -1,6 +1,10 @@
 package com.shreyash.dotrack
 
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,27 +24,50 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.shreyash.dotrack.core.ui.theme.DoTrackTheme
+import com.shreyash.dotrack.domain.model.AppLanguage
 import com.shreyash.dotrack.navigation.DeepLinkHandler
 import com.shreyash.dotrack.navigation.DoTrackBottomNavigation
 import com.shreyash.dotrack.navigation.DoTrackNavHost
 import com.shreyash.dotrack.navigation.bottomNavDestinations
 import com.shreyash.dotrack.ui.ThemeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Locale
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private var deepLinkCounter by mutableIntStateOf(0)
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(applyAppLocale(newBase))
+    }
+
+    /**
+     * On Android < 13 the per-app locale has to be applied manually by wrapping
+     * the base context. On 13+ the system LocaleManager handles it.
+     */
+    private fun applyAppLocale(base: Context): Context {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) return base
+        val application = application as? DoTrackApplication ?: return base
+        val languageCode = application.getLanguageCodeSync()
+        if (languageCode == AppLanguage.SYSTEM.value) return base
+        val locale = Locale.forLanguageTag(languageCode)
+        val config = Configuration(base.resources.configuration)
+        config.setLocale(locale)
+        return base.createConfigurationContext(config)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,6 +108,21 @@ fun DoTrackApp(
         "dark" -> true
         "light" -> false
         else -> isSystemInDarkTheme()
+    }
+
+    val languagePref by themeViewModel.language.collectAsState()
+    var isInitialLanguage by remember { mutableStateOf(true) }
+    val activity = LocalContext.current as? Activity
+    LaunchedEffect(languagePref) {
+        if (isInitialLanguage) {
+            isInitialLanguage = false
+            return@LaunchedEffect
+        }
+        // On Android < 13 the locale is applied manually, so the activity
+        // needs recreation for the new resources to take effect.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            activity?.recreate()
+        }
     }
 
     DoTrackTheme(darkTheme = isDark) {

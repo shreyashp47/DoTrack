@@ -37,6 +37,7 @@ class UserPreferencesRepositoryImpl @Inject constructor(
         val MEDIUM_PRIORITY_COLOR = stringPreferencesKey("medium_priority_color")
         val LOW_PRIORITY_COLOR = stringPreferencesKey("low_priority_color")
         val DARK_MODE = stringPreferencesKey("dark_mode")
+        val LANGUAGE = stringPreferencesKey("language")
         val SORT_OPTION = stringPreferencesKey("sort_option")
         val SORT_DIRECTION = stringPreferencesKey("sort_direction")
     }
@@ -211,6 +212,31 @@ class UserPreferencesRepositoryImpl @Inject constructor(
         return try {
             dataStore.edit { preferences ->
                 preferences[PreferencesKeys.DARK_MODE] = mode
+            }
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
+    }
+
+    override fun getLanguage(): Flow<String> {
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                preferences[PreferencesKeys.LANGUAGE] ?: "system"
+            }
+    }
+
+    override suspend fun setLanguage(language: String): Result<Unit> {
+        return try {
+            dataStore.edit { preferences ->
+                preferences[PreferencesKeys.LANGUAGE] = language
             }
             Result.Success(Unit)
         } catch (e: Exception) {

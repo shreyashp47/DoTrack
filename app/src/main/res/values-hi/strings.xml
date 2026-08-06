@@ -1,0 +1,163 @@
+<resources>
+    <string name="app_name">DoTrack</string>
+
+    <!-- General -->
+    <string name="cancel">रद्द करें</string>
+    <string name="ok">ठीक है</string>
+    <string name="next">अगला</string>
+    <string name="apply">लागू करें</string>
+    <string name="delete">हटाएँ</string>
+    <string name="back">वापस</string>
+    <string name="close">बंद करें</string>
+    <string name="save">सहेजें</string>
+
+    <!-- Time Picker -->
+    <string name="select_time">समय चुनें</string>
+
+    <!-- Tasks Screen -->
+    <string name="add_task">कार्य जोड़ें</string>
+    <string name="edit_task">कार्य संपादित करें</string>
+    <string name="save_task">कार्य सहेजें</string>
+    <string name="delete_task">कार्य हटाएँ</string>
+    <string name="delete_tasks_title">कार्य हटाएँ</string>
+    <string name="delete_tasks_summary">%1$d कार्य · यह क्रिया पूर्ववत नहीं की जा सकती।</string>
+    <string name="delete_all_tasks">सभी कार्य हटाएँ</string>
+    <string name="delete_completed_tasks">पूर्ण</string>
+    <string name="delete_incomplete_tasks">अधूरे</string>
+    <string name="delete_completed_action">पूर्ण कार्य हटाएँ</string>
+    <string name="delete_incomplete_action">अधूरे कार्य हटाएँ</string>
+    <string name="delete_task_confirm">क्या आप वाकई इस कार्य को हटाना चाहते हैं?</string>
+    <string name="tasks_deleted">कार्य हटा दिए गए</string>
+    <string name="no_tasks_yet">अभी कोई कार्य नहीं। एक जोड़ें!</string>
+    <string name="set_wallpaper">वॉलपेपर सेट करें</string>
+    <string name="set_wallpaper_confirm">क्या आप वाकई वॉलपेपर सेट करना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।</string>
+    <string name="wallpaper_in_progress">नया वॉलपेपर बन रहा है…</string>
+    <string name="applying_wallpaper">वॉलपेपर लागू हो रहा है…</string>
+    <string name="deleting_task">कार्य हटाया जा रहा है…</string>
+    <string name="set_as_wallpaper">वॉलपेपर के रूप में सेट करें</string>
+    <string name="delete_all_tasks_content_desc">कार्य हटाएँ</string>
+    <string name="error_format">त्रुटि: %s</string>
+    <string name="due_label">नियत तिथि: %s</string>
+    <string name="delete_task_content_desc">कार्य हटाएँ</string>
+
+    <!-- Task Detail -->
+    <string name="task_details">कार्य विवरण</string>
+    <string name="description">विवरण</string>
+    <string name="no_description">कोई विवरण नहीं</string>
+    <string name="priority">प्राथमिकता</string>
+    <string name="due_date">नियत तिथि</string>
+    <string name="created">बनाया गया</string>
+    <string name="last_updated">अंतिम अपडेट</string>
+
+    <!-- Add/Edit Task -->
+    <string name="title_label">शीर्षक</string>
+    <string name="description_label">विवरण</string>
+    <string name="no_due_date">कोई नियत तिथि नहीं</string>
+    <string name="due_date_optional">नियत तिथि (वैकल्पिक)</string>
+    <string name="select_date">तिथि चुनें</string>
+    <string name="saving_task">कार्य सहेजा जा रहा है…</string>
+    <string name="error_saving_task">कार्य सहेजने में त्रुटि</string>
+    <string name="clear_due_date">नियत तिथि हटाएँ</string>
+    <string name="enable_reminder">अनुस्मारक सक्षम करें (30 मिनट पहले)</string>
+    <string name="reminder_helper">आपको नियत समय से 30 मिनट पहले सूचना मिलेगी</string>
+    <string name="title_cannot_be_empty">शीर्षक खाली नहीं हो सकता</string>
+    <string name="sample_task">नमूना कार्य</string>
+    <string name="sample_task_description">यह पूर्वावलोकन के लिए नमूना कार्य विवरण है</string>
+
+    <!-- Categories -->
+    <string name="categories">श्रेणियाँ</string>
+    <string name="add_category">श्रेणी जोड़ें</string>
+    <string name="edit_category">श्रेणी संपादित करें</string>
+    <string name="save_category">श्रेणी सहेजें</string>
+    <string name="category_name">श्रेणी का नाम</string>
+    <string name="no_categories_yet">अभी कोई श्रेणी नहीं। एक जोड़ें!</string>
+    <string name="error_saving_category">श्रेणी सहेजने में त्रुटि</string>
+
+    <!-- Settings -->
+    <string name="settings">सेटिंग्स</string>
+    <string name="auto_wallpaper_updates">स्वचालित वॉलपेपर अपडेट</string>
+    <string name="auto_wallpaper_subtitle">कार्य बदलने पर वॉलपेपर स्वचालित रूप से अपडेट करें</string>
+    <string name="wallpaper_color">वॉलपेपर रंग</string>
+    <string name="wallpaper_color_subtitle">वॉलपेपर के लिए पृष्ठभूमि रंग चुनें</string>
+    <string name="choose_wallpaper_color">वॉलपेपर रंग चुनें</string>
+    <string name="choose_secondary_wallpaper_color">द्वितीयक वॉलपेपर रंग चुनें</string>
+    <string name="choose_high_priority_color">उच्च प्राथमिकता रंग चुनें</string>
+    <string name="choose_medium_priority_color">मध्यम प्राथमिकता रंग चुनें</string>
+    <string name="choose_low_priority_color">कम प्राथमिकता रंग चुनें</string>
+    <string name="task_priority_colors">कार्य प्राथमिकता रंग</string>
+    <string name="high_priority">उच्च प्राथमिकता</string>
+    <string name="high_priority_subtitle">उच्च प्राथमिकता वाले कार्यों के लिए रंग</string>
+    <string name="medium_priority">मध्यम प्राथमिकता</string>
+    <string name="medium_priority_subtitle">मध्यम प्राथमिकता वाले कार्यों के लिए रंग</string>
+    <string name="low_priority">कम प्राथमिकता</string>
+    <string name="low_priority_subtitle">कम प्राथमिकता वाले कार्यों के लिए रंग</string>
+    <string name="notifications">सूचनाएँ</string>
+    <string name="permission">अनुमति</string>
+    <string name="enable_notification_permission">सूचना अनुमतियाँ सक्षम करें</string>
+    <string name="notification_permission_title">सूचना अनुमति</string>
+    <string name="notification_permission_message">DoTrack को आपके कार्यों के लिए अनुस्मारक भेजने हेतु सूचना अनुमति की आवश्यकता है। क्या आप यह अनुमति देना चाहते हैं?</string>
+    <string name="grant_permission">अनुमति दें</string>
+    <string name="not_now">अभी नहीं</string>
+    <string name="sync_up">सिंक-अप</string>
+    <string name="sync_up_content_desc">सिंक करें</string>
+    <string name="choose_color">रंग चुनें</string>
+
+    <!-- Bottom Nav -->
+    <string name="nav_tasks">कार्य</string>
+    <string name="nav_categories">श्रेणियाँ</string>
+    <string name="nav_settings">सेटिंग्स</string>
+
+    <!-- Reminder Worker -->
+    <string name="reminder_channel_id">reminder_channel</string>
+    <string name="reminder_channel_name">कार्य अनुस्मारक</string>
+    <string name="reminder_channel_desc">कार्य अनुस्मारकों के लिए सूचनाएँ</string>
+    <string name="task_reminder">कार्य अनुस्मारक</string>
+
+    <!-- Date formats -->
+    <string name="date_time_format">MMM dd, yyyy HH:mm</string>
+    <string name="date_format_widget">MMM dd, yyyy</string>
+
+    <!-- Time validation -->
+    <string name="time_cannot_be_in_past">चुना गया समय बीत चुका है। कृपया भविष्य का समय चुनें।</string>
+
+    <!-- Appearance -->
+    <string name="appearance">दिखावट</string>
+    <string name="dark_mode">डार्क मोड</string>
+    <string name="dark_mode_system">सिस्टम डिफ़ॉल्ट</string>
+    <string name="dark_mode_light">लाइट</string>
+    <string name="dark_mode_dark">डार्क</string>
+
+    <!-- Language -->
+    <string name="language">भाषा</string>
+    <string name="language_system">सिस्टम डिफ़ॉल्ट</string>
+    <string name="language_english">English</string>
+    <string name="language_hindi">हिन्दी</string>
+    <string name="language_japanese">日本語</string>
+    <string name="language_german">Deutsch</string>
+
+    <!-- Sort -->
+    <string name="sort_by">क्रमबद्ध करें</string>
+    <string name="sort_due_date">नियत तिथि</string>
+    <string name="sort_priority">प्राथमिकता</string>
+    <string name="sort_created_date">निर्माण तिथि</string>
+    <string name="sort_title">शीर्षक</string>
+    <string name="sort_ascending">आरोही</string>
+    <string name="sort_descending">अवरोही</string>
+
+    <!-- Settings -->
+    <string name="primary">प्राथमिक</string>
+    <string name="secondary">द्वितीयक</string>
+
+    <!-- Filter -->
+    <string name="filter_by">फ़िल्टर करें</string>
+    <string name="filter_all">सभी</string>
+    <string name="filter_active">सक्रिय</string>
+    <string name="filter_completed">पूर्ण</string>
+    <string name="filter_status">स्थिति</string>
+    <string name="reset">रीसेट</string>
+
+    <!-- Widget -->
+    <string name="priority_high">H</string>
+    <string name="priority_medium">M</string>
+    <string name="priority_low">L</string>
+</resources>
