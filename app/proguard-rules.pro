@@ -9,8 +9,10 @@
 #   - Kotlin Coroutines
 # Everything else is shrunk and obfuscated by R8 full mode.
 
-# BISECT-TEST: no optimization
--dontoptimize
+# DataStore Preferences vendored-protobuf generates reflective field access
+# (e.g. MessageSchema looks up "preferences_" on the proto class). R8 strips
+# those private fields unless the generated classes are kept.
+-keep class androidx.datastore.preferences.PreferencesProto$** { *; }
 
 # ================================
 # Stack traces
