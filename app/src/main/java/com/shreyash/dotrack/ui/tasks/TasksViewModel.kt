@@ -105,7 +105,10 @@ class TasksViewModel @Inject constructor(
         when (result) {
             is Result.Success -> Result.Success(
                 filterTasks(
-                    sortTasks(result.data, option, direction),
+                    orderActiveFirstWhenViewingAll(
+                        sortTasks(result.data, option, direction),
+                        completedFilter
+                    ),
                     priorityFilter,
                     completedFilter
                 )
@@ -188,6 +191,16 @@ class TasksViewModel @Inject constructor(
 
     private fun sortTasks(tasks: List<Task>, option: SortOption, direction: SortDirection): List<Task> {
         return TaskSorter.sort(tasks, option, direction)
+    }
+
+    /**
+     * When viewing all tasks (no status filter), keep active (incomplete) tasks
+     * before completed ones, preserving the sort order within each group.
+     */
+    private fun orderActiveFirstWhenViewingAll(tasks: List<Task>, completedFilter: Boolean?): List<Task> {
+        if (completedFilter != null) return tasks
+        val (active, completed) = tasks.partition { !it.isCompleted }
+        return active + completed
     }
 
     private fun filterTasks(
