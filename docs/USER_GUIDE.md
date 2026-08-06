@@ -127,10 +127,10 @@ DoTrack can automatically update your device wallpaper with your pending tasks:
 
 ### How It Works
 
-1. Tasks are displayed on your wallpaper, sorted by priority
-2. High priority tasks appear at the top
-3. Completed tasks are not shown on the wallpaper
-4. The wallpaper updates when you add, complete, or delete tasks
+1. Tasks are displayed on your wallpaper using the same sort option you select in the task list (due date, priority, created date, or title)
+2. Completed tasks are not shown on the wallpaper
+3. The wallpaper updates when you add, complete, or delete tasks
+4. Turning on "Auto Wallpaper Updates" immediately applies the wallpaper with your current tasks
 
 ### Enabling/Disabling Dynamic Wallpaper
 
@@ -140,7 +140,8 @@ DoTrack can automatically update your device wallpaper with your pending tasks:
 ### Manual Wallpaper Update
 
 1. Navigate to the Settings screen
-2. Tap "Sync-up" to manually update your wallpaper
+2. Make sure "Auto Wallpaper Updates" is enabled (the "Sync-up" button only works while it is on)
+3. Tap "Sync-up" to manually update your wallpaper
 
 ## Customizing Settings
 

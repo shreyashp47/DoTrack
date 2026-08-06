@@ -197,26 +197,30 @@ The dynamic wallpaper feature is implemented with:
       private val getSecondaryWallpaperColorUseCase: GetSecondaryWallpaperColorUseCase,
       private val getHighPriorityColorUseCase: GetHighPriorityColorUseCase,
       private val getMediumPriorityColorUseCase: GetMediumPriorityColorUseCase,
-      private val getLowPriorityColorUseCase: GetLowPriorityColorUseCase
+      private val getLowPriorityColorUseCase: GetLowPriorityColorUseCase,
+      private val getSortOptionUseCase: GetSortOptionUseCase,
+      private val getSortDirectionUseCase: GetSortDirectionUseCase
   ) {
       suspend fun generateAndSetWallpaper(tasks: List<Task>): Result<Unit> {
           // Implementation
       }
-      
+
       private fun generateTaskListBitmap(
           tasks: List<Task>,
           startColorHex: String,
           endColorHex: String,
           highPriorityColorHex: String,
           mediumPriorityColorHex: String,
-          lowPriorityColorHex: String
+          lowPriorityColorHex: String,
+          sortOption: SortOption,
+          sortDirection: SortDirection
       ): Bitmap {
           // Implementation
       }
   }
   ```
 
-- **Preferences**: DataStore preferences for wallpaper and priority colors
+- **Preferences**: DataStore preferences for wallpaper, priority colors, and task-list sort option/direction (pending task cards on the wallpaper are ordered with the same sort the user selected in the list — see `TaskSorter`)
 
 - **UI Components**: Settings screen for customizing wallpaper appearance
 
