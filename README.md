@@ -185,51 +185,7 @@ DoTrack
 
 ## How to Use
 
-### Creating Your First Task
-
-1. **Open DoTrack** and tap the **Add** button
-2. **Fill in task details**:
-   - **Title**: What needs to be done?
-   - **Description**: Additional details (optional)
-   - **Priority**: High, Medium, or Low
-   - **Due Date**: Set a deadline
-   - **Reminder**: Get notified before due time
-   - **Category**: Organize your tasks
-
-3. **Save** and watch it appear on your task list!
-
-### Managing Tasks
-
-| Action | How To |
-|--------|--------|
-| **Complete Task** | Tap the checkbox |
-| **Edit Task** | Tap on task → Edit icon |
-| **Delete Task** | Task details → Delete icon (or swipe on list) |
-| **Clear Completed** | Toolbar delete icon → confirm |
-| **Sort Tasks** | Tap sort icon in filter bar → choose field/direction |
-| **Filter Tasks** | Tap filter icon → filter by status and/or priority |
-| **View Details** | Tap on any task |
-
-### Customizing Your Experience
-
-#### Dynamic Wallpaper Setup
-1. Go to **Settings**
-2. Enable **"Auto Wallpaper Updates"**
-3. Choose your **"Wallpaper Color"**
-4. Grant wallpaper permission when prompted
-5. Your tasks will now appear on your home screen!
-
-#### Personalizing Colors
-- **Wallpaper Background**: Settings → Wallpaper Color
-- **Priority Colors**: Settings → Task Priority Colors
-- **Categories**: Categories screen → Create custom categories
-
-### Setting Up Reminders
-
-1. **Enable notifications** in Settings
-2. When creating/editing tasks, toggle **"Enable Reminder"**
-3. Set a **due date and time**
-4. Get notified **30 minutes before** the deadline
+New to DoTrack? Check out the **[How to Use Guide](HOW_TO_USE.md)** — create tasks, set reminders, customize your wallpaper, and more in minutes.
 
 ---
 
@@ -385,6 +341,7 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 | Document | Description |
 |----------|-------------|
+| [How to Use](HOW_TO_USE.md) | Step-by-step usage guide |
 | [User Guide](docs/USER_GUIDE.md) | Complete user manual |
 | [Developer Guide](docs/DEVELOPER_GUIDE.md) | Development setup and guidelines |
 | [API Documentation](docs/DOCUMENTATION.md) | Code documentation |
@@ -409,9 +366,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Open Source Community** for the amazing libraries and tools
 
 ---
-## 🚀 Live on Google Play
-
-DoTrack is **now live on Google Play**! 🎉
+## 🚀 Get it on Google Play
 
 <div align="center">
 
@@ -419,15 +374,7 @@ DoTrack is **now live on Google Play**! 🎉
 
 </div>
 
-### 🌟 Join the Open Testing Program
-
-Want to try the **latest features before everyone else**? You can also join the open testing program:
-
-1. **Join the tester group:** [google groups/testers-community](https://groups.google.com/g/testers-community)
-2. **Become a tester:** Open the [Play Store listing](https://play.google.com/store/apps/details?id=com.shreyash.dotrack) and tap **"Join the beta"** — no code, no sideloading!
-3. **Report issues:** Open a [GitHub issue](https://github.com/shreyashp47/DoTrack/issues)
-
-Your feedback helps make DoTrack better — thank you for testing! 💚
+**Join the Open Testing Program** to try the latest features before everyone else — open the [Play Store listing](https://play.google.com/store/apps/details?id=com.shreyash.dotrack), tap **"Join the beta"**, no code, no sideloading. Report issues via [GitHub](https://github.com/shreyashp47/DoTrack/issues). Your feedback makes DoTrack better! 💚
 
 ---
 
@@ -440,6 +387,7 @@ Your feedback helps make DoTrack better — thank you for testing! 💚
 [![Email](https://img.shields.io/badge/Email-support%40dotrack.app-red?style=for-the-badge&logo=gmail)](shreyashp47@gmail.com)
 [![GitHub Issues](https://img.shields.io/badge/GitHub-Issues-black?style=for-the-badge&logo=github)](https://github.com/shreyashp47/DoTrack/issues)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-@DoTrackApp-blue?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/shreyashpattewardeveloper/)
+[![LinkedIn Post](https://img.shields.io/badge/LinkedIn-DoTrack%20Launch-0A66C2?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/posts/shreyashpattewardeveloper_androiddevelopment-kotlin-opensource-activity-7489967756902055926-dqLD?utm_source=social_share_send&utm_medium=member_desktop_web&rcm=ACoAABzBY68BS8qwG4Ns2vV82zF0DpF0GHnrV1k)
 
 **⭐ Star this repo if you find it helpful!**
 
