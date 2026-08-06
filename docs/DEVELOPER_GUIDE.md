@@ -129,6 +129,96 @@ Key packages:
 - `com.shreyash.dotrack.core.util`: Common utilities
 - `com.shreyash.dotrack.core.ui`: Shared UI components and theme
 
+### Detailed File Tree
+
+<details>
+<summary><b>Expand full file tree</b></summary>
+
+```
+DoTrack/
+├── app/src/main/java/com/shreyash/dotrack/
+│   ├── ui/
+│   │   ├── tasks/
+│   │   │   ├── TasksScreen.kt
+│   │   │   ├── TasksViewModel.kt
+│   │   │   ├── TaskDetailScreen.kt
+│   │   │   ├── TaskDetailViewModel.kt
+│   │   │   ├── TaskFilterBar.kt
+│   │   │   ├── SelectableOptionItem.kt
+│   │   │   ├── SortDropdownMenu.kt
+│   │   │   ├── FilterBottomSheet.kt
+│   │   │   └── addedit/
+│   │   │       ├── AddEditTaskScreen.kt
+│   │   │       └── AddEditTaskViewModel.kt
+│   │   ├── categories/
+│   │   │   ├── CategoriesScreen.kt
+│   │   │   └── CategoriesViewModel.kt
+│   │   └── settings/
+│   │       ├── SettingsScreen.kt
+│   │       └── SettingsViewModel.kt
+│   ├── navigation/
+│   │   ├── DoTrackNavHost.kt
+│   │   ├── DoTrackDestinations.kt
+│   │   └── DoTrackBottomNavigation.kt
+│   ├── workmanager/
+│   │   ├── ReminderSchedulerImpl.kt
+│   │   └── ReminderModule.kt
+│   ├── core/util/
+│   │   └── WallpaperGenerator.kt
+│   ├── DoTrackApplication.kt
+│   └── MainActivity.kt
+│
+├── domain/src/main/java/com/shreyash/dotrack/domain/
+│   ├── model/
+│   │   ├── Task.kt
+│   │   └── Category.kt
+│   ├── repository/
+│   │   ├── TaskRepository.kt
+│   │   ├── CategoryRepository.kt
+│   │   └── UserPreferencesRepository.kt
+│   └── usecase/
+│       ├── task/
+│       │   ├── AddTaskUseCase.kt
+│       │   ├── GetTasksUseCase.kt
+│       │   ├── UpdateTaskUseCase.kt
+│       │   └── DeleteTaskUseCase.kt
+│       ├── category/
+│       │   └── [Category Use Cases]
+│       └── preferences/
+│           └── [Preference Use Cases]
+│
+├── data/src/main/java/com/shreyash/dotrack/data/
+│   ├── local/
+│   │   ├── entity/
+│   │   │   ├── TaskEntity.kt
+│   │   │   └── CategoryEntity.kt
+│   │   ├── dao/
+│   │   │   ├── TaskDao.kt
+│   │   │   └── CategoryDao.kt
+│   │   └── TaskDatabase.kt
+│   ├── repository/
+│   │   ├── TaskRepositoryImpl.kt
+│   │   ├── CategoryRepositoryImpl.kt
+│   │   └── UserPreferencesRepositoryImpl.kt
+│   └── di/
+│       ├── DatabaseModule.kt
+│       ├── RepositoryModule.kt
+│       └── DataStoreModule.kt
+│
+└── core/src/main/java/com/shreyash/dotrack/core/
+    ├── ui/
+    │   ├── components/
+    │   │   └── LoadingIndicator.kt
+    │   └── theme/
+    │       ├── Color.kt
+    │       ├── Theme.kt
+    │       └── Type.kt
+    └── util/
+        └── Result.kt
+```
+
+</details>
+
 ## Key Components
 
 ### Task Management

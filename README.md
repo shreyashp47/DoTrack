@@ -6,6 +6,8 @@
 
 **A modern task management application that transforms your device wallpaper into a dynamic task list**
 
+> Built because I kept forgetting to open my task apps — now my to-dos live on my home screen, where I can't miss them.
+
 [![Android](https://img.shields.io/badge/Platform-Android-green.svg)](https://android.com)
 [![API](https://img.shields.io/badge/API-26%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=26)
 [![Kotlin](https://img.shields.io/badge/Kotlin-100%25-blue.svg)](https://kotlinlang.org)
@@ -14,6 +16,7 @@
 [![APK](https://github.com/shreyashp47/DoTrack/actions/workflows/build_apk.yml/badge.svg)](https://github.com/shreyashp47/DoTrack/actions/workflows/build_apk.yml)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Release](https://img.shields.io/github/v/release/shreyashp47/DoTrack?sort=semver)](https://github.com/shreyashp47/DoTrack/releases)
+[![GitHub stars](https://img.shields.io/github/stars/shreyashp47/DoTrack?style=social)](https://github.com/shreyashp47/DoTrack/stargazers)
 [![Play Store](https://img.shields.io/badge/Live%20on-Google%20Play-00D184.svg)](https://play.google.com/store/apps/details?id=com.shreyash.dotrack)
 
 [Quick Start](QUICK_START.md) • [How to Use](HOW_TO_USE.md) • [Changelog](CHANGELOG.md) • [Report an Issue](https://github.com/shreyashp47/DoTrack/issues)
@@ -24,11 +27,7 @@
 
 ## Features
 
-<table>
-<tr>
-<td width="50%">
-
-### **Task Management**
+### Task Management
 - Create, edit, complete, and delete tasks
 - Priority levels (High, Medium, Low)
 - Due dates and time tracking
@@ -37,19 +36,12 @@
 - Clear completed tasks in bulk
 - Smart reminder notifications
 
-</td>
-<td width="50%">
-
-### **Dynamic Wallpaper**
+### Dynamic Wallpaper
 - Auto-update device wallpaper with tasks
 - Customizable color themes
 - Adaptive text colors for readability
 - Real-time wallpaper sync
 - Manual sync control
-
-</td>
-</tr>
-</table>
 
 ---
 
@@ -146,6 +138,7 @@ We welcome contributions! Please see our **[Contributing Guidelines](CONTRIBUTIN
 | [How to Use](HOW_TO_USE.md) | Step-by-step usage guide |
 | [User Guide](docs/USER_GUIDE.md) | Complete user manual |
 | [Developer Guide](docs/DEVELOPER_GUIDE.md) | Development setup and guidelines |
+| [Testing Guide](docs/TEST_GUIDE.md) | How to run the UI test suite |
 | [Workflow Guide](docs/WORKFLOW.md) | The CI/CD and release process |
 | [Changelog](CHANGELOG.md) | Release history |
 | [Security](SECURITY.md) | Security policy and vulnerability reporting |
