@@ -1,7 +1,9 @@
 package com.shreyash.dotrack.ui.settings
 
 import android.Manifest
+import android.content.Intent
 import android.os.Build
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -57,6 +59,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -134,6 +137,8 @@ fun SettingsScreen(
     val lowPriorityColor by vm.lowPriorityColor.collectAsState()
     val isNotificationEnabled = vm.notificationPermissionState
 
+    val context = LocalContext.current
+
     var showPermissionDialog by rememberSaveable { mutableStateOf(false) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -208,9 +213,19 @@ fun SettingsScreen(
             onDarkModeChange = { vm.setDarkMode(it) },
             onLanguageChange = { vm.setLanguage(it) },
             onSyncWallpaper = { vm.updateWallpaper() },
-            onNotificationPermissionClick = {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !isNotificationEnabled) {
-                    showPermissionDialog = true
+            onNotificationPermissionClick = { enabled ->
+                if (enabled) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !isNotificationEnabled) {
+                        showPermissionDialog = true
+                    }
+                } else if (isNotificationEnabled) {
+                    // The app cannot programmatically revoke a granted runtime
+                    // permission — deep-link to the system app notification
+                    // settings so the user can turn notifications off there.
+                    context.startActivity(
+                        Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                            .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                    )
                 }
             }
         )
@@ -236,7 +251,7 @@ private fun SettingsContent(
     onDarkModeChange: (String) -> Unit,
     onLanguageChange: (String) -> Unit,
     onSyncWallpaper: () -> Unit,
-    onNotificationPermissionClick: () -> Unit,
+    onNotificationPermissionClick: (Boolean) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -356,7 +371,7 @@ private fun SettingsContent(
                 title = stringResource(R.string.permission),
                 subtitle = stringResource(R.string.enable_notification_permission),
                 checked = isNotificationEnabled,
-                onCheckedChange = { onNotificationPermissionClick() }
+                onCheckedChange = { onNotificationPermissionClick(it) }
             )
         }
 
