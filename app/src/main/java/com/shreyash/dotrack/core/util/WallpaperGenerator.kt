@@ -13,11 +13,15 @@ import android.graphics.Shader
 import android.graphics.Typeface
 import androidx.core.graphics.ColorUtils
 import com.shreyash.dotrack.domain.model.Priority
+import com.shreyash.dotrack.domain.model.SortDirection
+import com.shreyash.dotrack.domain.model.SortOption
 import com.shreyash.dotrack.domain.model.Task
 import com.shreyash.dotrack.domain.usecase.preferences.GetHighPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetLowPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetMediumPriorityColorUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetSecondaryWallpaperColorUseCase
+import com.shreyash.dotrack.domain.usecase.preferences.GetSortDirectionUseCase
+import com.shreyash.dotrack.domain.usecase.preferences.GetSortOptionUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetWallpaperColorUseCase
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +39,9 @@ class WallpaperGenerator @Inject constructor(
     private val getSecondaryWallpaperColorUseCase: GetSecondaryWallpaperColorUseCase,
     private val getHighPriorityColorUseCase: GetHighPriorityColorUseCase,
     private val getMediumPriorityColorUseCase: GetMediumPriorityColorUseCase,
-    private val getLowPriorityColorUseCase: GetLowPriorityColorUseCase
+    private val getLowPriorityColorUseCase: GetLowPriorityColorUseCase,
+    private val getSortOptionUseCase: GetSortOptionUseCase,
+    private val getSortDirectionUseCase: GetSortDirectionUseCase
 ) {
 
     private val wallpaperManager = WallpaperManager.getInstance(context)
@@ -58,6 +64,8 @@ class WallpaperGenerator @Inject constructor(
                 val highPriorityColorHex = getHighPriorityColorUseCase().first()
                 val mediumPriorityColorHex = getMediumPriorityColorUseCase().first()
                 val lowPriorityColorHex = getLowPriorityColorUseCase().first()
+                val sortOption = getSortOptionUseCase().first()
+                val sortDirection = getSortDirectionUseCase().first()
 
                 val bitmap = generateTaskListBitmap(
                     tasks,
@@ -65,7 +73,9 @@ class WallpaperGenerator @Inject constructor(
                     secondaryStartColorHex,
                     highPriorityColorHex,
                     mediumPriorityColorHex,
-                    lowPriorityColorHex
+                    lowPriorityColorHex,
+                    sortOption,
+                    sortDirection
                 )
                 try {
                     //only for system screen
@@ -93,7 +103,9 @@ class WallpaperGenerator @Inject constructor(
         endColorHex: String,
         highPriorityColorHex: String,
         mediumPriorityColorHex: String,
-        lowPriorityColorHex: String
+        lowPriorityColorHex: String,
+        sortOption: SortOption,
+        sortDirection: SortDirection
     ): Bitmap {
         val displayMetrics = context.resources.displayMetrics
         val width = displayMetrics.widthPixels
@@ -148,8 +160,11 @@ class WallpaperGenerator @Inject constructor(
 
         var y = topPadding
 
-        val pendingTasks = tasks.filter { !it.isCompleted }
-            .sortedByDescending { it.priority.value }
+        val pendingTasks = TaskSorter.sort(
+            tasks.filter { !it.isCompleted },
+            sortOption,
+            sortDirection
+        )
 
         if (pendingTasks.isEmpty()) {
             val noTasksText = "No pending tasks 🎉"

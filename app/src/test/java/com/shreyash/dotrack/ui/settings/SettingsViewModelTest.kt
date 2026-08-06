@@ -137,7 +137,10 @@ class SettingsViewModelTest {
     @Test
     fun `test auto wallpaper toggle functionality`() = runTest {
         // Given
+        val tasks = listOf(mockk<Task>())
         coEvery { setAutoWallpaperEnabledUseCase(any()) } returns Result.Success(Unit)
+        every { getAutoWallpaperEnabledUseCase() } returns flowOf(true)
+        every { getTasksUseCase() } returns flowOf(Result.Success(tasks))
 
         // When
         viewModel.setAutoWallpaperEnabled(true)
@@ -145,6 +148,36 @@ class SettingsViewModelTest {
 
         // Then
         coVerify { setAutoWallpaperEnabledUseCase(true) }
+        coVerify { wallpaperGenerator.generateAndSetWallpaper(tasks) }
+    }
+
+    @Test
+    fun `test disabling auto wallpaper does not update wallpaper`() = runTest {
+        // Given
+        coEvery { setAutoWallpaperEnabledUseCase(any()) } returns Result.Success(Unit)
+        every { getAutoWallpaperEnabledUseCase() } returns flowOf(false)
+        every { getTasksUseCase() } returns flowOf(Result.Success(emptyList<Task>()))
+
+        // When
+        viewModel.setAutoWallpaperEnabled(false)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        coVerify { setAutoWallpaperEnabledUseCase(false) }
+        coVerify(exactly = 0) { wallpaperGenerator.generateAndSetWallpaper(any()) }
+    }
+
+    @Test
+    fun `test enabling auto wallpaper does not update wallpaper when write fails`() = runTest {
+        // Given
+        coEvery { setAutoWallpaperEnabledUseCase(any()) } returns Result.Error(Exception("Failed"))
+
+        // When
+        viewModel.setAutoWallpaperEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        coVerify(exactly = 0) { wallpaperGenerator.generateAndSetWallpaper(any()) }
     }
 
 

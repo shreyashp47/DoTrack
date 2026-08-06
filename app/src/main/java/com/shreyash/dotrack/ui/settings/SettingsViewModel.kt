@@ -173,7 +173,10 @@ class SettingsViewModel @Inject constructor(
      */
     fun setAutoWallpaperEnabled(enabled: Boolean) {
         viewModelScope.launch {
-            setAutoWallpaperEnabledUseCase(enabled)
+            val result = setAutoWallpaperEnabledUseCase(enabled)
+            if (enabled && result.isSuccess()) {
+                updateWallpaper()
+            }
         }
     }
 
