@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shreyash.dotrack.core.util.Result
+import com.shreyash.dotrack.core.util.TaskSorter
 import com.shreyash.dotrack.core.util.WallpaperGenerator
 import com.shreyash.dotrack.domain.ReminderScheduler
 import com.shreyash.dotrack.domain.model.Priority
@@ -40,7 +41,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -105,7 +105,10 @@ class TasksViewModel @Inject constructor(
         when (result) {
             is Result.Success -> Result.Success(
                 filterTasks(
-                    sortTasks(result.data, option, direction),
+                    orderActiveFirstWhenViewingAll(
+                        sortTasks(result.data, option, direction),
+                        completedFilter
+                    ),
                     priorityFilter,
                     completedFilter
                 )
@@ -187,13 +190,17 @@ class TasksViewModel @Inject constructor(
     }
 
     private fun sortTasks(tasks: List<Task>, option: SortOption, direction: SortDirection): List<Task> {
-        val sorted = when (option) {
-            SortOption.DUE_DATE -> tasks.sortedBy { it.dueDate ?: LocalDateTime.MAX }
-            SortOption.PRIORITY -> tasks.sortedByDescending { it.priority.value }
-            SortOption.CREATED_DATE -> tasks.sortedBy { it.createdAt }
-            SortOption.TITLE -> tasks.sortedBy { it.title.lowercase() }
-        }
-        return if (direction == SortDirection.DESCENDING) sorted.reversed() else sorted
+        return TaskSorter.sort(tasks, option, direction)
+    }
+
+    /**
+     * When viewing all tasks (no status filter), keep active (incomplete) tasks
+     * before completed ones, preserving the sort order within each group.
+     */
+    private fun orderActiveFirstWhenViewingAll(tasks: List<Task>, completedFilter: Boolean?): List<Task> {
+        if (completedFilter != null) return tasks
+        val (active, completed) = tasks.partition { !it.isCompleted }
+        return active + completed
     }
 
     private fun filterTasks(
