@@ -82,38 +82,7 @@
 
 ## Quick Start
 
-### Prerequisites
-
-- **Android Studio**: Meerkat | 2024.3.1 or newer
-- **JDK**: 11 or higher
-- **Android SDK**: API 35
-- **Minimum Android**: API 26 (Android 8.0)
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/shreyashp47/DoTrack.git
-   cd DoTrack
-   ```
-
-2. **Open in Android Studio**
-   ```bash
-   # Open Android Studio and select "Open an existing project"
-   # Navigate to the cloned directory
-   ```
-
-3. **Sync and Build**
-   ```bash
-   # In Android Studio:
-   # 1. Sync Gradle files
-   # 2. Build → Make Project
-   # 3. Run on emulator or device
-   ```
-
-### Download APK
-
-Get the latest release from our [Releases page](https://github.com/shreyashp47/DoTrack/releases), or install the stable version directly from [Google Play](https://play.google.com/store/apps/details?id=com.shreyash.dotrack).
+Want to run DoTrack yourself? Check out the **[Quick Start Guide](QUICK_START.md)** — prerequisites, setup, and APK download.
 
 ---
 
@@ -341,6 +310,7 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 | Document | Description |
 |----------|-------------|
+| [Quick Start](QUICK_START.md) | Setup and first run |
 | [How to Use](HOW_TO_USE.md) | Step-by-step usage guide |
 | [User Guide](docs/USER_GUIDE.md) | Complete user manual |
 | [Developer Guide](docs/DEVELOPER_GUIDE.md) | Development setup and guidelines |
@@ -370,7 +340,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <div align="center">
 
-[![Get it on Google Play](https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png)](https://play.google.com/store/apps/details?id=com.shreyash.dotrack)
+<a href="https://play.google.com/store/apps/details?id=com.shreyash.dotrack">
+  <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" width="200"/>
+</a>
 
 </div>
 
