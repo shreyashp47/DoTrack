@@ -1,5 +1,4 @@
-• Faster app startup and lower memory usage
-• Improved task list and wallpaper rendering performance
-• Upgraded Android build tools for better stability
-• Improved widget refresh performance
+• Fixed Auto Wallpaper Updates toggle — it now applies your wallpaper immediately when turned on
+• Wallpaper task cards now follow your selected sort option (due date, priority, created date, or title)
+• Home screen now shows active tasks before completed ones when the status filter is set to "All"
 • Bug fixes and stability improvements
