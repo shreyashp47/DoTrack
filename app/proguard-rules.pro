@@ -9,8 +9,8 @@
 #   - Kotlin Coroutines
 # Everything else is shrunk and obfuscated by R8 full mode.
 
-# BISECT-TEST: no obfuscation
--dontobfuscate
+# BISECT-TEST: no optimization
+-dontoptimize
 
 # ================================
 # Stack traces
