@@ -29,8 +29,8 @@ android {
         applicationId = "com.shreyash.dotrack"
         minSdk = 26
         targetSdk = 36
-        versionCode = 32
-        versionName = "1.32"
+        versionCode = 50
+        versionName = "1.50"
 
         testInstrumentationRunner = "com.shreyash.dotrack.HiltTestRunner"
     }
@@ -76,6 +76,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

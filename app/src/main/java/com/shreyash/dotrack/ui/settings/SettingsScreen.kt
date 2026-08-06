@@ -63,6 +63,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
@@ -73,11 +74,12 @@ import com.github.skydoves.colorpicker.compose.BrightnessSlider
 import com.github.skydoves.colorpicker.compose.ColorEnvelope
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
+import com.shreyash.dotrack.BuildConfig
 import com.shreyash.dotrack.R
 import com.shreyash.dotrack.domain.model.AppLanguage
 import com.shreyash.dotrack.domain.model.Priority
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, heightDp = 1200)
 @Composable
 fun SettingsScreenPreview() {
     MaterialTheme {
@@ -389,7 +391,20 @@ private fun SettingsContent(
             Text(stringResource(R.string.sync_up))
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
+        Text(
+            text = stringResource(
+                R.string.app_version,
+                BuildConfig.VERSION_NAME.substringBefore("-"),
+                BuildConfig.VERSION_CODE
+            ),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+        )
     }
 }
 
