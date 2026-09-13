@@ -1,12 +1,12 @@
 package com.shreyash.dotrack
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -30,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -114,7 +113,7 @@ fun DoTrackApp(
 
     val languagePref by themeViewModel.language.collectAsState()
     var isInitialLanguage by remember { mutableStateOf(true) }
-    val activity = LocalContext.current as? Activity
+    val activity = LocalActivity.current
     LaunchedEffect(languagePref) {
         if (isInitialLanguage) {
             isInitialLanguage = false
