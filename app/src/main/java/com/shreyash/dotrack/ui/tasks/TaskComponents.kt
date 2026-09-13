@@ -38,10 +38,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.shreyash.dotrack.R
-import com.shreyash.dotrack.core.ui.theme.CardColorHighPriority
-import com.shreyash.dotrack.core.ui.theme.CardColorLowPriority
-import com.shreyash.dotrack.core.ui.theme.CardColorMediumPriority
 import com.shreyash.dotrack.core.ui.theme.DoTrackTheme
+import com.shreyash.dotrack.core.ui.theme.LocalPriorityCardColors
 import com.shreyash.dotrack.domain.model.Priority
 import com.shreyash.dotrack.domain.model.Task
 import java.time.LocalDateTime
@@ -77,10 +75,11 @@ fun TaskItem(
     onDeleteTask: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val priorityCardColors = LocalPriorityCardColors.current
     val color = when (task.priority) {
-        Priority.HIGH -> CardColorHighPriority
-        Priority.MEDIUM -> CardColorMediumPriority
-        Priority.LOW -> CardColorLowPriority
+        Priority.HIGH -> priorityCardColors.high
+        Priority.MEDIUM -> priorityCardColors.medium
+        Priority.LOW -> priorityCardColors.low
     }
     Card(
         modifier = modifier

@@ -25,6 +25,8 @@ import com.shreyash.dotrack.domain.usecase.preferences.GetSortOptionUseCase
 import com.shreyash.dotrack.domain.usecase.preferences.GetWallpaperColorUseCase
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
@@ -44,10 +46,10 @@ class WallpaperGenerator @Inject constructor(
     private val getSortDirectionUseCase: GetSortDirectionUseCase
 ) {
 
-    private val wallpaperManager = WallpaperManager.getInstance(context)
-    private val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy  HH:mm")
+    private val wallpaperManager by lazy { WallpaperManager.getInstance(context) }
 
     companion object {
+        private val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy  HH:mm")
         private val footerFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm")
     }
 
@@ -58,14 +60,30 @@ class WallpaperGenerator @Inject constructor(
     suspend fun generateAndSetWallpaper(tasks: List<Task>): Result<Unit> {
         return withContext(Dispatchers.IO) {
             try {
-                // Get the user's preferred colors
-                val startColorHex = getWallpaperColorUseCase().first()
-                val secondaryStartColorHex = getSecondaryWallpaperColorUseCase().first()
-                val highPriorityColorHex = getHighPriorityColorUseCase().first()
-                val mediumPriorityColorHex = getMediumPriorityColorUseCase().first()
-                val lowPriorityColorHex = getLowPriorityColorUseCase().first()
-                val sortOption = getSortOptionUseCase().first()
-                val sortDirection = getSortDirectionUseCase().first()
+                // Get the user's preferred colors & sort prefs concurrently (#102)
+                val startColorHex: String
+                val secondaryStartColorHex: String
+                val highPriorityColorHex: String
+                val mediumPriorityColorHex: String
+                val lowPriorityColorHex: String
+                val sortOption: SortOption
+                val sortDirection: SortDirection
+                coroutineScope {
+                    val deferredStart = async { getWallpaperColorUseCase().first() }
+                    val deferredSecondary = async { getSecondaryWallpaperColorUseCase().first() }
+                    val deferredHigh = async { getHighPriorityColorUseCase().first() }
+                    val deferredMedium = async { getMediumPriorityColorUseCase().first() }
+                    val deferredLow = async { getLowPriorityColorUseCase().first() }
+                    val deferredSortOption = async { getSortOptionUseCase().first() }
+                    val deferredSortDirection = async { getSortDirectionUseCase().first() }
+                    startColorHex = deferredStart.await()
+                    secondaryStartColorHex = deferredSecondary.await()
+                    highPriorityColorHex = deferredHigh.await()
+                    mediumPriorityColorHex = deferredMedium.await()
+                    lowPriorityColorHex = deferredLow.await()
+                    sortOption = deferredSortOption.await()
+                    sortDirection = deferredSortDirection.await()
+                }
 
                 val bitmap = generateTaskListBitmap(
                     tasks,

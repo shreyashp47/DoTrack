@@ -11,6 +11,7 @@ junitVersion = "1.3.0"
 espressoCore = "3.7.0"
 testRunner = "1.7.0"
 leakcanaryAndroid = "2.14"
+splashscreen = "1.0.1"
 
 # Compose
 compose-bom = "2025.06.01"
@@ -41,6 +42,7 @@ turbine = "1.0.0"
 [libraries]
 # AndroidX Core
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 colorpicker-compose = { module = "com.github.skydoves:colorpicker-compose", version.ref = "colorpickerCompose" }
 leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanaryAndroid" }

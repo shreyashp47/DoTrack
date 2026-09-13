@@ -29,8 +29,8 @@ android {
         applicationId = "com.shreyash.dotrack"
         minSdk = 26
         targetSdk = 36
-        versionCode = 55
-        versionName = "1.55"
+        versionCode = 56
+        versionName = "1.56"
 
         testInstrumentationRunner = "com.shreyash.dotrack.HiltTestRunner"
     }
@@ -87,6 +87,7 @@ dependencies {
 
     // AndroidX Core
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen)
 
     // Compose
     implementation(platform(libs.compose.bom))
