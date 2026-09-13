@@ -95,8 +95,16 @@ class TasksViewModel @Inject constructor(
     val filterPriority: Priority? get() = _filterPriority.value
     val filterCompleted: Boolean? get() = _filterCompleted.value
 
+    // Shared upstream to avoid duplicate Room observers (#102)
+    private val tasksResultFlow: StateFlow<Result<List<Task>>> = getTasksUseCase()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = Result.Loading
+        )
+
     val sortedTasks: StateFlow<Result<List<Task>>> = combine(
-        getTasksUseCase(),
+        tasksResultFlow,
         _sortOption,
         _sortDirection,
         _filterPriority,
@@ -122,7 +130,7 @@ class TasksViewModel @Inject constructor(
         initialValue = Result.Loading
     )
 
-    val taskCounts: StateFlow<TaskCounts> = getTasksUseCase()
+    val taskCounts: StateFlow<TaskCounts> = tasksResultFlow
         .map { result ->
             val tasks = result.getOrNull().orEmpty()
             TaskCounts(

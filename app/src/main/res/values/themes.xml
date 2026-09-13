@@ -6,4 +6,11 @@
     </style>
 
     <style name="Theme.DoTrack" parent="Base.Theme.DoTrack" />
+
+    <!-- SplashScreen theme (#101) - displayed until first frame -->
+    <style name="Theme.DoTrack.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_app_icon</item>
+        <item name="postSplashScreenTheme">@style/Theme.DoTrack</item>
+    </style>
 </resources>

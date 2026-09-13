@@ -24,8 +24,12 @@ object DatabaseModule {
             TaskDatabase::class.java,
             "dotrack_database"
         )
-        .fallbackToDestructiveMigration() // This will recreate the database if a migration isn't found
-        .build()
+            .addMigrations(
+                TaskDatabase.MIGRATION_1_2,
+                TaskDatabase.MIGRATION_2_3,
+                TaskDatabase.MIGRATION_3_4
+            )
+            .build()
     }
 
     @Provides

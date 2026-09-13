@@ -1,5 +1,6 @@
 package com.shreyash.dotrack.data.repository
 
+import android.content.Context
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -16,6 +17,7 @@ import com.shreyash.dotrack.core.util.Result
 import com.shreyash.dotrack.domain.model.SortDirection
 import com.shreyash.dotrack.domain.model.SortOption
 import com.shreyash.dotrack.domain.repository.UserPreferencesRepository
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -26,7 +28,8 @@ import javax.inject.Singleton
 // data/repository/UserPreferencesRepositoryImpl.kt
 @Singleton
 class UserPreferencesRepositoryImpl @Inject constructor(
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
+    @ApplicationContext private val context: Context
 ) : UserPreferencesRepository {
 
     private object PreferencesKeys {
@@ -237,6 +240,13 @@ class UserPreferencesRepositoryImpl @Inject constructor(
         return try {
             dataStore.edit { preferences ->
                 preferences[PreferencesKeys.LANGUAGE] = language
+            }
+            // Keep sync SharedPreferences cache in sync for fast attachBaseContext read (#99)
+            try {
+                context.getSharedPreferences("dotrack_sync_prefs", Context.MODE_PRIVATE)
+                    .edit().putString("language_sync", language).apply()
+            } catch (_: Exception) {
+                // non-critical
             }
             Result.Success(Unit)
         } catch (e: Exception) {

@@ -13,8 +13,8 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -76,30 +76,26 @@ fun DoTrackTheme(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+    val context = LocalContext.current
+    val colorScheme = remember(context, darkTheme, dynamicColor) {
+        when {
+            dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+                if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            }
+            darkTheme -> DarkColorScheme
+            else -> LightColorScheme
         }
+    }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    // Set the priority card colors based on the current theme - cached per theme
+    val priorityCardColors = remember(darkTheme) {
+        PriorityCardColors(
+            high = if (darkTheme) CardColorHighPriorityDark else CardColorHighPriorityLight,
+            medium = if (darkTheme) CardColorMediumPriorityDark else CardColorMediumPriorityLight,
+            low = if (darkTheme) CardColorLowPriorityDark else CardColorLowPriorityLight
+        )
     }
-    
-    // Set the priority card colors based on the current theme
-    val priorityCardColors = PriorityCardColors(
-        high = if (darkTheme) CardColorHighPriorityDark else CardColorHighPriorityLight,
-        medium = if (darkTheme) CardColorMediumPriorityDark else CardColorMediumPriorityLight,
-        low = if (darkTheme) CardColorLowPriorityDark else CardColorLowPriorityLight
-    )
-    
-    // Update the global color variables for backward compatibility
-    SideEffect {
-        CardColorHighPriority = priorityCardColors.high
-        CardColorMediumPriority = priorityCardColors.medium
-        CardColorLowPriority = priorityCardColors.low
-    }
-    
+
     CompositionLocalProvider(LocalPriorityCardColors provides priorityCardColors) {
         MaterialTheme(
             colorScheme = colorScheme,
